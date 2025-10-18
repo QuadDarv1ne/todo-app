@@ -23,36 +23,71 @@
                         </button>
                     </form>
 
+                    <!-- Фильтры -->
+                    <div class="mb-4 flex gap-2">
+                        <a href="{{ route('tasks.index', ['filter' => 'all']) }}" 
+                           class="px-3 py-1 rounded text-sm {{ $filter === 'all' ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300' }}">
+                            Все
+                        </a>
+                        <a href="{{ route('tasks.index', ['filter' => 'pending']) }}" 
+                           class="px-3 py-1 rounded text-sm {{ $filter === 'pending' ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300' }}">
+                            Активные
+                        </a>
+                        <a href="{{ route('tasks.index', ['filter' => 'completed']) }}" 
+                           class="px-3 py-1 rounded text-sm {{ $filter === 'completed' ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300' }}">
+                            Завершенные
+                        </a>
+                    </div>
+
                     <!-- Список задач -->
                     <ul id="tasks-list" class="space-y-3">
                         @foreach($tasks as $task)
-                            <li class="task-item flex items-center justify-between p-3 border rounded hover:bg-gray-50" data-id="{{ $task->id }}">
-                                <div class="flex items-center gap-3 flex-1">
-                                    <input
-                                        type="checkbox"
-                                        class="toggle-completed h-5 w-5 text-blue-600 rounded"
-                                        {{ $task->completed ? 'checked' : '' }}
+                            <li class="task-item flex flex-col p-3 border rounded hover:bg-gray-50" data-id="{{ $task->id }}">
+                                <div class="flex items-center justify-between w-full">
+                                    <div class="flex items-center gap-3 flex-1">
+                                        <input
+                                            type="checkbox"
+                                            class="toggle-completed h-5 w-5 text-blue-600 rounded"
+                                            {{ $task->completed ? 'checked' : '' }}
+                                            data-id="{{ $task->id }}"
+                                        >
+                                        <span 
+                                            class="editable-title cursor-pointer {{ $task->completed ? 'line-through text-gray-500' : 'text-gray-800' }}"
+                                            data-id="{{ $task->id }}"
+                                        >
+                                            {{ $task->title }}
+                                        </span>
+                                    </div>
+                                    <button
+                                        class="delete-task text-red-500 hover:text-red-700 ml-2"
                                         data-id="{{ $task->id }}"
                                     >
-                                    <span 
-                                        class="editable-title cursor-pointer {{ $task->completed ? 'line-through text-gray-500' : 'text-gray-800' }}"
-                                        data-id="{{ $task->id }}"
-                                    >
-                                        {{ $task->title }}
-                                    </span>
+                                        Удалить
+                                    </button>
                                 </div>
-                                <button
-                                    class="delete-task text-red-500 hover:text-red-700 ml-2"
-                                    data-id="{{ $task->id }}"
-                                >
-                                    Удалить
-                                </button>
+                                
+                                @if($task->description)
+                                    <div class="mt-2 text-sm text-gray-600 editable-description cursor-pointer" data-id="{{ $task->id }}">
+                                        {{ $task->description }}
+                                    </div>
+                                @endif
                             </li>
                         @endforeach
                     </ul>
 
                     @if($tasks->isEmpty())
-                        <p class="text-gray-500 text-center mt-6">Список пуст. Добавьте первую задачу!</p>
+                        <p class="text-gray-500 text-center mt-6">
+                            @switch($filter)
+                                @case('pending')
+                                    Нет активных задач. Добавьте новую задачу!
+                                    @break
+                                @case('completed')
+                                    Нет завершенных задач.
+                                    @break
+                                @default
+                                    Список пуст. Добавьте первую задачу!
+                            @endswitch
+                        </p>
                     @endif
 
                 </div>
@@ -115,7 +150,7 @@
                 }
             });
 
-            // Редактирование по двойному клику
+            // Редактирование заголовка по двойному клику
             document.addEventListener('dblclick', async (e) => {
                 if (e.target.classList.contains('editable-title')) {
                     const taskId = e.target.dataset.id;
@@ -155,6 +190,58 @@
                     input.addEventListener('blur', saveEdit);
                     input.addEventListener('keypress', (e) => {
                         if (e.key === 'Enter') saveEdit();
+                    });
+                }
+            });
+
+            // Редактирование описания по двойному клику
+            document.addEventListener('dblclick', async (e) => {
+                if (e.target.classList.contains('editable-description')) {
+                    const taskId = e.target.dataset.id;
+                    const currentDescription = e.target.textContent;
+                    const textarea = document.createElement('textarea');
+                    textarea.value = currentDescription;
+                    textarea.className = 'border rounded px-1 py-0.5 w-full mt-1';
+                    textarea.rows = 3;
+                    textarea.autofocus = true;
+
+                    e.target.replaceWith(textarea);
+
+                    const saveEdit = async () => {
+                        const newDescription = textarea.value.trim();
+                        // Проверяем, изменилось ли описание
+                        if (newDescription !== currentDescription) {
+                            await fetch(`/tasks/${taskId}`, {
+                                method: 'PATCH',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                                },
+                                body: JSON.stringify({ description: newDescription || null })
+                            });
+                            
+                            // Обновляем DOM
+                            if (newDescription) {
+                                e.target.textContent = newDescription;
+                            } else {
+                                // Если описание пустое, удаляем элемент
+                                textarea.remove();
+                                return;
+                            }
+                        }
+                        
+                        // Вернуть div
+                        const div = document.createElement('div');
+                        div.className = 'mt-2 text-sm text-gray-600 editable-description cursor-pointer';
+                        div.dataset.id = taskId;
+                        div.textContent = textarea.value.trim();
+                        textarea.replaceWith(div);
+                    };
+
+                    textarea.addEventListener('blur', saveEdit);
+                    textarea.addEventListener('keypress', (e) => {
+                        // Ctrl+Enter для сохранения
+                        if (e.key === 'Enter' && e.ctrlKey) saveEdit();
                     });
                 }
             });
@@ -202,16 +289,27 @@
             // Вспомогательная функция
             function addTaskToDOM(task) {
                 const li = document.createElement('li');
-                li.className = 'task-item flex items-center justify-between p-3 border rounded hover:bg-gray-50';
+                li.className = 'task-item flex flex-col p-3 border rounded hover:bg-gray-50';
                 li.dataset.id = task.id;
+                
+                let descriptionHtml = '';
+                if (task.description) {
+                    descriptionHtml = `<div class="mt-2 text-sm text-gray-600 editable-description cursor-pointer" data-id="${task.id}">
+                        ${task.description}
+                    </div>`;
+                }
+                
                 li.innerHTML = `
-                    <div class="flex items-center gap-3 flex-1">
-                        <input type="checkbox" class="toggle-completed h-5 w-5 text-blue-600 rounded" data-id="${task.id}" ${task.completed ? 'checked' : ''}>
-                        <span class="editable-title cursor-pointer ${task.completed ? 'line-through text-gray-500' : 'text-gray-800'}" data-id="${task.id}">
-                            ${task.title}
-                        </span>
+                    <div class="flex items-center justify-between w-full">
+                        <div class="flex items-center gap-3 flex-1">
+                            <input type="checkbox" class="toggle-completed h-5 w-5 text-blue-600 rounded" data-id="${task.id}" ${task.completed ? 'checked' : ''}>
+                            <span class="editable-title cursor-pointer ${task.completed ? 'line-through text-gray-500' : 'text-gray-800'}" data-id="${task.id}">
+                                ${task.title}
+                            </span>
+                        </div>
+                        <button class="delete-task text-red-500 hover:text-red-700 ml-2" data-id="${task.id}">Удалить</button>
                     </div>
-                    <button class="delete-task text-red-500 hover:text-red-700 ml-2" data-id="${task.id}">Удалить</button>
+                    ${descriptionHtml}
                 `;
                 tasksList.prepend(li);
             }

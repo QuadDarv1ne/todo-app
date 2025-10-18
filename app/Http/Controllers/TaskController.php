@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Task;
+use App\Http\Requests\UpdateTaskRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -20,12 +21,24 @@ class TaskController extends Controller
      */
     public function index(Request $request)
     {
-        $tasks = $request->user()
-            ->tasks()
-            ->orderBy('order')
-            ->get(['id', 'title', 'description', 'completed', 'order', 'created_at']);
+        // Получаем параметр фильтрации
+        $filter = $request->query('filter', 'all');
+        
+        $query = $request->user()->tasks()->orderBy('order');
+        
+        switch ($filter) {
+            case 'completed':
+                $query->where('completed', true);
+                break;
+            case 'pending':
+                $query->where('completed', false);
+                break;
+            // 'all' по умолчанию - все задачи
+        }
+        
+        $tasks = $query->get(['id', 'title', 'description', 'completed', 'order', 'created_at']);
 
-        return view('tasks.index', compact('tasks'));
+        return view('tasks.index', compact('tasks', 'filter'));
     }
 
     /**
@@ -55,17 +68,11 @@ class TaskController extends Controller
     /**
      * Обновляет задачу (статус, заголовок, описание).
      */
-    public function update(Request $request, Task $task): JsonResponse
+    public function update(UpdateTaskRequest $request, Task $task): JsonResponse
     {
         $this->authorize('update', $task);
 
-        $data = $request->validate([
-            'title' => 'sometimes|required|string|max:255',
-            'description' => 'nullable|string|max:65535',
-            'completed' => 'sometimes|boolean',
-        ]);
-
-        $task->update($data);
+        $task->update($request->validated());
 
         return response()->json([
             'success' => true,
