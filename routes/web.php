@@ -3,11 +3,17 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TaskController;
 
+use App\Http\Controllers\DashboardController;
+
 // Перенаправление с главной страницы на задачи (для авторизованных)
 Route::get('/', function () {
     return redirect()->route('tasks.index');
 })->middleware('auth');
 
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->name('dashboard')
+    ->middleware(['auth', 'verified']);
+    
 // Группа маршрутов задач
 Route::middleware('auth')->group(function () {
     Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
