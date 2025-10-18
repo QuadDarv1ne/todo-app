@@ -5,13 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Auth\Access\AuthorizationException;
 
 class TaskController extends Controller
 {
     /**
-     * Применяет middleware 'auth' ко всем методам контроллера.
-     * Это гарантирует, что только авторизованные пользователи могут управлять задачами.
+     * Создаёт экземпляр контроллера.
      */
     public function __construct()
     {
@@ -20,73 +19,66 @@ class TaskController extends Controller
 
     /**
      * Отображает список задач текущего пользователя.
-     *
-     * @return \Illuminate\View\View
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Получаем задачи текущего пользователя, отсортированные по дате создания (новые — сверху)
-        $tasks = auth()->user()->tasks()->latest()->get();
+        $tasks = $request->user()
+            ->tasks()
+            ->latest()
+            ->get(['id', 'title', 'description', 'completed', 'created_at']);
 
         return view('tasks.index', compact('tasks'));
     }
 
     /**
      * Создаёт новую задачу для текущего пользователя.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request): JsonResponse
     {
-        // Валидация входящих данных
-        $validated = $request->validate([
+        $data = $request->validate([
             'title' => 'required|string|max:255',
+            'description' => 'nullable|string|max:65535',
         ]);
 
-        // Создаём задачу, автоматически привязывая её к текущему пользователю
-        $task = auth()->user()->tasks()->create($validated);
+        $task = $request->user()->tasks()->create($data);
 
         return response()->json([
             'success' => true,
-            'task' => $task,
-        ]);
+            'task' => $task->only(['id', 'title', 'description', 'completed', 'created_at']),
+        ], 201);
     }
 
     /**
      * Обновляет статус выполнения задачи.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Task  $task
-     * @return \Illuminate\Http\JsonResponse
+     * @throws AuthorizationException
      */
     public function update(Request $request, Task $task): JsonResponse
     {
-        // Проверяем, что задача принадлежит текущему пользователю
-        if ($task->user_id !== auth()->id()) {
-            return response()->json(['error' => 'Доступ запрещён'], 403);
-        }
+        $this->authorize('update', $task);
 
-        // Обновляем статус (ожидается boolean из запроса)
-        $task->update([
-            'completed' => $request->boolean('completed'),
+        $data = $request->validate([
+            'completed' => 'required|boolean',
+            'title' => 'sometimes|string|max:255',
+            'description' => 'nullable|string|max:65535',
         ]);
 
-        return response()->json(['success' => true]);
+        $task->update($data);
+
+        return response()->json([
+            'success' => true,
+            'task' => $task->only(['id', 'title', 'description', 'completed', 'updated_at']),
+        ]);
     }
 
     /**
      * Удаляет задачу.
      *
-     * @param  \App\Models\Task  $task
-     * @return \Illuminate\Http\JsonResponse
+     * @throws AuthorizationException
      */
     public function destroy(Task $task): JsonResponse
     {
-        // Проверяем принадлежность задачи
-        if ($task->user_id !== auth()->id()) {
-            return response()->json(['error' => 'Доступ запрещён'], 403);
-        }
+        $this->authorize('delete', $task);
 
         $task->delete();
 

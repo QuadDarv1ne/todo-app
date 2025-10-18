@@ -9,58 +9,53 @@ use Illuminate\Auth\Access\Response;
 class TaskPolicy
 {
     /**
-     * Determine whether the user can view any models.
-     */
-    public function viewAny(User $user): bool
-    {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can view the model.
-     */
-    public function view(User $user, Task $task): bool
-    {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can create models.
+     * Разрешить пользователю создавать задачи.
      */
     public function create(User $user): bool
     {
-        return false;
+        return true; // Любой авторизованный пользователь может создавать задачи
     }
 
     /**
-     * Determine whether the user can update the model.
+     * Разрешить пользователю обновлять задачу, только если она принадлежит ему.
      */
     public function update(User $user, Task $task): bool
     {
-        return false;
+        return $user->id === $task->user_id;
     }
 
     /**
-     * Determine whether the user can delete the model.
+     * Разрешить пользователю удалять задачу, только если она принадлежит ему.
      */
     public function delete(User $user, Task $task): bool
     {
-        return false;
+        return $user->id === $task->user_id;
     }
 
     /**
-     * Determine whether the user can restore the model.
+     * Разрешить пользователю просматривать задачу, только если она принадлежит ему.
      */
+    public function view(User $user, Task $task): bool
+    {
+        return $user->id === $task->user_id;
+    }
+
+    /**
+     * Просмотр списка задач разрешён (но в контроллере мы и так фильтруем по пользователю).
+     */
+    public function viewAny(User $user): bool
+    {
+        return true;
+    }
+
+    // Остальные методы (restore, forceDelete) можно оставить, если не используете soft deletes
     public function restore(User $user, Task $task): bool
     {
-        return false;
+        return $user->id === $task->user_id;
     }
 
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
     public function forceDelete(User $user, Task $task): bool
     {
-        return false;
+        return $user->id === $task->user_id;
     }
 }
