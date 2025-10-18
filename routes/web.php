@@ -8,7 +8,7 @@ use App\Http\Controllers\ProfileController;
 // Главная → задачи
 Route::get('/', function () {
     return redirect()->route('tasks.index');
-})->middleware('auth');
+});
 
 // Dashboard
 Route::get('/dashboard', [DashboardController::class, 'index'])

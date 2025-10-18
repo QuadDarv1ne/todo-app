@@ -7,14 +7,11 @@ use App\Http\Requests\UpdateTaskRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Routing\Controller;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class TaskController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
+    use AuthorizesRequests;
 
     /**
      * Отображает список задач текущего пользователя.

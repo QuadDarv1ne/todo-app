@@ -56,9 +56,11 @@ php artisan make:model Task -mf
     ```bash
     Schema::create('tasks', function (Blueprint $table) {
         $table->id();
+        $table->foreignId('user_id')->constrained()->onDelete('cascade');
         $table->string('title');
         $table->text('description')->nullable();
         $table->boolean('completed')->default(false);
+        $table->integer('order')->default(0);
         $table->timestamps();
     });
     ```
@@ -109,10 +111,10 @@ Route::resource('tasks', TaskController::class)->except(['show', 'edit', 'create
 **Или вручную:**
 
 ```php
-Route::get('/tasks', [TaskController::class, 'index']);
-Route::post('/tasks', [TaskController::class, 'store']);
-Route::patch('/tasks/{task}', [TaskController::class, 'update']);
-Route::delete('/tasks/{task}', [TaskController::class, 'destroy']);
+Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
+Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
+Route::patch('/tasks/{task}', [TaskController::class, 'update'])->name('tasks.update');
+Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
 ```
 
 ### 8. Создание представления (`Blade`)
@@ -144,16 +146,31 @@ Route::delete('/tasks/{task}', [TaskController::class, 'destroy']);
     Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
     Route::patch('/tasks/{task}', [TaskController::class, 'update'])->name('tasks.update');
     Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
+    Route::post('/tasks/reorder', [TaskController::class, 'reorder'])->name('tasks.reorder');
     ```
 
 - **_Контроллер должен передавать `$tasks` в представление:_**
 
     ```php
     // TaskController.php
-    public function index()
+    public function index(Request $request)
     {
-        $tasks = Task::orderBy('created_at', 'desc')->get();
-        return view('tasks.index', compact('tasks'));
+        $filter = $request->query('filter', 'all');
+        
+        $query = $request->user()->tasks()->orderBy('order');
+        
+        switch ($filter) {
+            case 'completed':
+                $query->where('completed', true);
+                break;
+            case 'pending':
+                $query->where('completed', false);
+                break;
+        }
+        
+        $tasks = $query->get(['id', 'title', 'description', 'completed', 'order', 'created_at']);
+
+        return view('tasks.index', compact('tasks', 'filter'));
     }
     ```
 
@@ -219,7 +236,7 @@ Starting Laravel development server: http://127.0.0.1:8000
 - **Использовать `Form Request` для валидации (если логика усложнится):**
 
 ```bash
-php artisan make:request StoreTaskRequest
+php artisan make:request UpdateTaskRequest
 ```
 
 - **Добавить политики (`Policies`) для более гибкой авторизации:**
@@ -279,4 +296,3 @@ php artisan serve
 ※ Предложения по сотрудничеству можете присылать на почту ※
 📧 maksimqwe42@mail.ru
 ```
-
