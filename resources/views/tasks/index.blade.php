@@ -27,19 +27,22 @@
                     <ul id="tasks-list" class="space-y-3">
                         @foreach($tasks as $task)
                             <li class="task-item flex items-center justify-between p-3 border rounded hover:bg-gray-50" data-id="{{ $task->id }}">
-                                <div class="flex items-center gap-3">
+                                <div class="flex items-center gap-3 flex-1">
                                     <input
                                         type="checkbox"
                                         class="toggle-completed h-5 w-5 text-blue-600 rounded"
                                         {{ $task->completed ? 'checked' : '' }}
                                         data-id="{{ $task->id }}"
                                     >
-                                    <span class="{{ $task->completed ? 'line-through text-gray-500' : 'text-gray-800' }}">
+                                    <span 
+                                        class="editable-title cursor-pointer {{ $task->completed ? 'line-through text-gray-500' : 'text-gray-800' }}"
+                                        data-id="{{ $task->id }}"
+                                    >
                                         {{ $task->title }}
                                     </span>
                                 </div>
                                 <button
-                                    class="delete-task text-red-500 hover:text-red-700"
+                                    class="delete-task text-red-500 hover:text-red-700 ml-2"
                                     data-id="{{ $task->id }}"
                                 >
                                     Удалить
@@ -58,10 +61,37 @@
     </div>
 
     @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const form = document.getElementById('task-form');
             const tasksList = document.getElementById('tasks-list');
+
+            // Инициализация Sortable
+            if (tasksList) {
+                new Sortable(tasksList, {
+                    animation: 150,
+                    handle: '.editable-title', // перетаскиваем только за текст
+                    onEnd: async function (evt) {
+                        const newOrder = [];
+                        tasksList.querySelectorAll('.task-item').forEach((el, index) => {
+                            newOrder.push({
+                                id: el.dataset.id,
+                                order: index
+                            });
+                        });
+
+                        await fetch('{{ route("tasks.reorder") }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            },
+                            body: JSON.stringify({ tasks: newOrder })
+                        });
+                    }
+                });
+            }
 
             // Добавление задачи
             form.addEventListener('submit', async (e) => {
@@ -85,6 +115,50 @@
                 }
             });
 
+            // Редактирование по двойному клику
+            document.addEventListener('dblclick', async (e) => {
+                if (e.target.classList.contains('editable-title')) {
+                    const taskId = e.target.dataset.id;
+                    const currentTitle = e.target.textContent;
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.value = currentTitle;
+                    input.className = 'border rounded px-1 py-0.5 w-3/4';
+                    input.autofocus = true;
+
+                    e.target.replaceWith(input);
+
+                    const saveEdit = async () => {
+                        const newTitle = input.value.trim();
+                        if (newTitle && newTitle !== currentTitle) {
+                            await fetch(`/tasks/${taskId}`, {
+                                method: 'PATCH',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                                },
+                                body: JSON.stringify({ title: newTitle })
+                            });
+                            e.target.textContent = newTitle;
+                        }
+                        // Вернуть span
+                        const span = document.createElement('span');
+                        span.className = 'editable-title cursor-pointer ' + 
+                            (document.querySelector(`.task-item[data-id="${taskId}"] .toggle-completed`).checked 
+                                ? 'line-through text-gray-500' 
+                                : 'text-gray-800');
+                        span.dataset.id = taskId;
+                        span.textContent = input.value.trim() || currentTitle;
+                        input.replaceWith(span);
+                    };
+
+                    input.addEventListener('blur', saveEdit);
+                    input.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') saveEdit();
+                    });
+                }
+            });
+
             // Переключение статуса
             document.addEventListener('change', async (e) => {
                 if (e.target.classList.contains('toggle-completed')) {
@@ -100,11 +174,11 @@
                         body: JSON.stringify({ completed })
                     });
 
-                    // Обновляем стиль
-                    const taskText = e.target.closest('.task-item').querySelector('span');
-                    taskText.classList.toggle('line-through', completed);
-                    taskText.classList.toggle('text-gray-500', completed);
-                    taskText.classList.toggle('text-gray-800', !completed);
+                    // Обновляем стиль текста
+                    const titleEl = document.querySelector(`.editable-title[data-id="${taskId}"]`);
+                    titleEl.classList.toggle('line-through', completed);
+                    titleEl.classList.toggle('text-gray-500', completed);
+                    titleEl.classList.toggle('text-gray-800', !completed);
                 }
             });
 
@@ -131,11 +205,13 @@
                 li.className = 'task-item flex items-center justify-between p-3 border rounded hover:bg-gray-50';
                 li.dataset.id = task.id;
                 li.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <input type="checkbox" class="toggle-completed h-5 w-5 text-blue-600 rounded" data-id="${task.id}">
-                        <span class="text-gray-800">${task.title}</span>
+                    <div class="flex items-center gap-3 flex-1">
+                        <input type="checkbox" class="toggle-completed h-5 w-5 text-blue-600 rounded" data-id="${task.id}" ${task.completed ? 'checked' : ''}>
+                        <span class="editable-title cursor-pointer ${task.completed ? 'line-through text-gray-500' : 'text-gray-800'}" data-id="${task.id}">
+                            ${task.title}
+                        </span>
                     </div>
-                    <button class="delete-task text-red-500 hover:text-red-700" data-id="${task.id}">Удалить</button>
+                    <button class="delete-task text-red-500 hover:text-red-700 ml-2" data-id="${task.id}">Удалить</button>
                 `;
                 tasksList.prepend(li);
             }
