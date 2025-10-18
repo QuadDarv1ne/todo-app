@@ -4,25 +4,38 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\User;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Task extends Model
 {
     use HasFactory;
 
     /**
-     * Поля, разрешённые для массового заполнения (через create() или update()).
+     * Поля, разрешённые для массового заполнения.
      *
      * @var array<int, string>
      */
-    protected $fillable = ['title', 'description', 'completed'];
+    protected $fillable = [
+        'title',
+        'description',
+        'completed',
+        'order', // ← обязательно для сортировки!
+    ];
 
     /**
-     * Определяет отношение "многие к одному": задача принадлежит одному пользователю.
+     * Атрибуты, которые должны быть преобразованы в определённые типы.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @var array<string, string>
      */
-    public function user()
+    protected $casts = [
+        'completed' => 'boolean',
+        'order'     => 'integer',
+    ];
+
+    /**
+     * Отношение: задача принадлежит пользователю.
+     */
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }

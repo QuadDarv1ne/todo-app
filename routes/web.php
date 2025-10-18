@@ -5,26 +5,28 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 
-// Главная → редирект на задачи для авторизованных
+// Главная → задачи
 Route::get('/', function () {
     return redirect()->route('tasks.index');
 })->middleware('auth');
 
-// Dashboard (требует подтверждённой почты)
+// Dashboard
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->name('dashboard')
     ->middleware(['auth', 'verified']);
 
-// Группа защищённых маршрутов
+// Защищённые маршруты
 Route::middleware(['auth'])->group(function () {
-    // Задачи
-    Route::resource('tasks', TaskController::class)->except(['show', 'create', 'edit']);
+    Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
+    Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
+    Route::patch('/tasks/{task}', [TaskController::class, 'update'])->name('tasks.update');
+    Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
+    Route::post('/tasks/reorder', [TaskController::class, 'reorder'])->name('tasks.reorder');
 
-    // Профиль (Breeze-совместимость)
+    // Профиль
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Аутентификация (Breeze)
 require __DIR__.'/auth.php';
