@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Auth\Access\AuthorizationException;
 
+// use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controller;
+
 class TaskController extends Controller
 {
     /**
