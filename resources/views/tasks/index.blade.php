@@ -1,76 +1,145 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мой TO-DO список</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
-<body class="bg-gray-100 min-h-screen py-8">
-    <div class="max-w-lg mx-auto bg-white rounded-lg shadow-md p-6">
-        <h1 class="text-2xl font-bold text-center mb-6 text-gray-800">Мои задачи</h1>
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800">Мои задачи</h2>
+    </x-slot>
 
-        <!-- Форма добавления новой задачи -->
-        <form action="{{ route('tasks.store') }}" method="POST" class="mb-6">
-            @csrf
-            <div class="flex gap-2">
-                <input
-                    type="text"
-                    name="title"
-                    placeholder="Введите новую задачу..."
-                    required
-                    class="flex-1 border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                <button
-                    type="submit"
-                    class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-                >
-                    Добавить
-                </button>
-            </div>
-            @error('title')
-                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-            @enderror
-        </form>
+    <div class="py-12">
+        <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-sm rounded-lg">
+                <div class="p-6 text-gray-900">
 
-        <!-- Список задач -->
-        @if($tasks->count())
-            <ul class="space-y-3">
-                @foreach($tasks as $task)
-                    <li class="flex items-center justify-between p-3 border border-gray-200 rounded hover:bg-gray-50">
-                        <div class="flex items-center gap-3">
-                            <form action="{{ route('tasks.update', $task->id) }}" method="POST" class="inline">
-                                @csrf
-                                @method('PATCH')
-                                <input
-                                    type="checkbox"
-                                    onchange="this.form.submit()"
-                                    {{ $task->completed ? 'checked' : '' }}
-                                    class="h-5 w-5 text-blue-600 rounded focus:ring-blue-500"
+                    <!-- Форма добавления -->
+                    <form id="task-form" class="mb-6 flex gap-2">
+                        @csrf
+                        <input
+                            type="text"
+                            id="title"
+                            placeholder="Новая задача..."
+                            class="flex-1 border-gray-300 rounded focus:border-blue-500 focus:ring-blue-500"
+                            required
+                        >
+                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                            Добавить
+                        </button>
+                    </form>
+
+                    <!-- Список задач -->
+                    <ul id="tasks-list" class="space-y-3">
+                        @foreach($tasks as $task)
+                            <li class="task-item flex items-center justify-between p-3 border rounded hover:bg-gray-50" data-id="{{ $task->id }}">
+                                <div class="flex items-center gap-3">
+                                    <input
+                                        type="checkbox"
+                                        class="toggle-completed h-5 w-5 text-blue-600 rounded"
+                                        {{ $task->completed ? 'checked' : '' }}
+                                        data-id="{{ $task->id }}"
+                                    >
+                                    <span class="{{ $task->completed ? 'line-through text-gray-500' : 'text-gray-800' }}">
+                                        {{ $task->title }}
+                                    </span>
+                                </div>
+                                <button
+                                    class="delete-task text-red-500 hover:text-red-700"
+                                    data-id="{{ $task->id }}"
                                 >
-                            </form>
-                            <span class="{{ $task->completed ? 'line-through text-gray-500' : 'text-gray-800' }}">
-                                {{ $task->title }}
-                            </span>
-                        </div>
+                                    Удалить
+                                </button>
+                            </li>
+                        @endforeach
+                    </ul>
 
-                        <form action="{{ route('tasks.destroy', $task->id) }}" method="POST" class="inline">
-                            @csrf
-                            @method('DELETE')
-                            <button
-                                type="submit"
-                                onclick="return confirm('Удалить задачу?')"
-                                class="text-red-500 hover:text-red-700"
-                            >
-                                Удалить
-                            </button>
-                        </form>
-                    </li>
-                @endforeach
-            </ul>
-        @else
-            <p class="text-gray-500 text-center mt-6">Список задач пуст. Добавьте первую!</p>
-        @endif
+                    @if($tasks->isEmpty())
+                        <p class="text-gray-500 text-center mt-6">Список пуст. Добавьте первую задачу!</p>
+                    @endif
+
+                </div>
+            </div>
+        </div>
     </div>
-</body>
-</html>
+
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('task-form');
+            const tasksList = document.getElementById('tasks-list');
+
+            // Добавление задачи
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const title = document.getElementById('title').value.trim();
+                if (!title) return;
+
+                const res = await fetch('{{ route("tasks.store") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({ title })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    form.reset();
+                    addTaskToDOM(data.task);
+                }
+            });
+
+            // Переключение статуса
+            document.addEventListener('change', async (e) => {
+                if (e.target.classList.contains('toggle-completed')) {
+                    const taskId = e.target.dataset.id;
+                    const completed = e.target.checked;
+
+                    await fetch(`/tasks/${taskId}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({ completed })
+                    });
+
+                    // Обновляем стиль
+                    const taskText = e.target.closest('.task-item').querySelector('span');
+                    taskText.classList.toggle('line-through', completed);
+                    taskText.classList.toggle('text-gray-500', completed);
+                    taskText.classList.toggle('text-gray-800', !completed);
+                }
+            });
+
+            // Удаление задачи
+            document.addEventListener('click', async (e) => {
+                if (e.target.classList.contains('delete-task')) {
+                    if (!confirm('Удалить задачу?')) return;
+                    const taskId = e.target.dataset.id;
+
+                    await fetch(`/tasks/${taskId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }
+                    });
+
+                    e.target.closest('.task-item').remove();
+                }
+            });
+
+            // Вспомогательная функция
+            function addTaskToDOM(task) {
+                const li = document.createElement('li');
+                li.className = 'task-item flex items-center justify-between p-3 border rounded hover:bg-gray-50';
+                li.dataset.id = task.id;
+                li.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" class="toggle-completed h-5 w-5 text-blue-600 rounded" data-id="${task.id}">
+                        <span class="text-gray-800">${task.title}</span>
+                    </div>
+                    <button class="delete-task text-red-500 hover:text-red-700" data-id="${task.id}">Удалить</button>
+                `;
+                tasksList.prepend(li);
+            }
+        });
+    </script>
+    @endpush
+</x-app-layout>
