@@ -9,18 +9,26 @@
                 <div class="p-6 text-gray-900">
 
                     <!-- Форма добавления -->
-                    <form id="task-form" class="mb-6 flex gap-2">
+                    <form id="task-form" class="mb-6">
                         @csrf
-                        <input
-                            type="text"
-                            id="title"
-                            placeholder="Новая задача..."
-                            class="flex-1 border-gray-300 rounded focus:border-blue-500 focus:ring-blue-500"
-                            required
-                        >
-                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                            Добавить
-                        </button>
+                        <div class="flex gap-2 mb-2">
+                            <input
+                                type="text"
+                                id="title"
+                                placeholder="Новая задача..."
+                                class="flex-1 border-gray-300 rounded focus:border-blue-500 focus:ring-blue-500"
+                                required
+                            >
+                            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                                Добавить
+                            </button>
+                        </div>
+                        <textarea 
+                            id="description"
+                            placeholder="Описание задачи (необязательно)..."
+                            class="w-full border-gray-300 rounded focus:border-blue-500 focus:ring-blue-500 text-sm"
+                            rows="2"
+                        ></textarea>
                     </form>
 
                     <!-- Фильтры -->
@@ -132,6 +140,8 @@
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const title = document.getElementById('title').value.trim();
+                const description = document.getElementById('description').value.trim();
+                
                 if (!title) return;
 
                 const res = await fetch('{{ route("tasks.store") }}', {
@@ -140,7 +150,10 @@
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     },
-                    body: JSON.stringify({ title })
+                    body: JSON.stringify({ 
+                        title,
+                        description: description || null
+                    })
                 });
 
                 const data = await res.json();
