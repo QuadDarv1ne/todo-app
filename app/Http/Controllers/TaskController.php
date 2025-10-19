@@ -23,10 +23,19 @@ class TaskController extends Controller
     {
         // Получаем параметр фильтрации
         $filter = $request->query('filter', 'all');
+        $search = $request->query('search');
         
-        $tasks = TaskHelper::getFilteredTasks($request->user(), $filter)->get([
-            'id', 'title', 'description', 'completed', 'order', 'created_at', 'updated_at'
-        ]);
+        $query = TaskHelper::getFilteredTasks($request->user(), $filter);
+        
+        // Добавляем поиск, если он есть
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+        
+        $tasks = $query->paginate(10)->appends($request->except('page'));
 
         return view('tasks.index', compact('tasks', 'filter'));
     }
