@@ -236,4 +236,52 @@ class TaskControllerTest extends TestCase
         $response->assertStatus(200);
         $this->assertCount(3, $response->viewData('tasks'));
     }
+
+    /** @test */
+    public function user_can_search_tasks_by_title()
+    {
+        $this->actingAs($this->user);
+        
+        // Создаем задачи
+        Task::factory()->create([
+            'user_id' => $this->user->id,
+            'title' => 'Важная задача'
+        ]);
+        
+        Task::factory()->create([
+            'user_id' => $this->user->id,
+            'title' => 'Обычная задача'
+        ]);
+        
+        // Поиск по части названия
+        $response = $this->get(route('tasks.index', ['search' => 'Важная']));
+        $response->assertStatus(200);
+        $this->assertCount(1, $response->viewData('tasks'));
+        $this->assertEquals('Важная задача', $response->viewData('tasks')->first()->title);
+    }
+
+    /** @test */
+    public function user_can_search_tasks_by_description()
+    {
+        $this->actingAs($this->user);
+        
+        // Создаем задачи
+        Task::factory()->create([
+            'user_id' => $this->user->id,
+            'title' => 'Задача 1',
+            'description' => 'Нужно сделать срочно'
+        ]);
+        
+        Task::factory()->create([
+            'user_id' => $this->user->id,
+            'title' => 'Задача 2',
+            'description' => 'Можно сделать позже'
+        ]);
+        
+        // Поиск по описанию
+        $response = $this->get(route('tasks.index', ['search' => 'срочно']));
+        $response->assertStatus(200);
+        $this->assertCount(1, $response->viewData('tasks'));
+        $this->assertEquals('Нужно сделать срочно', $response->viewData('tasks')->first()->description);
+    }
 }
