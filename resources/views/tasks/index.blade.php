@@ -1,5 +1,11 @@
 @extends('layouts.app')
 
+@section('header')
+    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        Мои задачи
+    </h2>
+@endsection
+
 @section('content')
 <div class="min-h-screen bg-gray-50">
     <!-- Header -->
@@ -41,7 +47,7 @@
                     <span class="text-2xl font-bold text-indigo-600">{{ $progressPercentage }}%</span>
                 </div>
                 <div class="h-3 bg-gray-200 rounded-full overflow-hidden">
-                    <div class="h-full bg-gradient-to-r from-indigo-600 to-purple-600 transition-all duration-500 rounded-full" style="width: {{ $progressPercentage }}%"></div>
+                    <div class="h-full bg-gradient-to-r from-indigo-600 to-purple-600 transition-all duration-500 rounded-full" style="width: <?php echo $progressPercentage; ?>%"></div>
                 </div>
                 <div class="mt-2 text-xs text-gray-500">{{ $completedTasks }} из {{ $totalTasks }} задач выполнено</div>
             </div>
