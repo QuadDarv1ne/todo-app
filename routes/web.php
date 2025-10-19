@@ -5,10 +5,10 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 
-// Главная → задачи
+// Главная страница - welcome
 Route::get('/', function () {
-    return redirect()->route('tasks.index');
-});
+    return view('welcome');
+})->name('welcome');
 
 // Dashboard
 Route::get('/dashboard', [DashboardController::class, 'index'])
