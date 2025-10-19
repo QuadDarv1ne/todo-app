@@ -1,189 +1,123 @@
-<nav x-data="{ open: false }" class="bg-white border-b border-gray-100 shadow-sm">
-    <!-- Primary Navigation Menu -->
+<nav class="bg-white border-b border-gray-100 shadow-sm" x-data="{ mobileMenuOpen: false }">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-            <div class="flex">
+        <div class="flex justify-between items-center h-16">
+            
+            <!-- Logo & Desktop Nav -->
+            <div class="flex items-center gap-8">
                 <!-- Logo -->
-                <div class="shrink-0 flex items-center">
-                    <a href="{{ route('welcome') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-indigo-600" />
-                    </a>
-                </div>
+                <a href="{{ route('welcome') }}" class="flex-shrink-0 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                    <span class="text-lg font-bold text-indigo-600 hidden sm:inline">Maestro7IT</span>
+                </a>
 
-                <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                <!-- Desktop Navigation Links -->
+                <div class="hidden md:flex gap-6">
                     @auth
-                        <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                            {{ __('Dashboard') }}
-                        </x-nav-link>
-
-                        <!-- ДОБАВЛЕНО: Ссылка на задачи -->
-                        <x-nav-link :href="route('tasks.index')" :active="request()->routeIs('tasks.*')">
-                            {{ __('Задачи') }}
-                        </x-nav-link>
-                    @else
-                        <x-nav-link :href="route('login')" :active="request()->routeIs('login')">
-                            {{ __('Вход') }}
-                        </x-nav-link>
-                        
-                        @if (Route::has('register'))
-                            <x-nav-link :href="route('register')" :active="request()->routeIs('register')">
-                                {{ __('Регистрация') }}
-                            </x-nav-link>
-                        @endif
-                    @endauth
+                        <a href="{{ route('dashboard') }}" 
+                           class="px-1 py-2 text-sm font-medium {{ request()->routeIs('dashboard') ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-700 hover:text-gray-900' }} transition">
+                            Dashboard
+                        </a>
+                        <a href="{{ route('tasks.index') }}" 
+                           class="px-1 py-2 text-sm font-medium {{ request()->routeIs('tasks.*') ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-700 hover:text-gray-900' }} transition">
+                            Задачи
+                        </a>
+                    @endif
                 </div>
             </div>
 
-            <!-- Settings Dropdown or Auth Links -->
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
+            <!-- Right Section: Auth or User Menu -->
+            <div class="flex items-center gap-4">
                 @auth
-                    <x-dropdown align="right" width="48">
-                        <x-slot name="trigger">
-                            <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:text-gray-900 focus:outline-none transition ease-in-out duration-150">
-                                <div class="flex items-center">
-                                    <div class="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center mr-2">
-                                        <span class="text-indigo-800 font-semibold">{{ substr(Auth::user()->name, 0, 1) }}</span>
-                                    </div>
-                                    <div>{{ Auth::user()->name }}</div>
-                                </div>
+                    <!-- Desktop User Menu -->
+                    <div class="hidden sm:flex items-center gap-2 relative group">
+                        <button class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition">
+                            <div class="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0">
+                                <span class="text-sm font-semibold text-indigo-700">{{ substr(Auth::user()->name, 0, 1) }}</span>
+                            </div>
+                            <span class="text-sm font-medium text-gray-700 hidden lg:inline">{{ Auth::user()->name }}</span>
+                            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                            </svg>
+                        </button>
 
-                                <div class="ms-1">
-                                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                    </svg>
-                                </div>
-                            </button>
-                        </x-slot>
-
-                        <x-slot name="content">
-                            <x-dropdown-link :href="route('profile.edit')">
-                                {{ __('Профиль') }}
-                            </x-dropdown-link>
-                            
-                            <x-dropdown-link :href="route('tasks.index')">
-                                {{ __('Мои задачи') }}
-                            </x-dropdown-link>
-
-                            <div class="border-t border-gray-200"></div>
-
-                            <!-- Authentication -->
-                            <form method="POST" action="{{ route('logout') }}">
+                        <!-- Dropdown Menu -->
+                        <div class="absolute right-0 mt-0 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 top-full">
+                            <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 first:rounded-t-lg">Профиль</a>
+                            <a href="{{ route('tasks.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Мои задачи</a>
+                            <form method="POST" action="{{ route('logout') }}" class="border-t border-gray-200">
                                 @csrf
-
-                                <x-dropdown-link :href="route('logout')"
-                                        onclick="event.preventDefault();
-                                                    this.closest('form').submit();">
-                                    {{ __('Выйти') }}
-                                </x-dropdown-link>
+                                <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 last:rounded-b-lg">Выйти</button>
                             </form>
-                        </x-slot>
-                    </x-dropdown>
+                        </div>
+                    </div>
+
+                    <!-- Mobile Menu Button -->
+                    <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden p-2 rounded-lg hover:bg-gray-100 transition">
+                        <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                  :d="mobileMenuOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'" />
+                        </svg>
+                    </button>
                 @else
-                    <!-- Guest Navigation Links -->
-                    <div class="hidden space-x-4 sm:-my-px sm:ms-10 sm:flex">
-                        <a href="{{ route('login') }}" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-700 hover:text-gray-900 hover:border-gray-300 focus:outline-none focus:text-gray-900 focus:border-gray-300 transition duration-150 ease-in-out">
-                            {{ __('Вход') }}
+                    <!-- Guest Auth Links (Desktop) -->
+                    <div class="hidden sm:flex gap-3">
+                        <a href="{{ route('login') }}" 
+                           class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition">
+                            Вход
                         </a>
-                        
                         @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="ml-4 inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-700 hover:text-gray-900 hover:border-gray-300 focus:outline-none focus:text-gray-900 focus:border-gray-300 transition duration-150 ease-in-out">
-                                {{ __('Регистрация') }}
+                            <a href="{{ route('register') }}" 
+                               class="px-4 py-2 text-sm font-medium bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+                                Регистрация
                             </a>
                         @endif
                     </div>
+
+                    <!-- Mobile Menu Button -->
+                    <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden p-2 rounded-lg hover:bg-gray-100 transition">
+                        <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                  :d="mobileMenuOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'" />
+                        </svg>
+                    </button>
                 @endauth
             </div>
-
-            <!-- Hamburger -->
-            <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-900 transition duration-150 ease-in-out">
-                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
         </div>
-    </div>
 
-    <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
-        <div class="pt-2 pb-3 space-y-1">
+        <!-- Mobile Menu -->
+        <div x-show="mobileMenuOpen" x-transition class="md:hidden pb-4 space-y-2">
             @auth
-                <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                    {{ __('Dashboard') }}
-                </x-responsive-nav-link>
-
-                <!-- ДОБАВЛЕНО: Мобильная ссылка на задачи -->
-                <x-responsive-nav-link :href="route('tasks.index')" :active="request()->routeIs('tasks.*')">
-                    {{ __('Задачи') }}
-                </x-responsive-nav-link>
+                <a href="{{ route('dashboard') }}" 
+                   class="block px-4 py-2 rounded-lg {{ request()->routeIs('dashboard') ? 'bg-indigo-50 text-indigo-600 font-medium' : 'text-gray-700 hover:bg-gray-50' }} transition">
+                    Dashboard
+                </a>
+                <a href="{{ route('tasks.index') }}" 
+                   class="block px-4 py-2 rounded-lg {{ request()->routeIs('tasks.*') ? 'bg-indigo-50 text-indigo-600 font-medium' : 'text-gray-700 hover:bg-gray-50' }} transition">
+                    Задачи
+                </a>
+                <a href="{{ route('profile.edit') }}" 
+                   class="block px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-50 transition">
+                    Профиль
+                </a>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="w-full text-left px-4 py-2 rounded-lg text-red-600 hover:bg-red-50 transition">
+                        Выйти
+                    </button>
+                </form>
             @else
-                <x-responsive-nav-link :href="route('login')" :active="request()->routeIs('login')">
-                    {{ __('Вход') }}
-                </x-responsive-nav-link>
-                
+                <a href="{{ route('login') }}" 
+                   class="block px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-50 transition">
+                    Вход
+                </a>
                 @if (Route::has('register'))
-                    <x-responsive-nav-link :href="route('register')" :active="request()->routeIs('register')">
-                        {{ __('Регистрация') }}
-                    </x-responsive-nav-link>
+                    <a href="{{ route('register') }}" 
+                       class="block px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition text-center">
+                        Регистрация
+                    </a>
                 @endif
-            @endauth
-        </div>
-
-        <!-- Responsive Settings Options or Auth Links -->
-        <div class="pt-4 pb-1 border-t border-gray-200">
-            @auth
-                <div class="px-4">
-                    <div class="flex items-center">
-                        <div class="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center mr-3">
-                            <span class="text-indigo-800 font-semibold text-lg">{{ substr(Auth::user()->name, 0, 1) }}</span>
-                        </div>
-                        <div>
-                            <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
-                            <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="mt-3 space-y-1">
-                    <x-responsive-nav-link :href="route('profile.edit')">
-                        {{ __('Профиль') }}
-                    </x-responsive-nav-link>
-                    
-                    <x-responsive-nav-link :href="route('tasks.index')">
-                        {{ __('Мои задачи') }}
-                    </x-responsive-nav-link>
-
-                    <!-- Authentication -->
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-
-                        <x-responsive-nav-link :href="route('logout')"
-                                onclick="event.preventDefault();
-                                            this.closest('form').submit();">
-                            {{ __('Выйти') }}
-                        </x-responsive-nav-link>
-                    </form>
-                </div>
-            @else
-                <div class="px-4">
-                    <div class="font-medium text-base text-gray-800">Гостевой режим</div>
-                    <div class="font-medium text-sm text-gray-500">Войдите или зарегистрируйтесь</div>
-                </div>
-                
-                <div class="mt-3 space-y-1">
-                    <x-responsive-nav-link :href="route('login')" :active="request()->routeIs('login')">
-                        {{ __('Вход') }}
-                    </x-responsive-nav-link>
-                    
-                    @if (Route::has('register'))
-                        <x-responsive-nav-link :href="route('register')" :active="request()->routeIs('register')">
-                            {{ __('Регистрация') }}
-                        </x-responsive-nav-link>
-                    @endif
-                </div>
             @endauth
         </div>
     </div>
