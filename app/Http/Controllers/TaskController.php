@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Task;
 use App\Http\Requests\UpdateTaskRequest;
+use App\Http\Requests\StoreTaskRequest;
+use App\Helpers\TaskHelper;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Log;
 
 class TaskController extends Controller
 {
@@ -21,19 +24,9 @@ class TaskController extends Controller
         // Получаем параметр фильтрации
         $filter = $request->query('filter', 'all');
         
-        $query = $request->user()->tasks()->orderBy('order');
-        
-        switch ($filter) {
-            case 'completed':
-                $query->where('completed', true);
-                break;
-            case 'pending':
-                $query->where('completed', false);
-                break;
-            // 'all' по умолчанию - все задачи
-        }
-        
-        $tasks = $query->get(['id', 'title', 'description', 'completed', 'order', 'created_at']);
+        $tasks = TaskHelper::getFilteredTasks($request->user(), $filter)->get([
+            'id', 'title', 'description', 'completed', 'order', 'created_at', 'updated_at'
+        ]);
 
         return view('tasks.index', compact('tasks', 'filter'));
     }
@@ -41,25 +34,30 @@ class TaskController extends Controller
     /**
      * Создаёт новую задачу.
      */
-    public function store(Request $request): JsonResponse
+    public function store(StoreTaskRequest $request): JsonResponse
     {
-        $data = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string|max:65535',
-        ]);
+        try {
+            $data = $request->validated();
 
-        $maxOrder = $request->user()->tasks()->max('order');
-        $task = $request->user()->tasks()->create([
-            'title' => $data['title'],
-            'description' => $data['description'] ?? null,
-            'order' => $maxOrder + 1,
-            'completed' => false,
-        ]);
+            $maxOrder = $request->user()->tasks()->max('order') ?? 0;
+            $task = $request->user()->tasks()->create([
+                'title' => $data['title'],
+                'description' => $data['description'] ?? null,
+                'order' => $maxOrder + 1,
+                'completed' => false,
+            ]);
 
-        return response()->json([
-            'success' => true,
-            'task' => $task->only(['id', 'title', 'description', 'completed', 'order', 'created_at']),
-        ], 201);
+            return response()->json([
+                'success' => true,
+                'task' => $task->only(['id', 'title', 'description', 'completed', 'order', 'created_at', 'updated_at']),
+            ], 201);
+        } catch (\Exception $e) {
+            Log::error('Error creating task: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка при создании задачи'
+            ], 500);
+        }
     }
 
     /**
@@ -67,14 +65,27 @@ class TaskController extends Controller
      */
     public function update(UpdateTaskRequest $request, Task $task): JsonResponse
     {
-        $this->authorize('update', $task);
+        try {
+            $this->authorize('update', $task);
 
-        $task->update($request->validated());
+            $task->update($request->validated());
 
-        return response()->json([
-            'success' => true,
-            'task' => $task->only(['id', 'title', 'description', 'completed', 'order', 'updated_at']),
-        ]);
+            return response()->json([
+                'success' => true,
+                'task' => $task->only(['id', 'title', 'description', 'completed', 'order', 'updated_at']),
+            ]);
+        } catch (AuthorizationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'У вас нет прав для изменения этой задачи'
+            ], 403);
+        } catch (\Exception $e) {
+            Log::error('Error updating task: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка при обновлении задачи'
+            ], 500);
+        }
     }
 
     /**
@@ -82,10 +93,23 @@ class TaskController extends Controller
      */
     public function destroy(Task $task): JsonResponse
     {
-        $this->authorize('delete', $task);
-        $task->delete();
+        try {
+            $this->authorize('delete', $task);
+            $task->delete();
 
-        return response()->json(['success' => true]);
+            return response()->json(['success' => true]);
+        } catch (AuthorizationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'У вас нет прав для удаления этой задачи'
+            ], 403);
+        } catch (\Exception $e) {
+            Log::error('Error deleting task: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка при удалении задачи'
+            ], 500);
+        }
     }
 
     /**
@@ -93,28 +117,31 @@ class TaskController extends Controller
      */
     public function reorder(Request $request): JsonResponse
     {
-        $request->validate([
-            'tasks' => 'required|array',
-            'tasks.*.id' => 'required|exists:tasks,id',
-            'tasks.*.order' => 'integer|min:0',
-        ]);
+        try {
+            $request->validate([
+                'tasks' => 'required|array',
+                'tasks.*.id' => 'required|exists:tasks,id',
+                'tasks.*.order' => 'integer|min:0',
+            ]);
 
-        $taskIds = collect($request->tasks)->pluck('id')->toArray();
-        $userTaskCount = $request->user()
-            ->tasks()
-            ->whereIn('id', $taskIds)
-            ->count();
+            $success = TaskHelper::reorderTasks($request->user(), $request->tasks);
 
-        if ($userTaskCount !== count($taskIds)) {
-            throw new AuthorizationException('Вы можете изменять только свои задачи.');
+            if (!$success) {
+                throw new AuthorizationException('Вы можете изменять только свои задачи.');
+            }
+
+            return response()->json(['success' => true]);
+        } catch (AuthorizationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 403);
+        } catch (\Exception $e) {
+            Log::error('Error reordering tasks: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка при изменении порядка задач'
+            ], 500);
         }
-
-        foreach ($request->tasks as $item) {
-            Task::where('id', $item['id'])
-                ->where('user_id', $request->user()->id)
-                ->update(['order' => $item['order']]);
-        }
-
-        return response()->json(['success' => true]);
     }
 }

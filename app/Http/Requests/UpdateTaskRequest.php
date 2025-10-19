@@ -28,4 +28,21 @@ class UpdateTaskRequest extends FormRequest
             'completed' => 'sometimes|boolean',
         ];
     }
+
+    /**
+     * Get the error messages for the defined validation rules.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'title.required' => 'Название задачи обязательно для заполнения.',
+            'title.string' => 'Название задачи должно быть строкой.',
+            'title.max' => 'Название задачи не может превышать 255 символов.',
+            'description.string' => 'Описание задачи должно быть строкой.',
+            'description.max' => 'Описание задачи не может превышать 65535 символов.',
+            'completed.boolean' => 'Статус завершения должен быть булевым значением.',
+        ];
+    }
 }
