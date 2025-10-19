@@ -185,6 +185,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 const data = await res.json();
                 form.reset();
                 window.location.reload();
+            } else {
+                const error = await res.json();
+                alert(error.message || 'Не удалось добавить задачу');
             }
         } catch (error) {
             console.error('Ошибка:', error);
@@ -215,7 +218,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const newValue = input.value.trim();
                 if (newValue && newValue !== currentValue) {
                     try {
-                        await fetch(`/tasks/${taskId}`, {
+                        const res = await fetch(`/tasks/${taskId}`, {
                             method: 'PATCH',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -223,9 +226,17 @@ document.addEventListener('DOMContentLoaded', function () {
                             },
                             body: JSON.stringify({ [isTitle ? 'title' : 'description']: newValue })
                         });
+                        
+                        if (!res.ok) {
+                            const error = await res.json();
+                            throw new Error(error.message || 'Ошибка при сохранении');
+                        }
+                        
                         window.location.reload();
                     } catch (error) {
                         console.error('Ошибка при сохранении:', error);
+                        alert(error.message || 'Ошибка при сохранении изменений');
+                        restoreElement(isTitle, taskId, currentValue);
                     }
                 } else {
                     restoreElement(isTitle, taskId, currentValue);
@@ -260,7 +271,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const completed = e.target.checked;
 
             try {
-                await fetch(`/tasks/${taskId}`, {
+                const res = await fetch(`/tasks/${taskId}`, {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',
@@ -268,9 +279,18 @@ document.addEventListener('DOMContentLoaded', function () {
                     },
                     body: JSON.stringify({ completed })
                 });
+                
+                if (!res.ok) {
+                    const error = await res.json();
+                    throw new Error(error.message || 'Ошибка при обновлении статуса');
+                }
+                
                 window.location.reload();
             } catch (error) {
                 console.error('Ошибка:', error);
+                alert(error.message || 'Ошибка при обновлении статуса задачи');
+                // Восстановить предыдущее состояние
+                e.target.checked = !completed;
             }
         }
     });
@@ -285,15 +305,22 @@ document.addEventListener('DOMContentLoaded', function () {
         const taskId = btn.dataset.id;
 
         try {
-            await fetch(`/tasks/${taskId}`, {
+            const res = await fetch(`/tasks/${taskId}`, {
                 method: 'DELETE',
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 }
             });
+            
+            if (!res.ok) {
+                const error = await res.json();
+                throw new Error(error.message || 'Ошибка при удалении задачи');
+            }
+            
             window.location.reload();
         } catch (error) {
             console.error('Ошибка при удалении:', error);
+            alert(error.message || 'Ошибка при удалении задачи');
         }
     });
 });

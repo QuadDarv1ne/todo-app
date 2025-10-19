@@ -4,6 +4,7 @@ namespace App\Helpers;
 
 use App\Models\Task;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 
 class TaskHelper
 {
@@ -92,6 +93,7 @@ class TaskHelper
 
             return true;
         } catch (\Exception $e) {
+            Log::error('Error reordering tasks: ' . $e->getMessage());
             return false;
         }
     }

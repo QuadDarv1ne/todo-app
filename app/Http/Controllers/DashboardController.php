@@ -14,7 +14,7 @@ class DashboardController extends Controller
         $stats = TaskHelper::getUserTaskStats($user);
         $recentTasks = TaskHelper::getRecentTasks($user, 5);
         
-        return view('dashboard', [
+        return view('user-dashboard', [
             'totalTasks' => $stats['total'],
             'completedTasks' => $stats['completed'],
             'pendingTasks' => $stats['pending'],
