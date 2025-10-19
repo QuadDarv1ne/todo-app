@@ -47,24 +47,65 @@
                             </div>
                         </div>
                         
-                        <!-- Progress Bar -->
-                        @if($totalTasks > 0)
-                        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-                            <div class="flex justify-between items-center mb-3">
-                                <h3 class="text-lg font-semibold text-gray-900">Прогресс выполнения</h3>
-                                <span class="text-2xl font-bold text-indigo-600">{{ $completionPercentage }}%</span>
+                        <!-- Progress Section -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                            <!-- Progress Bar -->
+                            @if($totalTasks > 0)
+                            <div class="bg-white rounded-lg shadow-md p-6">
+                                <div class="flex justify-between items-center mb-3">
+                                    <h3 class="text-lg font-semibold text-gray-900">Прогресс выполнения</h3>
+                                    <span class="text-2xl font-bold text-indigo-600">{{ $completionPercentage }}%</span>
+                                </div>
+                                <div class="h-4 bg-gray-200 rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-indigo-500 to-purple-600 transition-all duration-500 rounded-full" 
+                                         style="width: <?php echo $completionPercentage; ?>%"></div>
+                                </div>
+                                <div class="mt-2 text-sm text-gray-600">{{ $completedTasks }} из {{ $totalTasks }} задач выполнено</div>
+                                
+                                <!-- Completion Stats -->
+                                <div class="mt-6">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-sm text-gray-600">Завершено</span>
+                                        <span class="text-sm font-medium text-green-600">{{ $completedTasks }}</span>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-600">В процессе</span>
+                                        <span class="text-sm font-medium text-yellow-600">{{ $pendingTasks }}</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="h-4 bg-gray-200 rounded-full overflow-hidden">
-                                <div class="h-full bg-gradient-to-r from-indigo-500 to-purple-600 transition-all duration-500 rounded-full" 
-                                     style="width: {{ $completionPercentage }}%"></div>
+                            @endif
+                            
+                            <!-- Activity Chart -->
+                            @if($tasksByDay->count() > 0)
+                            <div class="bg-white rounded-lg shadow-md p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Активность за неделю</h3>
+                                <div class="h-40 flex items-end justify-between gap-2">
+                                    @foreach($tasksByDay as $day)
+                                        <div class="flex flex-col items-center flex-1">
+                                            <div class="w-full bg-gray-200 rounded-t-lg overflow-hidden" style="height: 80px;">
+                                                <div class="bg-indigo-500 w-full rounded-t-lg" 
+                                                     style="height: <?php echo ($tasksByDay->max('count') > 0) ? ($day->count / $tasksByDay->max('count')) * 100 : 0; ?>%"></div>
+                                            </div>
+                                            <div class="text-xs text-gray-500 mt-2">
+                                                {{ \Carbon\Carbon::parse($day->date)->format('d.m') }}
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
                             </div>
-                            <div class="mt-2 text-sm text-gray-600">{{ $completedTasks }} из {{ $totalTasks }} задач выполнено</div>
+                            @endif
                         </div>
-                        @endif
                         
                         <!-- Recent Tasks -->
                         <div class="bg-white rounded-lg shadow-md p-6">
-                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Последние задачи</h3>
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-semibold text-gray-900">Последние задачи</h3>
+                                <a href="{{ route('tasks.index') }}" 
+                                   class="text-sm text-indigo-600 hover:text-indigo-800 font-medium">
+                                    Просмотреть все
+                                </a>
+                            </div>
                             
                             @if($recentTasks->count() > 0)
                                 <div class="space-y-4">
@@ -72,9 +113,9 @@
                                         <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
                                             <div class="flex items-center">
                                                 <input type="checkbox" 
-                                                       class="h-5 w-5 text-indigo-600 rounded focus:ring-indigo-500" 
-                                                       {{ $task->completed ? 'checked' : '' }}
-                                                       disabled>
+                                                       class="h-5 w-5 text-indigo-600 rounded focus:ring-indigo-500 task-toggle" 
+                                                       data-task-id="{{ $task->id }}"
+                                                       {{ $task->completed ? 'checked' : '' }}>
                                                 <div class="ml-4">
                                                     <div class="font-medium text-gray-900 {{ $task->completed ? 'line-through text-gray-500' : '' }}">
                                                         {{ $task->title }}
@@ -123,4 +164,41 @@
             </div>
         </div>
     </div>
+    
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Toggle task completion
+            document.querySelectorAll('.task-toggle').forEach(checkbox => {
+                checkbox.addEventListener('change', async function() {
+                    const taskId = this.dataset.taskId;
+                    const completed = this.checked;
+                    
+                    try {
+                        const response = await fetch(`/tasks/${taskId}`, {
+                            method: 'PATCH',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            },
+                            body: JSON.stringify({ completed: completed })
+                        });
+                        
+                        if (!response.ok) {
+                            throw new Error('Failed to update task');
+                        }
+                        
+                        // Reload the page to reflect changes
+                        window.location.reload();
+                    } catch (error) {
+                        console.error('Error updating task:', error);
+                        // Revert the checkbox state
+                        this.checked = !completed;
+                        alert('Ошибка при обновлении задачи');
+                    }
+                });
+            });
+        });
+    </script>
+    @endpush
 @endsection
