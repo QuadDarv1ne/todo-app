@@ -1,21 +1,21 @@
 @props(['title', 'description', 'icon', 'actionText' => null, 'actionUrl' => null])
 
-<div class="text-center py-12">
+<div class="empty-state text-center py-16">
     @if($icon)
-        <div class="mx-auto h-12 w-12 text-gray-400">
+        <div class="mx-auto h-16 w-16 text-gray-400 mb-6">
             {!! $icon !!}
         </div>
     @endif
     
-    <h3 class="mt-2 text-sm font-medium text-gray-900">{{ $title }}</h3>
-    <p class="mt-1 text-sm text-gray-500">
+    <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ $title }}</h3>
+    <p class="text-gray-600 max-w-md mx-auto">
         {{ $description }}
     </p>
     
     @if($actionText && $actionUrl)
-        <div class="mt-6">
+        <div class="mt-8">
             <a href="{{ $actionUrl }}" 
-               class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+               class="inline-flex items-center px-5 py-3 bg-indigo-600 border border-transparent rounded-lg font-semibold text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
                 {{ $actionText }}
             </a>
         </div>

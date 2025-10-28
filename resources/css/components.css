@@ -2,12 +2,13 @@
 
 /* Task Card */
 .task-card {
-    transition: all 0.2s ease-in-out;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateZ(0);
 }
 
 .task-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
 .task-title {
@@ -20,30 +21,48 @@
 
 /* Stats Card */
 .stats-card {
-    transition: all 0.2s ease-in-out;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateZ(0);
 }
 
 .stats-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
 /* Progress Bar */
 .progress-bar .rounded-full {
-    transition: width 0.5s ease-out;
+    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Task Form */
 .task-form input:focus,
 .task-form textarea:focus {
     outline: none;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+    border-color: #6366f1;
 }
 
 /* Task Filters */
 .task-filters input:focus {
     outline: none;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+    border-color: #6366f1;
+}
+
+/* Buttons */
+.btn-primary {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateZ(0);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
 }
 
 /* Animations */
@@ -59,7 +78,7 @@
 }
 
 .fade-in-up {
-    animation: fadeInUp 0.3s ease-out;
+    animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @keyframes pulse {
@@ -120,5 +139,13 @@
     .task-filters {
         background: #1f2937;
         border-color: #374151;
+    }
+    
+    .task-form input,
+    .task-form textarea,
+    .task-filters input {
+        background: #111827;
+        border-color: #374151;
+        color: #f3f4f6;
     }
 }

@@ -17,35 +17,77 @@
                         
                         <!-- Stats Cards -->
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                            <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg shadow-md p-6 text-white">
-                                <div class="flex items-center">
-                                    <div class="text-3xl font-bold"><?php echo e($totalTasks); ?></div>
-                                    <div class="ml-4">
-                                        <div class="text-sm">Всего задач</div>
-                                        <div class="text-xs opacity-75">Все ваши задачи</div>
-                                    </div>
-                                </div>
-                            </div>
+                            <?php if (isset($component)) { $__componentOriginal8f216e051c231b98198765acd723fb77 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal8f216e051c231b98198765acd723fb77 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.stats-card','data' => ['title' => 'Всего задач','value' => $totalTasks,'description' => 'Все ваши задачи','color' => 'blue']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('stats-card'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['title' => 'Всего задач','value' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($totalTasks),'description' => 'Все ваши задачи','color' => 'blue']); ?>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                </svg>
+                             <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal8f216e051c231b98198765acd723fb77)): ?>
+<?php $attributes = $__attributesOriginal8f216e051c231b98198765acd723fb77; ?>
+<?php unset($__attributesOriginal8f216e051c231b98198765acd723fb77); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal8f216e051c231b98198765acd723fb77)): ?>
+<?php $component = $__componentOriginal8f216e051c231b98198765acd723fb77; ?>
+<?php unset($__componentOriginal8f216e051c231b98198765acd723fb77); ?>
+<?php endif; ?>
                             
-                            <div class="bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-lg shadow-md p-6 text-white">
-                                <div class="flex items-center">
-                                    <div class="text-3xl font-bold"><?php echo e($pendingTasks); ?></div>
-                                    <div class="ml-4">
-                                        <div class="text-sm">Активные</div>
-                                        <div class="text-xs opacity-75">Еще не завершены</div>
-                                    </div>
-                                </div>
-                            </div>
+                            <?php if (isset($component)) { $__componentOriginal8f216e051c231b98198765acd723fb77 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal8f216e051c231b98198765acd723fb77 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.stats-card','data' => ['title' => 'Активные','value' => $pendingTasks,'description' => 'Еще не завершены','color' => 'yellow']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('stats-card'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['title' => 'Активные','value' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($pendingTasks),'description' => 'Еще не завершены','color' => 'yellow']); ?>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                             <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal8f216e051c231b98198765acd723fb77)): ?>
+<?php $attributes = $__attributesOriginal8f216e051c231b98198765acd723fb77; ?>
+<?php unset($__attributesOriginal8f216e051c231b98198765acd723fb77); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal8f216e051c231b98198765acd723fb77)): ?>
+<?php $component = $__componentOriginal8f216e051c231b98198765acd723fb77; ?>
+<?php unset($__componentOriginal8f216e051c231b98198765acd723fb77); ?>
+<?php endif; ?>
                             
-                            <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-lg shadow-md p-6 text-white">
-                                <div class="flex items-center">
-                                    <div class="text-3xl font-bold"><?php echo e($completedTasks); ?></div>
-                                    <div class="ml-4">
-                                        <div class="text-sm">Завершены</div>
-                                        <div class="text-xs opacity-75">Выполненные задачи</div>
-                                    </div>
-                                </div>
-                            </div>
+                            <?php if (isset($component)) { $__componentOriginal8f216e051c231b98198765acd723fb77 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal8f216e051c231b98198765acd723fb77 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.stats-card','data' => ['title' => 'Завершены','value' => $completedTasks,'description' => 'Выполненные задачи','color' => 'green']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('stats-card'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['title' => 'Завершены','value' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($completedTasks),'description' => 'Выполненные задачи','color' => 'green']); ?>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                             <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal8f216e051c231b98198765acd723fb77)): ?>
+<?php $attributes = $__attributesOriginal8f216e051c231b98198765acd723fb77; ?>
+<?php unset($__attributesOriginal8f216e051c231b98198765acd723fb77); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal8f216e051c231b98198765acd723fb77)): ?>
+<?php $component = $__componentOriginal8f216e051c231b98198765acd723fb77; ?>
+<?php unset($__componentOriginal8f216e051c231b98198765acd723fb77); ?>
+<?php endif; ?>
                         </div>
                         
                         <!-- Progress Section -->
@@ -53,25 +95,37 @@
                             <!-- Progress Bar -->
                             <?php if($totalTasks > 0): ?>
                             <div class="bg-white rounded-lg shadow-md p-6">
-                                <div class="flex justify-between items-center mb-3">
-                                    <h3 class="text-lg font-semibold text-gray-900">Прогресс выполнения</h3>
-                                    <span class="text-2xl font-bold text-indigo-600"><?php echo e($completionPercentage); ?>%</span>
-                                </div>
-                                <div class="h-4 bg-gray-200 rounded-full overflow-hidden">
-                                    <div class="h-full bg-gradient-to-r from-indigo-500 to-purple-600 transition-all duration-500 rounded-full" 
-                                         style="width: <?php echo $completionPercentage; ?>%"></div>
-                                </div>
-                                <div class="mt-2 text-sm text-gray-600"><?php echo e($completedTasks); ?> из <?php echo e($totalTasks); ?> задач выполнено</div>
+                                <?php if (isset($component)) { $__componentOriginalc1838dab69175fa625a76ca35492c358 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginalc1838dab69175fa625a76ca35492c358 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.progress-bar','data' => ['percentage' => $completionPercentage,'label' => 'Прогресс выполнения']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('progress-bar'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['percentage' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($completionPercentage),'label' => 'Прогресс выполнения']); ?>
+                                    <?php echo e($completedTasks); ?> из <?php echo e($totalTasks); ?> задач выполнено
+                                 <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginalc1838dab69175fa625a76ca35492c358)): ?>
+<?php $attributes = $__attributesOriginalc1838dab69175fa625a76ca35492c358; ?>
+<?php unset($__attributesOriginalc1838dab69175fa625a76ca35492c358); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginalc1838dab69175fa625a76ca35492c358)): ?>
+<?php $component = $__componentOriginalc1838dab69175fa625a76ca35492c358; ?>
+<?php unset($__componentOriginalc1838dab69175fa625a76ca35492c358); ?>
+<?php endif; ?>
                                 
                                 <!-- Completion Stats -->
-                                <div class="mt-6">
-                                    <div class="flex items-center justify-between mb-2">
-                                        <span class="text-sm text-gray-600">Завершено</span>
-                                        <span class="text-sm font-medium text-green-600"><?php echo e($completedTasks); ?></span>
+                                <div class="mt-6 grid grid-cols-2 gap-4">
+                                    <div class="text-center p-3 bg-green-50 rounded-lg">
+                                        <div class="text-2xl font-bold text-green-600"><?php echo e($completedTasks); ?></div>
+                                        <div class="text-sm text-green-700">Завершено</div>
                                     </div>
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-sm text-gray-600">В процессе</span>
-                                        <span class="text-sm font-medium text-yellow-600"><?php echo e($pendingTasks); ?></span>
+                                    <div class="text-center p-3 bg-yellow-50 rounded-lg">
+                                        <div class="text-2xl font-bold text-yellow-600"><?php echo e($pendingTasks); ?></div>
+                                        <div class="text-sm text-yellow-700">В процессе</div>
                                     </div>
                                 </div>
                             </div>
@@ -110,37 +164,28 @@
                             </div>
                             
                             <?php if($recentTasks->count() > 0): ?>
-                                <div class="space-y-4">
+                                <div class="space-y-3">
                                     <?php $__currentLoopData = $recentTasks; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $task): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
-                                            <div class="flex items-center">
-                                                <input type="checkbox" 
-                                                       class="h-5 w-5 text-indigo-600 rounded focus:ring-indigo-500 task-toggle" 
-                                                       data-task-id="<?php echo e($task->id); ?>"
-                                                       <?php echo e($task->completed ? 'checked' : ''); ?>>
-                                                <div class="ml-4">
-                                                    <div class="font-medium text-gray-900 <?php echo e($task->completed ? 'line-through text-gray-500' : ''); ?>">
-                                                        <?php echo e($task->title); ?>
-
-                                                    </div>
-                                                    <?php if($task->description): ?>
-                                                        <div class="text-sm text-gray-500 mt-1">
-                                                            <?php echo e(Str::limit($task->description, 60)); ?>
-
-                                                        </div>
-                                                    <?php endif; ?>
-                                                    <div class="text-xs text-gray-400 mt-1">
-                                                        Создано: <?php echo e($task->created_at->format('d.m.Y H:i')); ?>
-
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="px-2 py-1 rounded-full text-xs font-medium 
-                                                <?php echo e($task->completed ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'); ?>">
-                                                <?php echo e($task->completed ? 'Завершено' : 'Активно'); ?>
-
-                                            </div>
-                                        </div>
+                                        <?php if (isset($component)) { $__componentOriginal5c7e45c1b38a85fb63a7b75e56a24d35 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal5c7e45c1b38a85fb63a7b75e56a24d35 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.task-card','data' => ['task' => $task,'showActions' => false]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('task-card'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['task' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($task),'show-actions' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(false)]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal5c7e45c1b38a85fb63a7b75e56a24d35)): ?>
+<?php $attributes = $__attributesOriginal5c7e45c1b38a85fb63a7b75e56a24d35; ?>
+<?php unset($__attributesOriginal5c7e45c1b38a85fb63a7b75e56a24d35); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal5c7e45c1b38a85fb63a7b75e56a24d35)): ?>
+<?php $component = $__componentOriginal5c7e45c1b38a85fb63a7b75e56a24d35; ?>
+<?php unset($__componentOriginal5c7e45c1b38a85fb63a7b75e56a24d35); ?>
+<?php endif; ?>
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </div>
                                 <div class="mt-6">

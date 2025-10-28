@@ -3,11 +3,14 @@
 let currentTaskId = null;
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Task completion toggle
+    // Task completion toggle with smooth animation
     document.querySelectorAll('.task-toggle').forEach(checkbox => {
         checkbox.addEventListener('change', async function() {
             const taskId = this.dataset.id;
             const completed = this.checked;
+            
+            // Add loading state
+            this.classList.add('animate-pulse');
             
             try {
                 const response = await fetch(`/tasks/${taskId}`, {
@@ -50,16 +53,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Revert the checkbox state
                 this.checked = !completed;
                 alert('Ошибка при обновлении задачи');
+            } finally {
+                // Remove loading state
+                this.classList.remove('animate-pulse');
             }
         });
     });
     
-    // Task deletion
+    // Task deletion with animation
     document.querySelectorAll('.delete-task').forEach(button => {
         button.addEventListener('click', async function() {
             if (!confirm('Удалить задачу?')) return;
             
             const taskId = this.dataset.id;
+            
+            // Add loading state
+            this.innerHTML = '<svg class="h-5 w-5 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
             
             try {
                 const response = await fetch(`/tasks/${taskId}`, {
@@ -73,9 +82,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     throw new Error('Failed to delete task');
                 }
                 
-                // Remove task card from UI
+                // Remove task card from UI with animation
                 const taskCard = this.closest('.task-card');
                 if (taskCard) {
+                    taskCard.style.transition = 'all 0.3s ease';
                     taskCard.style.opacity = '0';
                     taskCard.style.transform = 'translateX(-100%)';
                     setTimeout(() => {
@@ -85,6 +95,8 @@ document.addEventListener('DOMContentLoaded', function() {
             } catch (error) {
                 console.error('Error deleting task:', error);
                 alert('Ошибка при удалении задачи');
+                // Restore button
+                this.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>';
             }
         });
     });
@@ -124,8 +136,19 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (!title) {
                 titleInput.focus();
+                // Add error animation
+                titleInput.classList.add('border-red-500', 'animate-pulse');
+                setTimeout(() => {
+                    titleInput.classList.remove('border-red-500', 'animate-pulse');
+                }, 1000);
                 return;
             }
+            
+            // Add loading state to submit button
+            const submitButton = taskForm.querySelector('button[type="submit"]');
+            const originalContent = submitButton.innerHTML;
+            submitButton.innerHTML = '<svg class="h-5 w-5 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
+            submitButton.disabled = true;
             
             try {
                 const response = await fetch('/tasks', {
@@ -154,9 +177,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Add new task to the list (optional)
                 console.log('Task created:', data.task);
+                
+                // Reload the page to show the new task
+                window.location.reload();
             } catch (error) {
                 console.error('Error creating task:', error);
                 alert('Ошибка при создании задачи');
+            } finally {
+                // Restore submit button
+                submitButton.innerHTML = originalContent;
+                submitButton.disabled = false;
             }
         });
     }
@@ -190,6 +220,12 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (!currentTaskId) return;
             
+            // Add loading state to submit button
+            const submitButton = editTaskForm.querySelector('button[type="submit"]');
+            const originalContent = submitButton.innerHTML;
+            submitButton.innerHTML = '<svg class="h-5 w-5 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
+            submitButton.disabled = true;
+            
             const formData = new FormData(this);
             const data = {};
             
@@ -216,123 +252,62 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 closeEditModal();
-                location.reload();
+                window.location.reload();
             } catch (error) {
                 console.error('Error updating task:', error);
                 alert('Ошибка при обновлении задачи');
+            } finally {
+                // Restore submit button
+                submitButton.innerHTML = originalContent;
+                submitButton.disabled = false;
             }
         });
     }
     
-    // Sorting functionality
-    document.querySelectorAll('.sort-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const sortField = this.dataset.sort;
-            const currentUrl = new URL(window.location);
-            currentUrl.searchParams.set('sort', sortField);
-            currentUrl.searchParams.set('direction', 'asc');
-            window.location.href = currentUrl.toString();
-        });
-    });
-    
-    // Drag and drop sorting
-    const sortableTasks = document.querySelector('.sortable-tasks');
-    if (sortableTasks) {
-        let draggedItem = null;
-        
-        sortableTasks.querySelectorAll('.task-card').forEach(item => {
-            item.addEventListener('dragstart', function() {
-                draggedItem = this;
-                setTimeout(() => this.classList.add('opacity-50'), 0);
-            });
-            
-            item.addEventListener('dragend', function() {
-                this.classList.remove('opacity-50');
-                draggedItem = null;
-            });
-            
-            item.addEventListener('dragover', function(e) {
-                e.preventDefault();
-            });
-            
-            item.addEventListener('dragenter', function(e) {
-                e.preventDefault();
-                this.classList.add('border-2', 'border-dashed', 'border-indigo-300');
-            });
-            
-            item.addEventListener('dragleave', function() {
-                this.classList.remove('border-2', 'border-dashed', 'border-indigo-300');
-            });
-            
-            item.addEventListener('drop', function(e) {
-                e.preventDefault();
-                this.classList.remove('border-2', 'border-dashed', 'border-indigo-300');
-                
-                if (draggedItem !== this) {
-                    const allItems = Array.from(sortableTasks.querySelectorAll('.task-card'));
-                    const draggedIndex = allItems.indexOf(draggedItem);
-                    const targetIndex = allItems.indexOf(this);
-                    
-                    if (draggedIndex < targetIndex) {
-                        this.parentNode.insertBefore(draggedItem, this.nextSibling);
-                    } else {
-                        this.parentNode.insertBefore(draggedItem, this);
-                    }
-                    
-                    // Update order in database
-                    updateTaskOrder();
+    // Search form enhancements
+    const searchForm = document.querySelector('form[action*="tasks"]');
+    if (searchForm) {
+        const searchInput = searchForm.querySelector('input[name="search"]');
+        if (searchInput) {
+            // Clear search on ESC key
+            searchInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && this.value) {
+                    this.value = '';
+                    searchForm.submit();
                 }
             });
-        });
+        }
     }
 });
 
+// Modal functions
 function openEditModal(taskId) {
     currentTaskId = taskId;
     const editTaskModal = document.getElementById('editTaskModal');
-    
     if (editTaskModal) {
         editTaskModal.classList.remove('hidden');
         editTaskModal.classList.add('block');
-        document.body.classList.add('overflow-hidden');
+        
+        // Fetch task data and populate form
+        fetch(`/tasks/${taskId}/edit`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('edit-title').value = data.title;
+                document.getElementById('edit-description').value = data.description || '';
+                document.getElementById('edit-completed').checked = data.completed;
+            })
+            .catch(error => {
+                console.error('Error fetching task:', error);
+                alert('Ошибка при загрузке данных задачи');
+            });
     }
 }
 
 function closeEditModal() {
     const editTaskModal = document.getElementById('editTaskModal');
-    
     if (editTaskModal) {
         editTaskModal.classList.remove('block');
         editTaskModal.classList.add('hidden');
-        document.body.classList.remove('overflow-hidden');
         currentTaskId = null;
-    }
-}
-
-async function updateTaskOrder() {
-    const taskCards = document.querySelectorAll('.sortable-tasks .task-card');
-    const tasks = [];
-    
-    taskCards.forEach((card, index) => {
-        const taskId = card.querySelector('.task-toggle').dataset.id;
-        tasks.push({ id: taskId, order: index });
-    });
-    
-    try {
-        const response = await fetch('/tasks/reorder', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
-            body: JSON.stringify({ tasks })
-        });
-        
-        if (!response.ok) {
-            throw new Error('Failed to update task order');
-        }
-    } catch (error) {
-        console.error('Error updating task order:', error);
-        alert('Ошибка при обновлении порядка задач');
     }
 }

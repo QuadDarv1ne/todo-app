@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('header')
-    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+    <h2 class="font-semibold text-2xl text-gray-800 leading-tight">
         Мои задачи
     </h2>
 @endsection
@@ -11,19 +11,19 @@
     <!-- Header -->
     <div class="bg-white border-b border-gray-200 shadow-sm sticky top-16 z-40">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-                <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Мои задачи</h1>
-                <div class="grid grid-cols-3 gap-4 text-sm">
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-5">
+                <h1 class="text-3xl font-bold text-gray-900">Мои задачи</h1>
+                <div class="grid grid-cols-3 gap-5 text-base">
                     <div class="text-center">
-                        <div class="text-lg font-semibold text-gray-900">{{ auth()->user()->tasks()->count() }}</div>
+                        <div class="text-2xl font-bold text-gray-900">{{ auth()->user()->tasks()->count() }}</div>
                         <div class="text-gray-500">Всего</div>
                     </div>
                     <div class="text-center">
-                        <div class="text-lg font-semibold text-blue-600">{{ auth()->user()->tasks()->where('completed', false)->count() }}</div>
+                        <div class="text-2xl font-bold text-blue-600">{{ auth()->user()->tasks()->where('completed', false)->count() }}</div>
                         <div class="text-gray-500">Активные</div>
                     </div>
                     <div class="text-center">
-                        <div class="text-lg font-semibold text-green-600">{{ auth()->user()->tasks()->where('completed', true)->count() }}</div>
+                        <div class="text-2xl font-bold text-green-600">{{ auth()->user()->tasks()->where('completed', true)->count() }}</div>
                         <div class="text-gray-500">Завершены</div>
                     </div>
                 </div>
@@ -32,7 +32,7 @@
     </div>
 
     <!-- Main Content -->
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <!-- Progress Bar -->
         @php
             $totalTasks = auth()->user()->tasks()->count();
@@ -41,7 +41,7 @@
         @endphp
         
         @if($totalTasks > 0)
-            <div class="mb-8">
+            <div class="mb-10">
                 <x-progress-bar 
                     :percentage="$progressPercentage"
                     label="Прогресс выполнения"
@@ -52,22 +52,26 @@
         @endif
 
         <!-- Add Task Form -->
-        <x-task-form class="mb-8" />
+        <x-task-form class="mb-10" />
 
         <!-- Search and Filters -->
-        <x-task-filters :current-filter="$filter" :search-query="request('search')" class="mb-8" />
+        <x-task-filters :current-filter="$filter" :search-query="request('search')" class="mb-10" />
 
         <!-- Tasks List -->
         @if($tasks->count() > 0)
-            <x-task-list :tasks="$tasks" :sortable="true" />
+            <div class="space-y-5">
+                @foreach($tasks as $task)
+                    <x-task-card :task="$task" />
+                @endforeach
+            </div>
         @else
-            <div class="bg-white rounded-lg shadow-sm">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200">
                 @switch($filter)
                     @case('pending')
                         <x-empty-state
                             title="Все задачи выполнены!"
                             description="🎉 Поздравляем! У вас нет активных задач."
-                            icon='<svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            icon='<svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>'
                         />
@@ -76,7 +80,7 @@
                         <x-empty-state
                             title="Нет завершённых задач"
                             description="У вас ещё нет завершённых задач. Продолжайте работать!"
-                            icon='<svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            icon='<svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>'
                         />
@@ -86,7 +90,7 @@
                             <x-empty-state
                                 title="Ничего не найдено"
                                 description='По вашему запросу "{{ request('search') }}" ничего не найдено.'
-                                icon='<svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                icon='<svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>'
                             />
@@ -94,11 +98,11 @@
                             <x-empty-state
                                 title="Нет задач"
                                 description="Начните с создания своей первой задачи!"
-                                icon='<svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                icon='<svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                                 </svg>'
                                 action-text="Создать задачу"
-                                action-url="#"
+                                action-url="{{ route('tasks.index') }}#task-form"
                             />
                         @endif
                 @endswitch
@@ -107,8 +111,10 @@
         
         <!-- Pagination -->
         @if($tasks->hasPages())
-            <div class="mt-8 bg-white rounded-lg shadow-sm p-6">
-                {{ $tasks->appends(request()->except('page'))->links() }}
+            <div class="mt-12 bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+                <div class="flex justify-center">
+                    {{ $tasks->appends(request()->except('page'))->links() }}
+                </div>
             </div>
         @endif
     </div>
@@ -164,7 +170,7 @@ document.addEventListener('DOMContentLoaded', function () {
             
             input.type = isTitle ? 'text' : 'text';
             input.value = currentValue;
-            input.className = 'px-2 py-1 border border-indigo-400 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full';
+            input.className = 'px-3 py-2 border border-indigo-400 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full';
             if (!isTitle) input.rows = 3;
             input.autofocus = true;
 
@@ -205,8 +211,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     : document.createElement('p');
                 
                 element.className = isTitle 
-                    ? 'editable-title cursor-pointer text-base font-medium break-words'
-                    : 'editable-description cursor-pointer text-sm text-gray-600 mt-1 break-words';
+                    ? 'editable-title cursor-pointer text-lg font-semibold break-words'
+                    : 'editable-description cursor-pointer text-gray-600 mt-2 break-words';
                 element.dataset.id = taskId;
                 element.textContent = value;
                 input.replaceWith(element);

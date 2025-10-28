@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('header')
-    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+    <h2 class="font-semibold text-2xl text-gray-800 leading-tight">
         {{ __('Dashboard') }}
     </h2>
 @endsection
@@ -9,13 +9,13 @@
 @section('content')
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    <div class="mb-8">
-                        <h3 class="text-2xl font-bold text-gray-800 mb-6">Добро пожаловать, {{ Auth::user()->name }}!</h3>
+            <div class="bg-white overflow-hidden shadow-xl sm:rounded-2xl">
+                <div class="p-8">
+                    <div class="mb-10">
+                        <h3 class="text-3xl font-bold text-gray-800 mb-8">Добро пожаловать, {{ Auth::user()->name }}!</h3>
                         
                         <!-- Stats Cards -->
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
                             <x-stats-card 
                                 title="Всего задач"
                                 :value="$totalTasks"
@@ -51,10 +51,10 @@
                         </div>
                         
                         <!-- Progress Section -->
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
                             <!-- Progress Bar -->
                             @if($totalTasks > 0)
-                            <div class="bg-white rounded-lg shadow-md p-6">
+                            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
                                 <x-progress-bar 
                                     :percentage="$completionPercentage"
                                     label="Прогресс выполнения"
@@ -63,14 +63,14 @@
                                 </x-progress-bar>
                                 
                                 <!-- Completion Stats -->
-                                <div class="mt-6 grid grid-cols-2 gap-4">
-                                    <div class="text-center p-3 bg-green-50 rounded-lg">
-                                        <div class="text-2xl font-bold text-green-600">{{ $completedTasks }}</div>
-                                        <div class="text-sm text-green-700">Завершено</div>
+                                <div class="mt-8 grid grid-cols-2 gap-4">
+                                    <div class="text-center p-4 bg-green-50 rounded-xl">
+                                        <div class="text-3xl font-bold text-green-600">{{ $completedTasks }}</div>
+                                        <div class="text-base text-green-700 mt-1">Завершено</div>
                                     </div>
-                                    <div class="text-center p-3 bg-yellow-50 rounded-lg">
-                                        <div class="text-2xl font-bold text-yellow-600">{{ $pendingTasks }}</div>
-                                        <div class="text-sm text-yellow-700">В процессе</div>
+                                    <div class="text-center p-4 bg-yellow-50 rounded-xl">
+                                        <div class="text-3xl font-bold text-yellow-600">{{ $pendingTasks }}</div>
+                                        <div class="text-base text-yellow-700 mt-1">В процессе</div>
                                     </div>
                                 </div>
                             </div>
@@ -78,16 +78,16 @@
                             
                             <!-- Activity Chart -->
                             @if($tasksByDay->count() > 0)
-                            <div class="bg-white rounded-lg shadow-md p-6">
-                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Активность за неделю</h3>
-                                <div class="h-40 flex items-end justify-between gap-2">
+                            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+                                <h3 class="text-xl font-semibold text-gray-900 mb-6">Активность за неделю</h3>
+                                <div class="h-48 flex items-end justify-between gap-3">
                                     @foreach($tasksByDay as $day)
                                         <div class="flex flex-col items-center flex-1">
-                                            <div class="w-full bg-gray-200 rounded-t-lg overflow-hidden" style="height: 80px;">
+                                            <div class="w-full bg-gray-200 rounded-t-lg overflow-hidden" style="height: 120px;">
                                                 <div class="bg-indigo-500 w-full rounded-t-lg" 
                                                      style="height: <?php echo ($tasksByDay->max('count') > 0) ? ($day->count / $tasksByDay->max('count')) * 100 : 0; ?>%"></div>
                                             </div>
-                                            <div class="text-xs text-gray-500 mt-2">
+                                            <div class="text-sm text-gray-500 mt-3">
                                                 {{ \Carbon\Carbon::parse($day->date)->format('d.m') }}
                                             </div>
                                         </div>
@@ -98,37 +98,37 @@
                         </div>
                         
                         <!-- Recent Tasks -->
-                        <div class="bg-white rounded-lg shadow-md p-6">
-                            <div class="flex justify-between items-center mb-4">
-                                <h3 class="text-lg font-semibold text-gray-900">Последние задачи</h3>
+                        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="text-xl font-semibold text-gray-900">Последние задачи</h3>
                                 <a href="{{ route('tasks.index') }}" 
-                                   class="text-sm text-indigo-600 hover:text-indigo-800 font-medium">
+                                   class="text-base text-indigo-600 hover:text-indigo-800 font-medium transition-colors duration-200">
                                     Просмотреть все
                                 </a>
                             </div>
                             
                             @if($recentTasks->count() > 0)
-                                <div class="space-y-3">
+                                <div class="space-y-4">
                                     @foreach($recentTasks as $task)
                                         <x-task-card :task="$task" :show-actions="false" />
                                     @endforeach
                                 </div>
-                                <div class="mt-6">
+                                <div class="mt-8">
                                     <a href="{{ route('tasks.index') }}" 
-                                       class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                       class="inline-flex items-center px-5 py-3 bg-indigo-600 border border-transparent rounded-lg font-semibold text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
                                         Просмотреть все задачи
                                     </a>
                                 </div>
                             @else
-                                <div class="text-center py-8">
-                                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="text-center py-12">
+                                    <svg class="mx-auto h-16 w-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
                                     </svg>
-                                    <h3 class="mt-2 text-sm font-medium text-gray-900">Нет задач</h3>
-                                    <p class="mt-1 text-sm text-gray-500">Начните с создания своей первой задачи.</p>
-                                    <div class="mt-6">
+                                    <h3 class="mt-4 text-xl font-medium text-gray-900">Нет задач</h3>
+                                    <p class="mt-2 text-gray-600">Начните с создания своей первой задачи.</p>
+                                    <div class="mt-8">
                                         <a href="{{ route('tasks.index') }}" 
-                                           class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                           class="inline-flex items-center px-5 py-3 bg-indigo-600 border border-transparent rounded-lg font-semibold text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
                                             Создать задачу
                                         </a>
                                     </div>

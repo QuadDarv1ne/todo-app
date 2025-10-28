@@ -33,5 +33,10 @@
                 @yield('content')
             </main>
         </div>
+        
+        <!-- Edit Task Modal -->
+        <x-edit-task-modal />
+        
+        @stack('scripts')
     </body>
 </html>
