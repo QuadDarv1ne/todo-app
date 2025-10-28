@@ -223,6 +223,68 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+    
+    // Sorting functionality
+    document.querySelectorAll('.sort-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const sortField = this.dataset.sort;
+            const currentUrl = new URL(window.location);
+            currentUrl.searchParams.set('sort', sortField);
+            currentUrl.searchParams.set('direction', 'asc');
+            window.location.href = currentUrl.toString();
+        });
+    });
+    
+    // Drag and drop sorting
+    const sortableTasks = document.querySelector('.sortable-tasks');
+    if (sortableTasks) {
+        let draggedItem = null;
+        
+        sortableTasks.querySelectorAll('.task-card').forEach(item => {
+            item.addEventListener('dragstart', function() {
+                draggedItem = this;
+                setTimeout(() => this.classList.add('opacity-50'), 0);
+            });
+            
+            item.addEventListener('dragend', function() {
+                this.classList.remove('opacity-50');
+                draggedItem = null;
+            });
+            
+            item.addEventListener('dragover', function(e) {
+                e.preventDefault();
+            });
+            
+            item.addEventListener('dragenter', function(e) {
+                e.preventDefault();
+                this.classList.add('border-2', 'border-dashed', 'border-indigo-300');
+            });
+            
+            item.addEventListener('dragleave', function() {
+                this.classList.remove('border-2', 'border-dashed', 'border-indigo-300');
+            });
+            
+            item.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('border-2', 'border-dashed', 'border-indigo-300');
+                
+                if (draggedItem !== this) {
+                    const allItems = Array.from(sortableTasks.querySelectorAll('.task-card'));
+                    const draggedIndex = allItems.indexOf(draggedItem);
+                    const targetIndex = allItems.indexOf(this);
+                    
+                    if (draggedIndex < targetIndex) {
+                        this.parentNode.insertBefore(draggedItem, this.nextSibling);
+                    } else {
+                        this.parentNode.insertBefore(draggedItem, this);
+                    }
+                    
+                    // Update order in database
+                    updateTaskOrder();
+                }
+            });
+        });
+    }
 });
 
 function openEditModal(taskId) {
@@ -244,5 +306,33 @@ function closeEditModal() {
         editTaskModal.classList.add('hidden');
         document.body.classList.remove('overflow-hidden');
         currentTaskId = null;
+    }
+}
+
+async function updateTaskOrder() {
+    const taskCards = document.querySelectorAll('.sortable-tasks .task-card');
+    const tasks = [];
+    
+    taskCards.forEach((card, index) => {
+        const taskId = card.querySelector('.task-toggle').dataset.id;
+        tasks.push({ id: taskId, order: index });
+    });
+    
+    try {
+        const response = await fetch('/tasks/reorder', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({ tasks })
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to update task order');
+        }
+    } catch (error) {
+        console.error('Error updating task order:', error);
+        alert('Ошибка при обновлении порядка задач');
     }
 }

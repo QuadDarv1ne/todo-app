@@ -58,34 +58,52 @@
         <x-task-filters :current-filter="$filter" :search-query="request('search')" class="mb-8" />
 
         <!-- Tasks List -->
-        <div class="space-y-3">
-            @forelse($tasks as $task)
-                <x-task-card :task="$task" />
-            @empty
-                <div class="bg-white rounded-lg shadow-sm p-12 text-center">
-                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                    </svg>
-                    <h3 class="mt-4 text-lg font-medium text-gray-900">Нет задач</h3>
-                    <p class="mt-2 text-gray-600">
-                        @switch($filter)
-                            @case('pending')
-                                Все задачи выполнены! 🎉
-                            @break
-                            @case('completed')
-                                Ещё нет завершённых задач.
-                            @break
-                            @default
-                                @if(request('search'))
-                                    По вашему запросу "{{ request('search') }}" ничего не найдено.
-                                @else
-                                    Начните с создания первой задачи!
-                                @endif
-                        @endswitch
-                    </p>
-                </div>
-            @endforelse
-        </div>
+        @if($tasks->count() > 0)
+            <x-task-list :tasks="$tasks" :sortable="true" />
+        @else
+            <div class="bg-white rounded-lg shadow-sm">
+                @switch($filter)
+                    @case('pending')
+                        <x-empty-state
+                            title="Все задачи выполнены!"
+                            description="🎉 Поздравляем! У вас нет активных задач."
+                            icon='<svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>'
+                        />
+                    @break
+                    @case('completed')
+                        <x-empty-state
+                            title="Нет завершённых задач"
+                            description="У вас ещё нет завершённых задач. Продолжайте работать!"
+                            icon='<svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>'
+                        />
+                    @break
+                    @default
+                        @if(request('search'))
+                            <x-empty-state
+                                title="Ничего не найдено"
+                                description='По вашему запросу "{{ request('search') }}" ничего не найдено.'
+                                icon='<svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>'
+                            />
+                        @else
+                            <x-empty-state
+                                title="Нет задач"
+                                description="Начните с создания своей первой задачи!"
+                                icon='<svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                </svg>'
+                                action-text="Создать задачу"
+                                action-url="#"
+                            />
+                        @endif
+                @endswitch
+            </div>
+        @endif
         
         <!-- Pagination -->
         @if($tasks->hasPages())
