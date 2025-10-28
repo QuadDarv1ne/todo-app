@@ -7,6 +7,27 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+/**
+ * Class User
+ *
+ * Модель пользователя системы управления задачами.
+ * 
+ * @property int $id Уникальный идентификатор пользователя
+ * @property string $name Имя пользователя
+ * @property string $email Email пользователя
+ * @property string $password Хэшированный пароль пользователя
+ * @property string|null $remember_token Токен для функции "запомнить меня"
+ * @property \Carbon\Carbon|null $email_verified_at Время подтверждения email
+ * @property \Carbon\Carbon $created_at Время создания пользователя
+ * @property \Carbon\Carbon $updated_at Время последнего обновления пользователя
+ * 
+ * @property-read int $task_count Общее количество задач пользователя
+ * @property-read int $completed_task_count Количество завершенных задач
+ * @property-read int $pending_task_count Количество активных задач
+ * @property-read float $completion_percentage Процент завершения задач
+ * 
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Task[] $tasks Задачи пользователя
+ */
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */

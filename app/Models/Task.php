@@ -6,6 +6,26 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * Class Task
+ *
+ * Модель задачи для управления списком дел пользователя.
+ * 
+ * @property int $id Уникальный идентификатор задачи
+ * @property string $title Заголовок задачи
+ * @property string|null $description Описание задачи (необязательно)
+ * @property bool $completed Статус выполнения задачи
+ * @property int $order Порядковый номер задачи для сортировки
+ * @property int $user_id Идентификатор пользователя, которому принадлежит задача
+ * @property \Carbon\Carbon $created_at Время создания задачи
+ * @property \Carbon\Carbon $updated_at Время последнего обновления задачи
+ * 
+ * @property-read string $status Статус задачи (completed/pending)
+ * @property-read string $statusColor Цвет статуса задачи (green/yellow)
+ * @property-read string $statusName Название статуса задачи (Завершено/Активно)
+ * 
+ * @property-read \App\Models\User $user Пользователь, которому принадлежит задача
+ */
 class Task extends Model
 {
     use HasFactory;
@@ -43,6 +63,8 @@ class Task extends Model
 
     /**
      * Отношение: задача принадлежит пользователю.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function user(): BelongsTo
     {

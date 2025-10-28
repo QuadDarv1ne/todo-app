@@ -12,6 +12,13 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Log;
 
+/**
+ * Class TaskController
+ *
+ * Контроллер для управления задачами пользователей.
+ * Обрабатывает создание, чтение, обновление и удаление задач,
+ * а также изменение их порядка через drag & drop.
+ */
 class TaskController extends Controller
 {
     use AuthorizesRequests;

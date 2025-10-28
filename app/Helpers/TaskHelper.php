@@ -6,6 +6,13 @@ use App\Models\Task;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
 
+/**
+ * Class TaskHelper
+ *
+ * Вспомогательный класс для работы с задачами.
+ * Содержит статические методы для получения статистики,
+ * фильтрации и изменения порядка задач.
+ */
 class TaskHelper
 {
     /**

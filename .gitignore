@@ -48,6 +48,9 @@ Homestead.json
 Homestead.yaml
 .vagrant
 
+# Coverage Reports
+/coverage
+
 # Other
 /phpcs.xml
 /phpcs.xml.dist

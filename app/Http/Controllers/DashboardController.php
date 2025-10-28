@@ -6,6 +6,12 @@ use Illuminate\Http\Request;
 use App\Helpers\TaskHelper;
 use App\Models\Task;
 
+/**
+ * Class DashboardController
+ *
+ * Контроллер для отображения панели управления пользователя.
+ * Показывает статистику задач, последние задачи и графики активности.
+ */
 class DashboardController extends Controller
 {
     public function index(Request $request)

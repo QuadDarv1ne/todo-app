@@ -311,6 +311,17 @@ open coverage/index.html
 
 ---
 
+**Дата:** 28.10.2025
+
+```bash
+# Добавление мультиязычности (RU, EN, ES)
+php artisan make:middleware SetUserLocale
+```
+
+
+
+---
+
 ### 📄 Лицензия
 
 [Этот проект лицензирован под лицензией MIT](LICENCE)

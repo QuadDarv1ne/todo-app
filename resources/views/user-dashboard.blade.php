@@ -16,35 +16,38 @@
                         
                         <!-- Stats Cards -->
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                            <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg shadow-md p-6 text-white">
-                                <div class="flex items-center">
-                                    <div class="text-3xl font-bold">{{ $totalTasks }}</div>
-                                    <div class="ml-4">
-                                        <div class="text-sm">Всего задач</div>
-                                        <div class="text-xs opacity-75">Все ваши задачи</div>
-                                    </div>
-                                </div>
-                            </div>
+                            <x-stats-card 
+                                title="Всего задач"
+                                :value="$totalTasks"
+                                description="Все ваши задачи"
+                                color="blue"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                </svg>
+                            </x-stats-card>
                             
-                            <div class="bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-lg shadow-md p-6 text-white">
-                                <div class="flex items-center">
-                                    <div class="text-3xl font-bold">{{ $pendingTasks }}</div>
-                                    <div class="ml-4">
-                                        <div class="text-sm">Активные</div>
-                                        <div class="text-xs opacity-75">Еще не завершены</div>
-                                    </div>
-                                </div>
-                            </div>
+                            <x-stats-card 
+                                title="Активные"
+                                :value="$pendingTasks"
+                                description="Еще не завершены"
+                                color="yellow"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </x-stats-card>
                             
-                            <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-lg shadow-md p-6 text-white">
-                                <div class="flex items-center">
-                                    <div class="text-3xl font-bold">{{ $completedTasks }}</div>
-                                    <div class="ml-4">
-                                        <div class="text-sm">Завершены</div>
-                                        <div class="text-xs opacity-75">Выполненные задачи</div>
-                                    </div>
-                                </div>
-                            </div>
+                            <x-stats-card 
+                                title="Завершены"
+                                :value="$completedTasks"
+                                description="Выполненные задачи"
+                                color="green"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </x-stats-card>
                         </div>
                         
                         <!-- Progress Section -->
@@ -52,25 +55,22 @@
                             <!-- Progress Bar -->
                             @if($totalTasks > 0)
                             <div class="bg-white rounded-lg shadow-md p-6">
-                                <div class="flex justify-between items-center mb-3">
-                                    <h3 class="text-lg font-semibold text-gray-900">Прогресс выполнения</h3>
-                                    <span class="text-2xl font-bold text-indigo-600">{{ $completionPercentage }}%</span>
-                                </div>
-                                <div class="h-4 bg-gray-200 rounded-full overflow-hidden">
-                                    <div class="h-full bg-gradient-to-r from-indigo-500 to-purple-600 transition-all duration-500 rounded-full" 
-                                         style="width: <?php echo $completionPercentage; ?>%"></div>
-                                </div>
-                                <div class="mt-2 text-sm text-gray-600">{{ $completedTasks }} из {{ $totalTasks }} задач выполнено</div>
+                                <x-progress-bar 
+                                    :percentage="$completionPercentage"
+                                    label="Прогресс выполнения"
+                                >
+                                    {{ $completedTasks }} из {{ $totalTasks }} задач выполнено
+                                </x-progress-bar>
                                 
                                 <!-- Completion Stats -->
-                                <div class="mt-6">
-                                    <div class="flex items-center justify-between mb-2">
-                                        <span class="text-sm text-gray-600">Завершено</span>
-                                        <span class="text-sm font-medium text-green-600">{{ $completedTasks }}</span>
+                                <div class="mt-6 grid grid-cols-2 gap-4">
+                                    <div class="text-center p-3 bg-green-50 rounded-lg">
+                                        <div class="text-2xl font-bold text-green-600">{{ $completedTasks }}</div>
+                                        <div class="text-sm text-green-700">Завершено</div>
                                     </div>
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-sm text-gray-600">В процессе</span>
-                                        <span class="text-sm font-medium text-yellow-600">{{ $pendingTasks }}</span>
+                                    <div class="text-center p-3 bg-yellow-50 rounded-lg">
+                                        <div class="text-2xl font-bold text-yellow-600">{{ $pendingTasks }}</div>
+                                        <div class="text-sm text-yellow-700">В процессе</div>
                                     </div>
                                 </div>
                             </div>
@@ -108,33 +108,9 @@
                             </div>
                             
                             @if($recentTasks->count() > 0)
-                                <div class="space-y-4">
+                                <div class="space-y-3">
                                     @foreach($recentTasks as $task)
-                                        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
-                                            <div class="flex items-center">
-                                                <input type="checkbox" 
-                                                       class="h-5 w-5 text-indigo-600 rounded focus:ring-indigo-500 task-toggle" 
-                                                       data-task-id="{{ $task->id }}"
-                                                       {{ $task->completed ? 'checked' : '' }}>
-                                                <div class="ml-4">
-                                                    <div class="font-medium text-gray-900 {{ $task->completed ? 'line-through text-gray-500' : '' }}">
-                                                        {{ $task->title }}
-                                                    </div>
-                                                    @if($task->description)
-                                                        <div class="text-sm text-gray-500 mt-1">
-                                                            {{ Str::limit($task->description, 60) }}
-                                                        </div>
-                                                    @endif
-                                                    <div class="text-xs text-gray-400 mt-1">
-                                                        Создано: {{ $task->created_at->format('d.m.Y H:i') }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="px-2 py-1 rounded-full text-xs font-medium 
-                                                {{ $task->completed ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
-                                                {{ $task->completed ? 'Завершено' : 'Активно' }}
-                                            </div>
-                                        </div>
+                                        <x-task-card :task="$task" :show-actions="false" />
                                     @endforeach
                                 </div>
                                 <div class="mt-6">

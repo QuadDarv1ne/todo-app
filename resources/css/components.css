@@ -1,0 +1,124 @@
+/* Общие стили для компонентов */
+
+/* Task Card */
+.task-card {
+    transition: all 0.2s ease-in-out;
+}
+
+.task-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.task-title {
+    transition: color 0.2s ease;
+}
+
+.task-card:hover .task-title:not(.line-through) {
+    color: #4f46e5;
+}
+
+/* Stats Card */
+.stats-card {
+    transition: all 0.2s ease-in-out;
+}
+
+.stats-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Progress Bar */
+.progress-bar .rounded-full {
+    transition: width 0.5s ease-out;
+}
+
+/* Task Form */
+.task-form input:focus,
+.task-form textarea:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* Task Filters */
+.task-filters input:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+    .task-card .flex.items-start {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .task-card .flex.items-center.justify-between {
+        width: 100%;
+    }
+    
+    .stats-card {
+        text-align: center;
+    }
+    
+    .stats-card .flex.items-center.justify-between {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .task-card {
+        background: #1f2937;
+        border-color: #374151;
+    }
+    
+    .task-card:hover {
+        background: #374151;
+    }
+    
+    .stats-card {
+        background: #1f2937;
+        border-color: #374151;
+    }
+    
+    .stats-card:hover {
+        background: #374151;
+    }
+    
+    .task-form,
+    .task-filters {
+        background: #1f2937;
+        border-color: #374151;
+    }
+}

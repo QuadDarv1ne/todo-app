@@ -6,6 +6,12 @@ use App\Models\Task;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
+/**
+ * Class TaskPolicy
+ *
+ * Политика авторизации для задач.
+ * Определяет права доступа пользователей к задачам.
+ */
 class TaskPolicy
 {
     /**

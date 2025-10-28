@@ -9,6 +9,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
+/**
+ * Class ProfileController
+ *
+ * Контроллер для управления профилем пользователя.
+ * Обрабатывает отображение, обновление и удаление профиля.
+ */
 class ProfileController extends Controller
 {
     /**

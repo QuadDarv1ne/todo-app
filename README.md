@@ -71,6 +71,7 @@ php artisan test
 
 - [Инструкция по установке и настройке](README-note.md)
 - [Документация API](API_DOCS.md)
+- [Документация на русском языке](README-ru.md)
 
 ## О Laravel
 
