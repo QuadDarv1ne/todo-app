@@ -28,23 +28,23 @@ foreach ($attributes->all() as $__key => $__value) {
 
 unset($__defined_vars, $__key, $__value); ?>
 
-<div class="task-filters bg-white rounded-lg shadow-sm border border-gray-200 p-5">
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+<div class="task-filters bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
         <!-- Search -->
-        <div class="flex-1">
+        <div class="flex-1 max-w-2xl">
             <form method="GET" action="<?php echo e(route('tasks.index')); ?>" class="relative">
-                <input
-                    type="text"
-                    name="search"
-                    value="<?php echo e($searchQuery); ?>"
-                    placeholder="Поиск задач..."
-                    class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition text-sm"
-                >
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
                 </div>
+                <input
+                    type="text"
+                    name="search"
+                    value="<?php echo e($searchQuery); ?>"
+                    placeholder="Поиск задач..."
+                    class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition text-base shadow-sm"
+                >
                 <?php if($searchQuery): ?>
                     <a href="<?php echo e(route('tasks.index')); ?>" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -67,7 +67,7 @@ unset($__defined_vars, $__key, $__value); ?>
             
             <?php $__currentLoopData = $filters; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <a href="<?php echo e(route('tasks.index', array_merge(request()->except('filter', 'page'), ['filter' => $key]))); ?>" 
-                   class="px-4 py-2 rounded-lg text-sm font-medium transition <?php echo e($currentFilter === $key ? 'bg-indigo-600 text-white shadow-md' : 'bg-white text-gray-700 border border-gray-200 hover:border-gray-300'); ?>">
+                   class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 <?php echo e($currentFilter === $key ? 'bg-indigo-600 text-white shadow-md' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'); ?>">
                     <?php echo e($label); ?>
 
                 </a>

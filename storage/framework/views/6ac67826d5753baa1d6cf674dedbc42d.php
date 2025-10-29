@@ -28,20 +28,22 @@ foreach ($attributes->all() as $__key => $__value) {
 
 unset($__defined_vars, $__key, $__value); ?>
 
-<div class="stats-card bg-white rounded-lg shadow-sm border border-gray-200 p-5 hover:shadow-md transition-shadow duration-200">
+<div class="stats-card bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-lg transition-all duration-300 overflow-hidden">
     <div class="flex items-center justify-between">
         <div>
             <p class="text-sm font-medium text-gray-600"><?php echo e($title); ?></p>
-            <p class="text-2xl font-bold text-gray-900 mt-1"><?php echo e($value); ?></p>
+            <p class="text-3xl font-bold text-gray-900 mt-1"><?php echo e($value); ?></p>
             <?php if($description): ?>
-                <p class="text-xs text-gray-500 mt-1"><?php echo e($description); ?></p>
+                <p class="text-xs text-gray-500 mt-2"><?php echo e($description); ?></p>
             <?php endif; ?>
         </div>
         
         <?php if(trim($slot)): ?>
             <div class="p-3 rounded-lg bg-<?php echo e($color); ?>-100 text-<?php echo e($color); ?>-600">
-                <?php echo $slot; ?>
+                <div class="h-8 w-8">
+                    <?php echo $slot; ?>
 
+                </div>
             </div>
         <?php endif; ?>
     </div>

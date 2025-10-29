@@ -1,7 +1,7 @@
 
 
 <?php $__env->startSection('header'); ?>
-    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+    <h2 class="font-semibold text-2xl text-gray-800 leading-tight">
         Мои задачи
     </h2>
 <?php $__env->stopSection(); ?>
@@ -11,19 +11,19 @@
     <!-- Header -->
     <div class="bg-white border-b border-gray-200 shadow-sm sticky top-16 z-40">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-                <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Мои задачи</h1>
-                <div class="grid grid-cols-3 gap-4 text-sm">
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-5">
+                <h1 class="text-3xl font-bold text-gray-900">Мои задачи</h1>
+                <div class="grid grid-cols-3 gap-5 text-base">
                     <div class="text-center">
-                        <div class="text-lg font-semibold text-gray-900"><?php echo e(auth()->user()->tasks()->count()); ?></div>
+                        <div class="text-2xl font-bold text-gray-900"><?php echo e(auth()->user()->tasks()->count()); ?></div>
                         <div class="text-gray-500">Всего</div>
                     </div>
                     <div class="text-center">
-                        <div class="text-lg font-semibold text-blue-600"><?php echo e(auth()->user()->tasks()->where('completed', false)->count()); ?></div>
+                        <div class="text-2xl font-bold text-blue-600"><?php echo e(auth()->user()->tasks()->where('completed', false)->count()); ?></div>
                         <div class="text-gray-500">Активные</div>
                     </div>
                     <div class="text-center">
-                        <div class="text-lg font-semibold text-green-600"><?php echo e(auth()->user()->tasks()->where('completed', true)->count()); ?></div>
+                        <div class="text-2xl font-bold text-green-600"><?php echo e(auth()->user()->tasks()->where('completed', true)->count()); ?></div>
                         <div class="text-gray-500">Завершены</div>
                     </div>
                 </div>
@@ -32,7 +32,7 @@
     </div>
 
     <!-- Main Content -->
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <!-- Progress Bar -->
         <?php
             $totalTasks = auth()->user()->tasks()->count();
@@ -41,7 +41,7 @@
         ?>
         
         <?php if($totalTasks > 0): ?>
-            <div class="mb-8">
+            <div class="mb-10">
                 <?php if (isset($component)) { $__componentOriginalc1838dab69175fa625a76ca35492c358 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginalc1838dab69175fa625a76ca35492c358 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.progress-bar','data' => ['percentage' => $progressPercentage,'label' => 'Прогресс выполнения']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -69,14 +69,14 @@
         <!-- Add Task Form -->
         <?php if (isset($component)) { $__componentOriginal1213088c491ad27af228723338a4a888 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal1213088c491ad27af228723338a4a888 = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.task-form','data' => ['class' => 'mb-8']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.task-form','data' => ['class' => 'mb-10']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
 <?php $component->withName('task-form'); ?>
 <?php if ($component->shouldRender()): ?>
 <?php $__env->startComponent($component->resolveView(), $component->data()); ?>
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
 <?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
 <?php endif; ?>
-<?php $component->withAttributes(['class' => 'mb-8']); ?>
+<?php $component->withAttributes(['class' => 'mb-10']); ?>
 <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal1213088c491ad27af228723338a4a888)): ?>
@@ -91,14 +91,14 @@
         <!-- Search and Filters -->
         <?php if (isset($component)) { $__componentOriginalc846d12936cd11f6bc3fa89c4978ab1c = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginalc846d12936cd11f6bc3fa89c4978ab1c = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.task-filters','data' => ['currentFilter' => $filter,'searchQuery' => request('search'),'class' => 'mb-8']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.task-filters','data' => ['currentFilter' => $filter,'searchQuery' => request('search'),'class' => 'mb-10']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
 <?php $component->withName('task-filters'); ?>
 <?php if ($component->shouldRender()): ?>
 <?php $__env->startComponent($component->resolveView(), $component->data()); ?>
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
 <?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
 <?php endif; ?>
-<?php $component->withAttributes(['current-filter' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($filter),'search-query' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(request('search')),'class' => 'mb-8']); ?>
+<?php $component->withAttributes(['current-filter' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($filter),'search-query' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(request('search')),'class' => 'mb-10']); ?>
 <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginalc846d12936cd11f6bc3fa89c4978ab1c)): ?>
@@ -112,33 +112,37 @@
 
         <!-- Tasks List -->
         <?php if($tasks->count() > 0): ?>
-            <?php if (isset($component)) { $__componentOriginal43d87d4ed96c73531099f91927a1fda3 = $component; } ?>
-<?php if (isset($attributes)) { $__attributesOriginal43d87d4ed96c73531099f91927a1fda3 = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.task-list','data' => ['tasks' => $tasks,'sortable' => true]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
-<?php $component->withName('task-list'); ?>
+            <div class="space-y-5">
+                <?php $__currentLoopData = $tasks; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $task): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <?php if (isset($component)) { $__componentOriginal5c7e45c1b38a85fb63a7b75e56a24d35 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal5c7e45c1b38a85fb63a7b75e56a24d35 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.task-card','data' => ['task' => $task]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('task-card'); ?>
 <?php if ($component->shouldRender()): ?>
 <?php $__env->startComponent($component->resolveView(), $component->data()); ?>
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
 <?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
 <?php endif; ?>
-<?php $component->withAttributes(['tasks' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($tasks),'sortable' => true]); ?>
+<?php $component->withAttributes(['task' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($task)]); ?>
 <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
-<?php if (isset($__attributesOriginal43d87d4ed96c73531099f91927a1fda3)): ?>
-<?php $attributes = $__attributesOriginal43d87d4ed96c73531099f91927a1fda3; ?>
-<?php unset($__attributesOriginal43d87d4ed96c73531099f91927a1fda3); ?>
+<?php if (isset($__attributesOriginal5c7e45c1b38a85fb63a7b75e56a24d35)): ?>
+<?php $attributes = $__attributesOriginal5c7e45c1b38a85fb63a7b75e56a24d35; ?>
+<?php unset($__attributesOriginal5c7e45c1b38a85fb63a7b75e56a24d35); ?>
 <?php endif; ?>
-<?php if (isset($__componentOriginal43d87d4ed96c73531099f91927a1fda3)): ?>
-<?php $component = $__componentOriginal43d87d4ed96c73531099f91927a1fda3; ?>
-<?php unset($__componentOriginal43d87d4ed96c73531099f91927a1fda3); ?>
+<?php if (isset($__componentOriginal5c7e45c1b38a85fb63a7b75e56a24d35)): ?>
+<?php $component = $__componentOriginal5c7e45c1b38a85fb63a7b75e56a24d35; ?>
+<?php unset($__componentOriginal5c7e45c1b38a85fb63a7b75e56a24d35); ?>
 <?php endif; ?>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            </div>
         <?php else: ?>
-            <div class="bg-white rounded-lg shadow-sm">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200">
                 <?php switch($filter):
                     case ('pending'): ?>
                         <?php if (isset($component)) { $__componentOriginal074a021b9d42f490272b5eefda63257c = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal074a021b9d42f490272b5eefda63257c = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.empty-state','data' => ['title' => 'Все задачи выполнены!','description' => '🎉 Поздравляем! У вас нет активных задач.','icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.empty-state','data' => ['title' => 'Все задачи выполнены!','description' => '🎉 Поздравляем! У вас нет активных задач.','icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
 <?php $component->withName('empty-state'); ?>
@@ -147,7 +151,7 @@
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
 <?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
 <?php endif; ?>
-<?php $component->withAttributes(['title' => 'Все задачи выполнены!','description' => '🎉 Поздравляем! У вас нет активных задач.','icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+<?php $component->withAttributes(['title' => 'Все задачи выполнены!','description' => '🎉 Поздравляем! У вас нет активных задач.','icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>']); ?>
 <?php echo $__env->renderComponent(); ?>
@@ -164,7 +168,7 @@
                     <?php case ('completed'): ?>
                         <?php if (isset($component)) { $__componentOriginal074a021b9d42f490272b5eefda63257c = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal074a021b9d42f490272b5eefda63257c = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.empty-state','data' => ['title' => 'Нет завершённых задач','description' => 'У вас ещё нет завершённых задач. Продолжайте работать!','icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.empty-state','data' => ['title' => 'Нет завершённых задач','description' => 'У вас ещё нет завершённых задач. Продолжайте работать!','icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
 <?php $component->withName('empty-state'); ?>
@@ -173,7 +177,7 @@
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
 <?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
 <?php endif; ?>
-<?php $component->withAttributes(['title' => 'Нет завершённых задач','description' => 'У вас ещё нет завершённых задач. Продолжайте работать!','icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+<?php $component->withAttributes(['title' => 'Нет завершённых задач','description' => 'У вас ещё нет завершённых задач. Продолжайте работать!','icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>']); ?>
 <?php echo $__env->renderComponent(); ?>
@@ -192,25 +196,25 @@
                             <x-empty-state
                                 title="Ничего не найдено"
                                 description='По вашему запросу "<?php echo e(request('search')); ?>" ничего не найдено.'
-                                icon='<svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                icon='<svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>'
                             />
                         <?php else: ?>
                             <?php if (isset($component)) { $__componentOriginal074a021b9d42f490272b5eefda63257c = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal074a021b9d42f490272b5eefda63257c = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.empty-state','data' => ['title' => 'Нет задач','description' => 'Начните с создания своей первой задачи!','icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.empty-state','data' => ['title' => 'Нет задач','description' => 'Начните с создания своей первой задачи!','icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                                </svg>','actionText' => 'Создать задачу','actionUrl' => '#']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+                                </svg>','actionText' => 'Создать задачу','actionUrl' => ''.e(route('tasks.index')).'#task-form']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
 <?php $component->withName('empty-state'); ?>
 <?php if ($component->shouldRender()): ?>
 <?php $__env->startComponent($component->resolveView(), $component->data()); ?>
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
 <?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
 <?php endif; ?>
-<?php $component->withAttributes(['title' => 'Нет задач','description' => 'Начните с создания своей первой задачи!','icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+<?php $component->withAttributes(['title' => 'Нет задач','description' => 'Начните с создания своей первой задачи!','icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                                </svg>','action-text' => 'Создать задачу','action-url' => '#']); ?>
+                                </svg>','action-text' => 'Создать задачу','action-url' => ''.e(route('tasks.index')).'#task-form']); ?>
 <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal074a021b9d42f490272b5eefda63257c)): ?>
@@ -228,9 +232,11 @@
         
         <!-- Pagination -->
         <?php if($tasks->hasPages()): ?>
-            <div class="mt-8 bg-white rounded-lg shadow-sm p-6">
-                <?php echo e($tasks->appends(request()->except('page'))->links()); ?>
+            <div class="mt-12 bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+                <div class="flex justify-center">
+                    <?php echo e($tasks->appends(request()->except('page'))->links()); ?>
 
+                </div>
             </div>
         <?php endif; ?>
     </div>
@@ -286,7 +292,7 @@ document.addEventListener('DOMContentLoaded', function () {
             
             input.type = isTitle ? 'text' : 'text';
             input.value = currentValue;
-            input.className = 'px-2 py-1 border border-indigo-400 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full';
+            input.className = 'px-3 py-2 border border-indigo-400 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full';
             if (!isTitle) input.rows = 3;
             input.autofocus = true;
 
@@ -327,8 +333,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     : document.createElement('p');
                 
                 element.className = isTitle 
-                    ? 'editable-title cursor-pointer text-base font-medium break-words'
-                    : 'editable-description cursor-pointer text-sm text-gray-600 mt-1 break-words';
+                    ? 'editable-title cursor-pointer text-lg font-semibold break-words'
+                    : 'editable-description cursor-pointer text-gray-600 mt-2 break-words';
                 element.dataset.id = taskId;
                 element.textContent = value;
                 input.replaceWith(element);

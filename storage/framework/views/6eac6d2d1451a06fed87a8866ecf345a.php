@@ -54,5 +54,29 @@
                 <?php echo $__env->yieldContent('content'); ?>
             </main>
         </div>
+        
+        <!-- Edit Task Modal -->
+        <?php if (isset($component)) { $__componentOriginal90bba21216398bc0c4d9b368855cda0b = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal90bba21216398bc0c4d9b368855cda0b = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.edit-task-modal','data' => []] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('edit-task-modal'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes([]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal90bba21216398bc0c4d9b368855cda0b)): ?>
+<?php $attributes = $__attributesOriginal90bba21216398bc0c4d9b368855cda0b; ?>
+<?php unset($__attributesOriginal90bba21216398bc0c4d9b368855cda0b); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal90bba21216398bc0c4d9b368855cda0b)): ?>
+<?php $component = $__componentOriginal90bba21216398bc0c4d9b368855cda0b; ?>
+<?php unset($__componentOriginal90bba21216398bc0c4d9b368855cda0b); ?>
+<?php endif; ?>
+        
+        <?php echo $__env->yieldPushContent('scripts'); ?>
     </body>
 </html><?php /**PATH C:\Users\maksi\OneDrive\Documents\GitHub\todo-app\resources\views/layouts/app.blade.php ENDPATH**/ ?>
