@@ -318,7 +318,38 @@ open coverage/index.html
 php artisan make:middleware SetUserLocale
 ```
 
+**Дата:** 08.11.2025
 
+### Диагностика
+
+**Проверьте текущее состояние вашей базы данных:**
+
+```bash
+php artisan tinker
+```
+
+```bash
+// Проверить существующие таблицы
+DB::select('SHOW TABLES');
+
+// Проверить содержимое таблицы migrations
+DB::table('migrations')->get();
+
+// Проверить структуру таблицы users
+Schema::getColumnListing('users');
+
+// Проверить структуру таблицы tasks
+Schema::getColumnListing('users');
+```
+
+```bash
+# Очистить кэш конфигурации
+php artisan config:clear
+php artisan cache:clear
+
+# Затем снова попробовать сделать миграции
+php artisan migrate:fresh
+```
 
 ---
 
