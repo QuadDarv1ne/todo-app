@@ -1,6 +1,6 @@
 @props(['task', 'showActions' => true])
 
-<div class="task-card bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden">
+<div class="task-card bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden {{ $task->is_overdue ? 'border-l-4 border-l-red-500' : '' }}">
     <div class="p-5">
         <div class="flex items-start gap-4">
             @if($showActions)
@@ -22,8 +22,8 @@
                     
                     @if($showActions)
                         <div class="flex items-center gap-2 flex-shrink-0">
-                            <span class="px-3 py-1 rounded-full text-xs font-medium {{ $task->completed ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' }} transition-colors duration-200">
-                                {{ $task->completed ? 'Завершено' : 'Активно' }}
+                            <span class="px-3 py-1 rounded-full text-xs font-medium {{ $task->completed ? 'bg-green-100 text-green-800' : ($task->is_overdue ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800') }} transition-colors duration-200">
+                                {{ $task->completed ? 'Завершено' : ($task->is_overdue ? 'Просрочено' : 'Активно') }}
                             </span>
                         </div>
                     @endif
@@ -49,6 +49,18 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1h-3a1 1 0 01-1-1v-3a1 1 0 011-1h1a2 2 0 100-4h-1a1 1 0 01-1-1v-3a1 1 0 011-1h3a1 1 0 001-1V4z" />
                             </svg>
                             {{ $task->updated_at->format('d.m.Y H:i') }}
+                        </span>
+                    @endif
+                    
+                    @if($task->due_date)
+                        <span class="flex items-center gap-1 {{ $task->is_overdue && !$task->completed ? 'text-red-600 font-medium' : '' }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            {{ $task->due_date->format('d.m.Y') }}
+                            @if($task->is_overdue && !$task->completed)
+                                <span class="ml-1">⚠️</span>
+                            @endif
                         </span>
                     @endif
                 </div>
