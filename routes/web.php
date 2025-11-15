@@ -62,6 +62,15 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
     Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
 
+    // Достижения
+    Route::get('/achievements', [AchievementController::class, 'index'])->name('achievements.index');
+    Route::post('/achievements/check', [AchievementController::class, 'check'])->name('achievements.check');
+
+    // История активности
+    Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
+    Route::get('/activity-logs/{log}', [ActivityLogController::class, 'show'])->name('activity-logs.show');
+    Route::post('/activity-logs/cleanup', [ActivityLogController::class, 'cleanup'])->name('activity-logs.cleanup');
+
     // Напоминания
     Route::get('/reminders', [ReminderController::class, 'index'])->name('reminders.index');
     Route::patch('/reminders', [ReminderController::class, 'update'])->name('reminders.update');

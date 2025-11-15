@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property int $user_id Идентификатор пользователя, которому принадлежит задача
  * @property \Carbon\Carbon|null $due_date Дата выполнения задачи (необязательно)
  * @property string $priority Приоритет задачи (low, medium, high)
+ * @property bool $reminders_enabled Флаг включения напоминаний для задачи
  * @property \Carbon\Carbon $created_at Время создания задачи
  * @property \Carbon\Carbon $updated_at Время последнего обновления задачи
  * 
@@ -66,6 +67,7 @@ class Task extends Model
         'order', // ← обязательно для сортировки!
         'due_date',
         'priority',
+        'reminders_enabled',
     ];
 
     /**
@@ -77,6 +79,7 @@ class Task extends Model
         'completed' => 'boolean',
         'order'     => 'integer',
         'due_date'  => 'date',
+        'reminders_enabled' => 'boolean',
     ];
 
     /**
@@ -86,6 +89,15 @@ class Task extends Model
      */
     protected $hidden = [
         'user_id',
+    ];
+
+    /**
+     * Значения по умолчанию для атрибутов модели.
+     *
+     * @var array
+     */
+    protected $attributes = [
+        'reminders_enabled' => true,
     ];
 
     /**
