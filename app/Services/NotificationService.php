@@ -40,6 +40,7 @@ class NotificationService
         $tasks = Task::where('completed', false)
             ->whereNotNull('due_date')
             ->whereBetween('due_date', [$targetDate, $endDate])
+            ->where('reminders_enabled', true) // Only tasks with reminders enabled
             ->whereIn('user_id', $userIds)
             ->with('user')
             ->get();
@@ -86,6 +87,7 @@ class NotificationService
         $tasks = Task::where('completed', false)
             ->whereNotNull('due_date')
             ->where('due_date', '<', now())
+            ->where('reminders_enabled', true) // Only tasks with reminders enabled
             ->whereIn('user_id', $users)
             ->with('user')
             ->get();

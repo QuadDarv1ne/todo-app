@@ -28,11 +28,8 @@ class TaskController extends Controller
 {
     use AuthorizesRequests;
 
-    public function __construct(
-        private \App\Services\AchievementService $achievementService,
-        private \App\Services\ReportService $reportService,
-        private \App\Services\ActivityLogService $activityLogService
-    ) {
+    public function __construct(private ReportService $reportService)
+    {
     }
 
     /**
@@ -137,22 +134,17 @@ class TaskController extends Controller
                 'description' => $data['description'] ?? null,
                 'due_date' => $data['due_date'] ?? null,
                 'priority' => $data['priority'] ?? 'medium',
+                'reminders_enabled' => $data['reminders_enabled'] ?? true,
                 'order' => $maxOrder + 1,
                 'completed' => false,
             ]);
-
-            // Логируем создание задачи
-            $this->activityLogService->logCreated($request->user(), $task);
-
-            // Проверяем достижения при создании задачи
-            $this->achievementService->checkAndUnlockAchievements($request->user());
 
             // Генерируем событие
             event(new TaskCreated($task));
 
             return response()->json([
                 'success' => true,
-                'task' => $task->only(['id', 'title', 'description', 'completed', 'order', 'due_date', 'priority', 'created_at', 'updated_at']),
+                'task' => $task->only(['id', 'title', 'description', 'completed', 'order', 'due_date', 'priority', 'reminders_enabled', 'created_at', 'updated_at']),
             ], 201);
         } catch (\Exception $e) {
             Log::error('Error creating task: ' . $e->getMessage());
@@ -171,27 +163,14 @@ class TaskController extends Controller
         try {
             $this->authorize('update', $task);
 
-            $wasCompleted = $task->completed;
-            $oldData = $task->toArray();
             $task->update($request->validated());
-
-            // Логируем изменения
-            if (!$wasCompleted && $task->completed) {
-                $this->activityLogService->logTaskCompleted($task->user, $task);
-                $this->achievementService->checkAndUnlockAchievements($task->user);
-            } elseif ($wasCompleted && !$task->completed) {
-                $this->activityLogService->logTaskUncompleted($task->user, $task);
-            } else {
-                $changes = array_diff_assoc($task->toArray(), $oldData);
-                $this->activityLogService->logUpdated($task->user, $task, $changes);
-            }
 
             // Генерируем событие
             event(new TaskUpdated($task));
 
             return response()->json([
                 'success' => true,
-                'task' => $task->only(['id', 'title', 'description', 'completed', 'order', 'due_date', 'priority', 'updated_at']),
+                'task' => $task->only(['id', 'title', 'description', 'completed', 'order', 'due_date', 'priority', 'reminders_enabled', 'updated_at']),
             ]);
         } catch (AuthorizationException $e) {
             return response()->json([
@@ -214,9 +193,6 @@ class TaskController extends Controller
     {
         try {
             $this->authorize('delete', $task);
-            
-            // Логируем удаление до фактического удаления
-            $this->activityLogService->logDeleted($task->user, $task);
             
             // Генерируем событие до удаления (чтобы сохранить ссылку на user)
             event(new TaskDeleted($task));
