@@ -80,28 +80,35 @@
         
         // Save task order to server
         function saveTaskOrder() {
-            const taskIds = Array.from(taskList.children).map(item => 
-                item.getAttribute('data-task-id')
-            );
+            // Get tasks with their new order
+            const tasks = Array.from(taskList.children).map((item, index) => ({
+                id: item.getAttribute('data-task-id'),
+                order: index
+            }));
             
             // Send to server
-            fetch('/tasks/reorder', {
+            fetch('{{ route("tasks.reorder") }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 },
-                body: JSON.stringify({ task_ids: taskIds })
+                body: JSON.stringify({ tasks: tasks })
             }).then(response => {
                 if (!response.ok) {
                     throw new Error('Failed to save task order');
                 }
                 return response.json();
             }).then(data => {
+                if (!data.success) {
+                    throw new Error(data.message || 'Failed to save task order');
+                }
                 console.log('Task order saved:', data);
             }).catch(error => {
                 console.error('Error saving task order:', error);
                 alert('Ошибка при сохранении порядка задач');
+                // Reload to restore previous order
+                window.location.reload();
             });
         }
     });

@@ -120,16 +120,20 @@
     </div>
 </div>
 
+<!-- Edit Task Modal -->
+<x-edit-task-modal />
+
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('task-form');
     
-    // Добавление задачи
+    // Add task
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const title = document.getElementById('title').value.trim();
         const description = document.getElementById('description').value.trim();
+        const dueDate = document.getElementById('due_date').value;
         
         if (!title) return;
 
@@ -140,7 +144,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 },
-                body: JSON.stringify({ title, description: description || null })
+                body: JSON.stringify({ 
+                    title, 
+                    description: description || null,
+                    due_date: dueDate || null
+                })
             });
 
             if (res.ok) {
@@ -157,76 +165,90 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Редактирование по двойному клику
-    document.addEventListener('dblclick', async (e) => {
-        if (e.target.classList.contains('editable-title') || e.target.classList.contains('editable-description')) {
-            const isTitle = e.target.classList.contains('editable-title');
-            const taskId = e.target.dataset.id;
-            const currentValue = e.target.textContent.trim();
+    // Edit task modal
+    const editModal = document.getElementById('editTaskModal');
+    const editForm = document.getElementById('editTaskForm');
+    const cancelEdit = document.getElementById('cancelEdit');
+    
+    // Open edit modal
+    document.addEventListener('click', async (e) => {
+        const btn = e.target.closest('.edit-task');
+        if (!btn) return;
+        
+        const taskId = btn.dataset.id;
+        
+        try {
+            // Fetch task data
+            const res = await fetch(`/tasks/${taskId}`);
+            if (!res.ok) throw new Error('Не удалось загрузить задачу');
             
-            const input = isTitle 
-                ? document.createElement('input')
-                : document.createElement('textarea');
+            const data = await res.json();
+            const task = data.task;
             
-            input.type = isTitle ? 'text' : 'text';
-            input.value = currentValue;
-            input.className = 'px-3 py-2 border border-indigo-400 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full';
-            if (!isTitle) input.rows = 3;
-            input.autofocus = true;
-
-            e.target.replaceWith(input);
-
-            const saveEdit = async () => {
-                const newValue = input.value.trim();
-                if (newValue && newValue !== currentValue) {
-                    try {
-                        const res = await fetch(`/tasks/${taskId}`, {
-                            method: 'PATCH',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                            },
-                            body: JSON.stringify({ [isTitle ? 'title' : 'description']: newValue })
-                        });
-                        
-                        if (!res.ok) {
-                            const error = await res.json();
-                            throw new Error(error.message || 'Ошибка при сохранении');
-                        }
-                        
-                        window.location.reload();
-                    } catch (error) {
-                        console.error('Ошибка при сохранении:', error);
-                        alert(error.message || 'Ошибка при сохранении изменений');
-                        restoreElement(isTitle, taskId, currentValue);
-                    }
-                } else {
-                    restoreElement(isTitle, taskId, currentValue);
-                }
-            };
-
-            const restoreElement = (isTitle, taskId, value) => {
-                const element = isTitle 
-                    ? document.createElement('p')
-                    : document.createElement('p');
-                
-                element.className = isTitle 
-                    ? 'editable-title cursor-pointer text-lg font-semibold break-words'
-                    : 'editable-description cursor-pointer text-gray-600 mt-2 break-words';
-                element.dataset.id = taskId;
-                element.textContent = value;
-                input.replaceWith(element);
-            };
-
-            input.addEventListener('blur', saveEdit);
-            input.addEventListener('keypress', (e) => {
-                if (isTitle && e.key === 'Enter') saveEdit();
-                if (!isTitle && e.key === 'Enter' && e.ctrlKey) saveEdit();
+            // Populate form
+            document.getElementById('edit-title').value = task.title;
+            document.getElementById('edit-description').value = task.description || '';
+            document.getElementById('edit-due_date').value = task.due_date || '';
+            document.getElementById('edit-completed').checked = task.completed;
+            
+            // Set form action
+            editForm.action = `/tasks/${taskId}`;
+            
+            // Show modal
+            editModal.classList.remove('hidden');
+        } catch (error) {
+            console.error('Ошибка:', error);
+            alert('Не удалось загрузить данные задачи');
+        }
+    });
+    
+    // Close modal
+    cancelEdit.addEventListener('click', () => {
+        editModal.classList.add('hidden');
+    });
+    
+    // Close modal when clicking outside
+    editModal.addEventListener('click', (e) => {
+        if (e.target === editModal) {
+            editModal.classList.add('hidden');
+        }
+    });
+    
+    // Save edited task
+    editForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = new FormData(editForm);
+        const data = {
+            title: formData.get('title'),
+            description: formData.get('description') || null,
+            due_date: formData.get('due_date') || null,
+            completed: formData.get('completed') === '1'
+        };
+        
+        try {
+            const res = await fetch(editForm.action, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify(data)
             });
+            
+            if (res.ok) {
+                window.location.reload();
+            } else {
+                const error = await res.json();
+                alert(error.message || 'Ошибка при сохранении задачи');
+            }
+        } catch (error) {
+            console.error('Ошибка:', error);
+            alert('Ошибка при сохранении задачи');
         }
     });
 
-    // Переключение статуса
+    // Toggle task completion
     document.addEventListener('change', async (e) => {
         if (e.target.classList.contains('task-toggle')) {
             const taskId = e.target.dataset.id;
@@ -251,13 +273,13 @@ document.addEventListener('DOMContentLoaded', function () {
             } catch (error) {
                 console.error('Ошибка:', error);
                 alert(error.message || 'Ошибка при обновлении статуса задачи');
-                // Восстановить предыдущее состояние
+                // Restore previous state
                 e.target.checked = !completed;
             }
         }
     });
 
-    // Удаление задачи
+    // Delete task
     document.addEventListener('click', async (e) => {
         const btn = e.target.closest('.delete-task');
         if (!btn) return;
@@ -284,16 +306,6 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error('Ошибка при удалении:', error);
             alert(error.message || 'Ошибка при удалении задачи');
         }
-    });
-    
-    // Редактирование задачи
-    document.addEventListener('click', (e) => {
-        const btn = e.target.closest('.edit-task');
-        if (!btn) return;
-        
-        const taskId = btn.dataset.id;
-        // Здесь можно добавить логику для открытия модального окна редактирования
-        console.log('Edit task:', taskId);
     });
 });
 </script>

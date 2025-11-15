@@ -48,6 +48,32 @@ class TaskController extends Controller
     }
 
     /**
+     * Возвращает данные одной задачи в формате JSON.
+     */
+    public function show(Task $task): JsonResponse
+    {
+        try {
+            $this->authorize('view', $task);
+
+            return response()->json([
+                'success' => true,
+                'task' => $task->toArray()
+            ]);
+        } catch (AuthorizationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'У вас нет прав для просмотра этой задачи'
+            ], 403);
+        } catch (\Exception $e) {
+            Log::error('Error fetching task: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка при получении данных задачи'
+            ], 500);
+        }
+    }
+
+    /**
      * Создаёт новую задачу.
      */
     public function store(StoreTaskRequest $request): JsonResponse
