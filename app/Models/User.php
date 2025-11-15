@@ -68,8 +68,12 @@ class User extends Authenticatable
             'password' => 'hashed',
             'task_limit' => 'integer',
             'role' => 'string',
-            'bio' => 'string',           // ← Кастинг для биографии
+            'bio' => 'string',
             'avatar_path' => 'string',
+            'level' => 'integer',
+            'experience_points' => 'integer',
+            'streak_days' => 'integer',
+            'last_activity_date' => 'date',
         ];
     }
 
@@ -113,6 +117,16 @@ class User extends Authenticatable
     public function donations(): HasMany
     {
         return $this->hasMany(Donation::class)->orderBy('created_at', 'desc');
+    }
+
+    /**
+     * Достижения пользователя
+     */
+    public function achievements()
+    {
+        return $this->belongsToMany(Achievement::class, 'user_achievements')
+            ->withTimestamps()
+            ->withPivot('unlocked_at');
     }
 
     // === АКСЕССОРЫ ДЛЯ ПОЛЯ BIO ===
