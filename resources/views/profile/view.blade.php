@@ -67,10 +67,13 @@
                         </div>
                     </div>
                 </div>
-                            </div>
+            </div>
+            
+            <!-- Reminder Settings -->
+            @include('profile.partials.reminder-settings')
             
             <!-- Stats and Charts Section -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
                 <!-- Task Completion Chart -->
                 <div class="bg-white overflow-hidden shadow-xl sm:rounded-2xl">
                     <div class="p-6">

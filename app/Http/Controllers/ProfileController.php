@@ -55,12 +55,23 @@ class ProfileController extends Controller
             ->orderBy('date')
             ->get();
         
+        // Get reminder statistics
+        $reminderStats = [
+            'enabled' => $user->reminder_enabled,
+            'one_day' => $user->reminder_1_day,
+            'three_days' => $user->reminder_3_days,
+            'one_week' => $user->reminder_1_week,
+            'overdue' => $user->reminder_overdue,
+            'time' => $user->reminder_time ? $user->reminder_time->format('H:i') : '09:00',
+        ];
+        
         return view('profile.view', [
             'user' => $user,
             'taskStats' => $taskStats,
             'donationStats' => $donationStats,
             'completionStats' => $completionStats,
-            'tasksByDay' => $tasksByDay
+            'tasksByDay' => $tasksByDay,
+            'reminderStats' => $reminderStats
         ]);
     }
 
