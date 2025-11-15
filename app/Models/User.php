@@ -141,6 +141,14 @@ class User extends Authenticatable
             ->withPivot('unlocked_at');
     }
 
+    /**
+     * Логи активности пользователя
+     */
+    public function activityLogs(): HasMany
+    {
+        return $this->hasMany(ActivityLog::class)->orderBy('created_at', 'desc');
+    }
+
     // === АКСЕССОРЫ ДЛЯ ПОЛЯ BIO ===
     
     /**

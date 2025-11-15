@@ -9,6 +9,10 @@ use Illuminate\Support\Facades\Log;
 
 class AchievementService
 {
+    public function __construct(private ?ActivityLogService $activityLogService = null)
+    {
+    }
+
     /**
      * Проверить и разблокировать достижения для пользователя.
      *
@@ -120,6 +124,11 @@ class AchievementService
 
             // Начисляем очки опыта
             $this->awardExperience($user, $achievement->points);
+
+            // Логируем получение достижения
+            if ($this->activityLogService) {
+                $this->activityLogService->logAchievementUnlocked($user, $achievement);
+            }
 
             // Очищаем кэш достижений пользователя
             Cache::forget("user_{$user->id}_achievements");

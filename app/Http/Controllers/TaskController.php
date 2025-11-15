@@ -30,7 +30,8 @@ class TaskController extends Controller
 
     public function __construct(
         private \App\Services\AchievementService $achievementService,
-        private \App\Services\ReportService $reportService
+        private \App\Services\ReportService $reportService,
+        private \App\Services\ActivityLogService $activityLogService
     ) {
     }
 
@@ -140,6 +141,9 @@ class TaskController extends Controller
                 'completed' => false,
             ]);
 
+            // Логируем создание задачи
+            $this->activityLogService->logCreated($request->user(), $task);
+
             // Проверяем достижения при создании задачи
             $this->achievementService->checkAndUnlockAchievements($request->user());
 
@@ -168,11 +172,18 @@ class TaskController extends Controller
             $this->authorize('update', $task);
 
             $wasCompleted = $task->completed;
+            $oldData = $task->toArray();
             $task->update($request->validated());
 
-            // Проверяем достижения, если задача была завершена
+            // Логируем изменения
             if (!$wasCompleted && $task->completed) {
+                $this->activityLogService->logTaskCompleted($task->user, $task);
                 $this->achievementService->checkAndUnlockAchievements($task->user);
+            } elseif ($wasCompleted && !$task->completed) {
+                $this->activityLogService->logTaskUncompleted($task->user, $task);
+            } else {
+                $changes = array_diff_assoc($task->toArray(), $oldData);
+                $this->activityLogService->logUpdated($task->user, $task, $changes);
             }
 
             // Генерируем событие
@@ -203,6 +214,9 @@ class TaskController extends Controller
     {
         try {
             $this->authorize('delete', $task);
+            
+            // Логируем удаление до фактического удаления
+            $this->activityLogService->logDeleted($task->user, $task);
             
             // Генерируем событие до удаления (чтобы сохранить ссылку на user)
             event(new TaskDeleted($task));
