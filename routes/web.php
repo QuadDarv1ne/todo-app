@@ -35,9 +35,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
     Route::get('/tasks/{task}', [TaskController::class, 'show'])->name('tasks.show');
     Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
-    Route::match(['put', 'patch'], '/tasks/{task}', [TaskController::class, 'update'])->name('tasks.update');
+    Route::patch('/tasks/{task}', [TaskController::class, 'update'])->name('tasks.update');
     Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
     Route::post('/tasks/reorder', [TaskController::class, 'reorder'])->name('tasks.reorder');
+    
+    // Экспорт задач
+    Route::get('/tasks/export/json', [TaskController::class, 'exportJson'])->name('tasks.export.json');
+    Route::get('/tasks/export/csv', [TaskController::class, 'exportCsv'])->name('tasks.export.csv');
 
     // Профиль
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');

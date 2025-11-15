@@ -11,6 +11,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * Class TaskController
@@ -195,6 +196,91 @@ class TaskController extends Controller
                 'success' => false,
                 'message' => 'Ошибка при изменении порядка задач'
             ], 500);
+        }
+    }
+
+    /**
+     * Экспортирует задачи пользователя в JSON формате.
+     */
+    public function exportJson(Request $request): JsonResponse
+    {
+        try {
+            $filter = $request->query('filter', 'all');
+            $query = TaskHelper::getFilteredTasks($request->user(), $filter);
+            
+            $tasks = $query->get(['id', 'title', 'description', 'completed', 'due_date', 'created_at', 'updated_at']);
+            
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'user' => [
+                        'id' => $request->user()->id,
+                        'name' => $request->user()->name,
+                        'email' => $request->user()->email,
+                    ],
+                    'tasks' => $tasks,
+                    'exported_at' => now()->toIso8601String(),
+                    'filter' => $filter,
+                    'total_tasks' => $tasks->count()
+                ]
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error exporting tasks to JSON: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка при экспорте задач'
+            ], 500);
+        }
+    }
+
+    /**
+     * Экспортирует задачи пользователя в CSV формате.
+     */
+    public function exportCsv(Request $request): StreamedResponse
+    {
+        try {
+            $filter = $request->query('filter', 'all');
+            $query = TaskHelper::getFilteredTasks($request->user(), $filter);
+            
+            $tasks = $query->get(['id', 'title', 'description', 'completed', 'due_date', 'created_at', 'updated_at']);
+            
+            $fileName = 'tasks_export_' . now()->format('Y-m-d_His') . '.csv';
+            
+            $headers = [
+                'Content-Type' => 'text/csv; charset=UTF-8',
+                'Content-Disposition' => "attachment; filename=\"{$fileName}\"",
+                'Cache-Control' => 'no-cache, no-store, must-revalidate',
+                'Pragma' => 'no-cache',
+                'Expires' => '0'
+            ];
+            
+            return response()->stream(function () use ($tasks) {
+                $handle = fopen('php://output', 'w');
+                
+                // Добавляем BOM для корректного отображения UTF-8 в Excel
+                fprintf($handle, chr(0xEF).chr(0xBB).chr(0xBF));
+                
+                // Заголовки CSV
+                fputcsv($handle, ['ID', 'Заголовок', 'Описание', 'Статус', 'Дата выполнения', 'Создана', 'Обновлена']);
+                
+                // Данные задач
+                foreach ($tasks as $task) {
+                    fputcsv($handle, [
+                        $task->id,
+                        $task->title,
+                        $task->description ?? '',
+                        $task->completed ? 'Выполнена' : 'Активна',
+                        $task->due_date ? $task->due_date : '',
+                        $task->created_at->format('Y-m-d H:i:s'),
+                        $task->updated_at->format('Y-m-d H:i:s'),
+                    ]);
+                }
+                
+                fclose($handle);
+            }, 200, $headers);
+        } catch (\Exception $e) {
+            Log::error('Error exporting tasks to CSV: ' . $e->getMessage());
+            abort(500, 'Ошибка при экспорте задач');
         }
     }
 }

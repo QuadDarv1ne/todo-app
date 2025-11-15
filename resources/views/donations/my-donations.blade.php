@@ -135,6 +135,24 @@
                                 <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">
                                     Завершён
                                 </span>
+                                <button 
+                                    onclick="openEditModal({{ $donation->id }}, '{{ $donation->currency }}', {{ $donation->amount }}, '{{ addslashes($donation->description) }}')"
+                                    class="text-gray-500 hover:text-indigo-600 p-1 rounded-full hover:bg-indigo-50 transition"
+                                    title="Редактировать"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                    </svg>
+                                </button>
+                                <button 
+                                    onclick="deleteDonation({{ $donation->id }})"
+                                    class="text-gray-500 hover:text-red-600 p-1 rounded-full hover:bg-red-50 transition"
+                                    title="Удалить"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -218,13 +236,84 @@
     </div>
 </div>
 
+<!-- Edit Donation Modal -->
+<div id="edit-donation-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-md transform transition-all">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-gray-900">Редактировать донат</h2>
+                <button onclick="document.getElementById('edit-donation-modal').classList.add('hidden')" 
+                        class="text-gray-500 hover:text-gray-700 rounded-full p-1 hover:bg-gray-100">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <form id="edit-donation-form">
+                @csrf
+                @method('PUT')
+                <input type="hidden" id="edit-donation-id" name="donation_id">
+                <div class="mb-5">
+                    <label for="edit-currency" class="block text-sm font-medium text-gray-700 mb-2">Валюта</label>
+                    <select name="currency" id="edit-currency" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-3">
+                        <option value="USD">USD - Доллар США</option>
+                        <option value="EUR">EUR - Евро</option>
+                        <option value="BTC">BTC - Биткойн</option>
+                        <option value="ETH">ETH - Эфириум</option>
+                        <option value="RUB">RUB - Российский рубль</option>
+                        <option value="UAH">UAH - Украинская гривна</option>
+                    </select>
+                </div>
+                
+                <div class="mb-5">
+                    <label for="edit-amount" class="block text-sm font-medium text-gray-700 mb-2">Сумма</label>
+                    <div class="relative">
+                        <input type="number" step="0.01" name="amount" id="edit-amount" 
+                               class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-3 pl-4"
+                               placeholder="0.00" required>
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                            <span class="text-gray-500 sm:text-sm" id="edit-currency-symbol">USD</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-5">
+                    <label for="edit-description" class="block text-sm font-medium text-gray-700 mb-2">Описание (опционально)</label>
+                    <textarea name="description" id="edit-description" rows="3" 
+                              class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-3"
+                              placeholder="Описание доната..."></textarea>
+                </div>
+                
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" onclick="document.getElementById('edit-donation-modal').classList.add('hidden')"
+                            class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition">
+                        Отмена
+                    </button>
+                    <button type="submit" 
+                            class="px-5 py-2.5 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        Сохранить
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
     // Close modal when clicking outside of it
     document.addEventListener('DOMContentLoaded', function() {
         const modal = document.getElementById('donation-modal');
+        const editModal = document.getElementById('edit-donation-modal');
         const form = document.getElementById('donation-form');
+        const editForm = document.getElementById('edit-donation-form');
         const currencySelect = document.getElementById('currency');
+        const editCurrencySelect = document.getElementById('edit-currency');
         const currencySymbol = document.getElementById('currency-symbol');
+        const editCurrencySymbol = document.getElementById('edit-currency-symbol');
         
         if (modal) {
             modal.addEventListener('click', function(event) {
@@ -234,10 +323,24 @@
             });
         }
         
+        if (editModal) {
+            editModal.addEventListener('click', function(event) {
+                if (event.target === editModal) {
+                    editModal.classList.add('hidden');
+                }
+            });
+        }
+        
         // Update currency symbol when currency changes
         if (currencySelect && currencySymbol) {
             currencySelect.addEventListener('change', function() {
                 currencySymbol.textContent = this.value;
+            });
+        }
+        
+        if (editCurrencySelect && editCurrencySymbol) {
+            editCurrencySelect.addEventListener('change', function() {
+                editCurrencySymbol.textContent = this.value;
             });
         }
         
@@ -287,6 +390,90 @@
                 }
             });
         }
+        
+        // Handle edit form submission with AJAX
+        if (editForm) {
+            editForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(editForm);
+                const donationId = document.getElementById('edit-donation-id').value;
+                const submitButton = editForm.querySelector('button[type="submit"]');
+                const originalText = submitButton.innerHTML;
+                
+                // Show loading state
+                submitButton.innerHTML = '<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Сохранение...';
+                submitButton.disabled = true;
+                
+                try {
+                    const response = await fetch(`/donations/${donationId}`, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'X-HTTP-Method-Override': 'PUT'
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const result = await response.json();
+                        if (result.success) {
+                            // Success - close modal and reload page
+                            editModal.classList.add('hidden');
+                            window.location.reload();
+                        } else {
+                            alert(result.message || 'Ошибка при обновлении доната');
+                        }
+                    } else {
+                        const error = await response.json();
+                        alert(error.message || 'Ошибка при обновлении доната');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Ошибка при обновлении доната');
+                } finally {
+                    // Restore button state
+                    submitButton.innerHTML = originalText;
+                    submitButton.disabled = false;
+                }
+            });
+        }
     });
+    
+    // Open edit modal with donation data
+    function openEditModal(id, currency, amount, description) {
+        document.getElementById('edit-donation-id').value = id;
+        document.getElementById('edit-currency').value = currency;
+        document.getElementById('edit-amount').value = amount;
+        document.getElementById('edit-description').value = description || '';
+        document.getElementById('edit-currency-symbol').textContent = currency;
+        document.getElementById('edit-donation-modal').classList.remove('hidden');
+    }
+    
+    // Delete donation
+    function deleteDonation(id) {
+        if (confirm('Вы уверены, что хотите удалить этот донат?')) {
+            fetch(`/donations/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    alert(data.message || 'Ошибка при удалении доната');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Ошибка при удалении доната');
+            });
+        }
+    }
 </script>
 @endsection
