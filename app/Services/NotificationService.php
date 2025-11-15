@@ -20,9 +20,27 @@ class NotificationService
         $targetDate = now()->addDays($daysBeforeDue)->startOfDay();
         $endDate = $targetDate->copy()->endOfDay();
         
+        // Получаем пользователей с включенными напоминаниями для указанного интервала
+        $users = User::where('reminder_enabled', true);
+        
+        switch ($daysBeforeDue) {
+            case 1:
+                $users->where('reminder_1_day', true);
+                break;
+            case 3:
+                $users->where('reminder_3_days', true);
+                break;
+            case 7:
+                $users->where('reminder_1_week', true);
+                break;
+        }
+        
+        $userIds = $users->pluck('id');
+        
         $tasks = Task::where('completed', false)
             ->whereNotNull('due_date')
             ->whereBetween('due_date', [$targetDate, $endDate])
+            ->whereIn('user_id', $userIds)
             ->with('user')
             ->get();
 
@@ -30,14 +48,18 @@ class NotificationService
         
         foreach ($tasks as $task) {
             try {
-                $task->user->notify(new TaskDueReminder($task));
-                $count++;
-                
-                Log::info('Task due reminder sent', [
-                    'task_id' => $task->id,
-                    'user_id' => $task->user_id,
-                    'due_date' => $task->due_date,
-                ]);
+                // Проверяем, что у пользователя все еще включены напоминания
+                if ($task->user->reminder_enabled) {
+                    $task->user->notify(new TaskDueReminder($task));
+                    $count++;
+                    
+                    Log::info('Task due reminder sent', [
+                        'task_id' => $task->id,
+                        'user_id' => $task->user_id,
+                        'due_date' => $task->due_date,
+                        'days_before_due' => $daysBeforeDue,
+                    ]);
+                }
             } catch (\Exception $e) {
                 Log::error('Failed to send task due reminder', [
                     'task_id' => $task->id,
@@ -56,9 +78,15 @@ class NotificationService
      */
     public function sendOverdueTaskReminders(): int
     {
+        // Получаем пользователей с включенными напоминаниями о просроченных задачах
+        $users = User::where('reminder_enabled', true)
+            ->where('reminder_overdue', true)
+            ->pluck('id');
+        
         $tasks = Task::where('completed', false)
             ->whereNotNull('due_date')
             ->where('due_date', '<', now())
+            ->whereIn('user_id', $users)
             ->with('user')
             ->get();
 
@@ -66,14 +94,17 @@ class NotificationService
         
         foreach ($tasks as $task) {
             try {
-                $task->user->notify(new TaskDueReminder($task));
-                $count++;
-                
-                Log::info('Overdue task reminder sent', [
-                    'task_id' => $task->id,
-                    'user_id' => $task->user_id,
-                    'due_date' => $task->due_date,
-                ]);
+                // Проверяем, что у пользователя все еще включены напоминания
+                if ($task->user->reminder_enabled && $task->user->reminder_overdue) {
+                    $task->user->notify(new TaskDueReminder($task));
+                    $count++;
+                    
+                    Log::info('Overdue task reminder sent', [
+                        'task_id' => $task->id,
+                        'user_id' => $task->user_id,
+                        'due_date' => $task->due_date,
+                    ]);
+                }
             } catch (\Exception $e) {
                 Log::error('Failed to send overdue task reminder', [
                     'task_id' => $task->id,

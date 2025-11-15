@@ -140,6 +140,9 @@ class TaskController extends Controller
                 'completed' => false,
             ]);
 
+            // Проверяем достижения при создании задачи
+            $this->achievementService->checkAndUnlockAchievements($request->user());
+
             // Генерируем событие
             event(new TaskCreated($task));
 
@@ -164,7 +167,13 @@ class TaskController extends Controller
         try {
             $this->authorize('update', $task);
 
+            $wasCompleted = $task->completed;
             $task->update($request->validated());
+
+            // Проверяем достижения, если задача была завершена
+            if (!$wasCompleted && $task->completed) {
+                $this->achievementService->checkAndUnlockAchievements($task->user);
+            }
 
             // Генерируем событие
             event(new TaskUpdated($task));

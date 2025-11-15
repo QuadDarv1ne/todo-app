@@ -28,18 +28,20 @@ class SendTaskReminders extends Command
     {
         $days = (int) $this->option('days');
         
-        $this->info("Sending task reminders for tasks due in {$days} day(s)...");
-        
-        $count = $notificationService->sendTaskDueReminders($days);
-        
-        $this->info("Sent {$count} reminder(s) successfully!");
-        
-        // Также отправляем напоминания о просроченных задачах
-        $this->info("Sending overdue task reminders...");
-        
-        $overdueCount = $notificationService->sendOverdueTaskReminders();
-        
-        $this->info("Sent {$overdueCount} overdue reminder(s) successfully!");
+        if ($days > 0) {
+            $this->info("Sending task reminders for tasks due in {$days} day(s)...");
+            
+            $count = $notificationService->sendTaskDueReminders($days);
+            
+            $this->info("Sent {$count} reminder(s) successfully!");
+        } else {
+            // Send overdue task reminders
+            $this->info("Sending overdue task reminders...");
+            
+            $overdueCount = $notificationService->sendOverdueTaskReminders();
+            
+            $this->info("Sent {$overdueCount} overdue reminder(s) successfully!");
+        }
         
         return self::SUCCESS;
     }

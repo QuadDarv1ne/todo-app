@@ -7,7 +7,7 @@ use App\Http\Controllers\TagController;
 use App\Http\Controllers\DonationController;
 use App\Http\Controllers\StatisticsController;
 use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\AchievementController;
+use App\Http\Controllers\ReminderController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -60,9 +60,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
     Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
 
-    // Достижения
-    Route::get('/achievements', [AchievementController::class, 'index'])->name('achievements.index');
-    Route::post('/achievements/check', [AchievementController::class, 'check'])->name('achievements.check');
+    // Напоминания
+    Route::get('/reminders', [ReminderController::class, 'index'])->name('reminders.index');
+    Route::patch('/reminders', [ReminderController::class, 'update'])->name('reminders.update');
 
     // Профиль
     Route::get('/profile', [ProfileController::class, 'view'])->name('profile.view');

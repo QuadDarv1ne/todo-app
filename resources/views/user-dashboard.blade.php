@@ -83,6 +83,9 @@
                         <!-- Рекомендации и умные подсказки -->
                         <x-dashboard-recommendations />
                         
+                        <!-- Игровой прогресс -->
+                        <x-dashboard-gamification />
+                        
                         <!-- Progress Section -->
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
                             <!-- Progress Bar -->

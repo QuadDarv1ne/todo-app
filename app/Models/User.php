@@ -28,6 +28,12 @@ class User extends Authenticatable
         'role',         // Роли пользователя
         'task_limit',   // Лимит задач для пользователя
         'avatar_path',  // Путь к аватару
+        'reminder_enabled',  // Включены ли напоминания
+        'reminder_1_day',    // Напоминание за 1 день
+        'reminder_3_days',   // Напоминание за 3 дня
+        'reminder_1_week',   // Напоминание за 1 неделю
+        'reminder_overdue',  // Напоминание о просроченных задачах
+        'reminder_time',     // Время отправки напоминаний
     ];
 
     /**
@@ -74,6 +80,12 @@ class User extends Authenticatable
             'experience_points' => 'integer',
             'streak_days' => 'integer',
             'last_activity_date' => 'date',
+            'reminder_enabled' => 'boolean',
+            'reminder_1_day' => 'boolean',
+            'reminder_3_days' => 'boolean',
+            'reminder_1_week' => 'boolean',
+            'reminder_overdue' => 'boolean',
+            'reminder_time' => 'datetime:H:i:s',
         ];
     }
 

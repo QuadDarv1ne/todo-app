@@ -19,19 +19,14 @@ class AchievementController extends Controller
     {
         $user = $request->user();
         
-        $userAchievements = $this->achievementService->getUserAchievements($user);
-        $userProgress = $this->achievementService->getUserProgress($user);
-        
-        $allAchievements = Achievement::public()
-            ->orderBy('category')
+        $achievements = Achievement::orderBy('category')
             ->orderBy('points')
-            ->get()
-            ->map(function ($achievement) use ($user) {
-                $achievement->is_unlocked = $achievement->isUnlockedBy($user);
-                return $achievement;
-            });
+            ->get();
 
-        return view('achievements.index', compact('allAchievements', 'userAchievements', 'userProgress'));
+        // Группируем достижения по категориям
+        $achievementsByCategory = $achievements->groupBy('category');
+
+        return view('achievements.index', compact('achievements', 'achievementsByCategory'));
     }
 
     /**
