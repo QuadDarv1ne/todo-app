@@ -197,6 +197,7 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('edit-title').value = task.title;
             document.getElementById('edit-description').value = task.description || '';
             document.getElementById('edit-due_date').value = task.due_date || '';
+            document.getElementById('edit-priority').value = task.priority || 'medium';
             document.getElementById('edit-completed').checked = task.completed;
             
             // Set form action
@@ -231,6 +232,7 @@ document.addEventListener('DOMContentLoaded', function () {
             title: formData.get('title'),
             description: formData.get('description') || null,
             due_date: formData.get('due_date') || null,
+            priority: formData.get('priority') || 'medium',
             completed: formData.get('completed') === '1'
         };
         
