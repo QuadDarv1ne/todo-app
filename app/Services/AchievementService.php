@@ -152,13 +152,21 @@ class AchievementService
     public function awardExperience(User $user, int $points): void
     {
         $user->experience_points += $points;
+        $oldLevel = $user->level;
         
         // Проверяем повышение уровня
         $newLevel = $this->calculateLevel($user->experience_points);
         if ($newLevel > $user->level) {
             $user->level = $newLevel;
+            
+            // Логируем повышение уровня
+            if ($this->activityLogService) {
+                $this->activityLogService->logLevelUp($user, $newLevel, $points);
+            }
+            
             Log::info("User leveled up", [
                 'user_id' => $user->id,
+                'old_level' => $oldLevel,
                 'new_level' => $newLevel,
             ]);
         }

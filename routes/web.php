@@ -7,6 +7,8 @@ use App\Http\Controllers\TagController;
 use App\Http\Controllers\DonationController;
 use App\Http\Controllers\StatisticsController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\AchievementController;
+use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\ReminderController;
 use Illuminate\Support\Facades\Route;
 
