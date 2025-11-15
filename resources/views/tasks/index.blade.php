@@ -1,43 +1,63 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="min-h-screen bg-gray-50 py-8">
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- Header -->
-        <div class="mb-8">
+        <!-- Header with Action Button -->
+        <div class="mb-8 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-                </svg>
-                <h1 class="text-3xl font-bold text-gray-900">Мои задачи</h1>
+                <div class="bg-indigo-100 rounded-lg p-3">
+                    <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Мои задачи</h1>
+                    <p class="mt-1 text-sm text-gray-600">Управляйте своими задачами эффективно</p>
+                </div>
             </div>
-            <p class="mt-2 text-sm text-gray-600">Управляйте своими задачами эффективно</p>
+            <button onclick="openCreateTaskModal()" class="hidden md:inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Создать задачу
+            </button>
         </div>
 
-        <!-- Filters -->
-        <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+        <!-- Filters with Modern Design -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
             <form action="{{ route('tasks.index') }}" method="GET" class="space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <!-- Search -->
                     <div>
-                        <label for="search" class="block text-sm font-medium text-gray-700 mb-2">Поиск</label>
+                        <label for="search" class="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                            <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                            Поиск
+                        </label>
                         <input 
                             type="text" 
                             name="search" 
                             id="search" 
                             value="{{ request('search') }}"
                             placeholder="Поиск задач..."
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                         >
                     </div>
 
                     <!-- Filter -->
                     <div>
-                        <label for="filter" class="block text-sm font-medium text-gray-700 mb-2">Фильтр</label>
+                        <label for="filter" class="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                            <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                            </svg>
+                            Фильтр
+                        </label>
                         <select 
                             name="filter" 
                             id="filter"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                         >
                             <option value="all" {{ $filter === 'all' ? 'selected' : '' }}>Все задачи</option>
                             <option value="active" {{ $filter === 'active' ? 'selected' : '' }}>Активные</option>
@@ -50,11 +70,16 @@
 
                     <!-- Priority -->
                     <div>
-                        <label for="priority" class="block text-sm font-medium text-gray-700 mb-2">Приоритет</label>
+                        <label for="priority" class="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                            <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                            </svg>
+                            Приоритет
+                        </label>
                         <select 
                             name="priority" 
                             id="priority"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                         >
                             <option value="">Все</option>
                             <option value="high" {{ request('priority') === 'high' ? 'selected' : '' }}>Высокий</option>
@@ -66,11 +91,16 @@
                     <!-- Tag -->
                     @if($userTags && $userTags->isNotEmpty())
                     <div>
-                        <label for="tag" class="block text-sm font-medium text-gray-700 mb-2">Тег</label>
+                        <label for="tag" class="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                            <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                            </svg>
+                            Тег
+                        </label>
                         <select 
                             name="tag" 
                             id="tag"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                         >
                             <option value="">Все теги</option>
                             @foreach($userTags as $tag)
@@ -83,14 +113,14 @@
                     @endif
                 </div>
 
-                <div class="flex gap-2">
-                    <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                <div class="flex gap-3">
+                    <button type="submit" class="inline-flex items-center gap-2 px-6 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                         Применить фильтры
                     </button>
-                    <a href="{{ route('tasks.index') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+                    <a href="{{ route('tasks.index') }}" class="inline-flex items-center gap-2 px-6 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all transform hover:-translate-y-0.5">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -102,135 +132,147 @@
 
         <!-- Tasks List -->
         @if($tasks->isEmpty())
-            <div class="bg-white rounded-lg shadow-sm p-12 text-center">
-                <svg class="mx-auto w-24 h-24 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                <h3 class="text-xl font-semibold text-gray-900 mb-2">Задачи не найдены</h3>
-                <p class="text-gray-600">Создайте свою первую задачу или измените фильтры</p>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-16 text-center">
+                <div class="bg-gray-100 rounded-full w-24 h-24 mx-auto mb-6 flex items-center justify-center">
+                    <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Задачи не найдены</h3>
+                <p class="text-gray-600 mb-6">Создайте свою первую задачу или измените фильтры</p>
+                <button onclick="openCreateTaskModal()" class="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all shadow-md hover:shadow-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Создать первую задачу
+                </button>
             </div>
         @else
-            <div class="space-y-4">
+            <div class="grid grid-cols-1 gap-4">
                 @foreach($tasks as $task)
-                    <div class="task-card bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow border-l-4 {{ $task->completed ? 'border-green-500' : 'border-indigo-500' }}">
-                        <div class="flex items-start gap-4">
-                            <!-- Checkbox -->
-                            <div class="flex-shrink-0 mt-1">
-                                <input 
-                                    type="checkbox" 
-                                    class="task-toggle w-5 h-5 text-indigo-600 rounded focus:ring-2 focus:ring-indigo-500 cursor-pointer"
-                                    data-id="{{ $task->id }}"
-                                    {{ $task->completed ? 'checked' : '' }}
-                                >
-                            </div>
+                    <div class="task-card group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-200 border border-gray-200 overflow-hidden {{ $task->completed ? 'opacity-75' : '' }}">
+                        <!-- Priority Bar -->
+                        <div class="h-1.5 {{ $task->priority === 'high' ? 'bg-red-500' : ($task->priority === 'medium' ? 'bg-yellow-500' : 'bg-green-500') }}"></div>
+                        
+                        <div class="p-6">
+                            <div class="flex items-start gap-4">
+                                <!-- Checkbox -->
+                                <div class="flex-shrink-0 mt-1">
+                                    <input 
+                                        type="checkbox" 
+                                        class="task-toggle w-6 h-6 text-indigo-600 rounded-lg border-2 border-gray-300 focus:ring-2 focus:ring-indigo-500 cursor-pointer transition-all"
+                                        data-id="{{ $task->id }}"
+                                        {{ $task->completed ? 'checked' : '' }}
+                                    >
+                                </div>
 
-                            <!-- Task Content -->
-                            <div class="flex-grow">
-                                <div class="flex items-start justify-between gap-4">
-                                    <div class="flex-grow">
-                                        <h3 class="task-title text-lg font-semibold {{ $task->completed ? 'line-through text-gray-400' : 'text-gray-900' }}">
-                                            {{ $task->title }}
-                                        </h3>
-                                        
-                                        @if($task->description)
-                                            <p class="mt-2 text-sm text-gray-600">{{ $task->description }}</p>
-                                        @endif
+                                <!-- Task Content -->
+                                <div class="flex-grow">
+                                    <div class="flex items-start justify-between gap-4">
+                                        <div class="flex-grow">
+                                            <h3 class="task-title text-lg font-bold {{ $task->completed ? 'line-through text-gray-400' : 'text-gray-900' }} mb-2">
+                                                {{ $task->title }}
+                                            </h3>
+                                            
+                                            @if($task->description)
+                                                <p class="text-sm text-gray-600 leading-relaxed">{{ $task->description }}</p>
+                                            @endif
 
-                                        <!-- Meta info -->
-                                        <div class="mt-3 flex flex-wrap gap-3 text-sm">
-                                            <!-- Priority -->
-                                            @if($task->priority)
-                                                <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium
-                                                    {{ $task->priority === 'high' ? 'bg-red-100 text-red-800' : '' }}
-                                                    {{ $task->priority === 'medium' ? 'bg-yellow-100 text-yellow-800' : '' }}
-                                                    {{ $task->priority === 'low' ? 'bg-green-100 text-green-800' : '' }}
+                                            <!-- Meta info -->
+                                            <div class="mt-4 flex flex-wrap gap-2 text-sm">
+                                                <!-- Priority -->
+                                                @if($task->priority)
+                                                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm
+                                                        {{ $task->priority === 'high' ? 'bg-gradient-to-r from-red-500 to-red-600 text-white' : '' }}
+                                                        {{ $task->priority === 'medium' ? 'bg-gradient-to-r from-yellow-400 to-yellow-500 text-white' : '' }}
+                                                        {{ $task->priority === 'low' ? 'bg-gradient-to-r from-green-500 to-green-600 text-white' : '' }}
+                                                    ">
+                                                        @if($task->priority === 'high')
+                                                            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" clip-rule="evenodd" />
+                                                            </svg>
+                                                            Высокий
+                                                        @elseif($task->priority === 'medium')
+                                                            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                                                <path fill-rule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
+                                                            </svg>
+                                                            Средний
+                                                        @else
+                                                            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                                                <path fill-rule="evenodd" d="M10 2a8 8 0 100 16 8 8 0 000-16zM9 9V7a1 1 0 112 0v2.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 111.414-1.414L9 9.586z" clip-rule="evenodd" />
+                                                            </svg>
+                                                            Низкий
+                                                        @endif
+                                                    </span>
+                                                @endif
+
+                                                <!-- Due date -->
+                                                @if($task->due_date)
+                                                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+                                                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+                                                        </svg>
+                                                        {{ \Carbon\Carbon::parse($task->due_date)->format('d.m.Y') }}
+                                                    </span>
+                                                @endif
+
+                                                <!-- Status -->
+                                                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold
+                                                    {{ $task->completed ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-indigo-50 text-indigo-700 border border-indigo-200' }}
                                                 ">
-                                                    @if($task->priority === 'high')
-                                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" clip-rule="evenodd" />
+                                                    @if($task->completed)
+                                                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                                                         </svg>
-                                                        Высокий
-                                                    @elseif($task->priority === 'medium')
-                                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                                            <path fill-rule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
-                                                        </svg>
-                                                        Средний
+                                                        Завершено
                                                     @else
-                                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                                            <path fill-rule="evenodd" d="M10 2a8 8 0 100 16 8 8 0 000-16zM9 9V7a1 1 0 112 0v2.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 111.414-1.414L9 9.586z" clip-rule="evenodd" />
-                                                        </svg>
-                                                        Низкий
-                                                    @endif
-                                                </span>
-                                            @endif
-
-                                            <!-- Due date -->
-                                            @if($task->due_date)
-                                                <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
-                                                    </svg>
-                                                    {{ \Carbon\Carbon::parse($task->due_date)->format('d.m.Y') }}
-                                                </span>
-                                            @endif
-
-                                            <!-- Status -->
-                                            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium
-                                                {{ $task->completed ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' }}
-                                            ">
-                                                @if($task->completed)
-                                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                                                    </svg>
-                                                    Завершено
-                                                @else
-                                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+                                                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
                                                     </svg>
                                                     Активно
                                                 @endif
                                             </span>
 
-                                            <!-- Tags -->
-                                            @if($task->tags && $task->tags->isNotEmpty())
-                                                @foreach($task->tags as $tag)
-                                                    <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                                            <path fill-rule="evenodd" d="M17.707 9.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-7-7A.997.997 0 012 10V5a3 3 0 013-3h5c.256 0 .512.098.707.293l7 7zM5 6a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
-                                                        </svg>
-                                                        {{ $tag->name }}
-                                                    </span>
-                                                @endforeach
-                                            @endif
+                                                <!-- Tags -->
+                                                @if($task->tags && $task->tags->isNotEmpty())
+                                                    @foreach($task->tags as $tag)
+                                                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200">
+                                                            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                                                <path fill-rule="evenodd" d="M17.707 9.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-7-7A.997.997 0 012 10V5a3 3 0 013-3h5c.256 0 .512.098.707.293l7 7zM5 6a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                                                            </svg>
+                                                            {{ $tag->name }}
+                                                        </span>
+                                                    @endforeach
+                                                @endif
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <!-- Actions -->
-                                    <div class="flex-shrink-0 flex gap-2">
-                                        <button 
-                                            class="edit-task p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                            data-id="{{ $task->id }}"
-                                            title="Редактировать"
-                                        >
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                            </svg>
-                                        </button>
+                                        <!-- Actions -->
+                                        <div class="flex-shrink-0 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button 
+                                                class="edit-task p-2.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-all hover:scale-110"
+                                                data-id="{{ $task->id }}"
+                                                title="Редактировать"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                </svg>
+                                            </button>
 
-                                        <button 
-                                            class="delete-task p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                            data-id="{{ $task->id }}"
-                                            title="Удалить"
-                                        >
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                            </svg>
-                                        </button>
+                                            <button 
+                                                class="delete-task p-2.5 text-red-600 hover:bg-red-50 rounded-lg transition-all hover:scale-110"
+                                                data-id="{{ $task->id }}"
+                                                title="Удалить"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
                 @endforeach
             </div>
 

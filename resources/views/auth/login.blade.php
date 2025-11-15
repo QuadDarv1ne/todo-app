@@ -100,24 +100,46 @@
             transition: all 300ms ease;
             border-bottom: 3px solid transparent;
             margin-bottom: -2px;
+            position: relative;
+            background: none;
+            border: none;
+            outline: none;
         }
 
         .tab:hover {
             color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
         }
 
         .tab.active {
             color: #667eea;
             border-bottom-color: #667eea;
+            background: rgba(102, 126, 234, 0.08);
         }
 
         .tab-content {
             display: none;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
         }
 
         .tab-content.active {
             display: block;
-            animation: fadeIn 0.3s ease-out;
+            opacity: 1;
+            transform: translateY(0);
+            animation: slideInUp 0.3s ease-out;
+        }
+
+        @keyframes slideInUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(15px);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0);
+            }
         }
 
         @keyframes fadeIn {
@@ -432,6 +454,7 @@
                 event.preventDefault();
             }
 
+            // Remove active class from all tabs and content
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
             });
@@ -440,14 +463,27 @@
                 tab.classList.remove('active');
             });
 
-            document.getElementById(tabName).classList.add('active');
-            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+            // Add active class to selected tab and content
+            const tabContent = document.getElementById(tabName);
+            const tabButton = document.querySelector(`[data-tab="${tabName}"]`);
+            
+            if (tabContent) tabContent.classList.add('active');
+            if (tabButton) tabButton.classList.add('active');
 
+            // Update footer text
             updateFooterText(tabName);
+            
+            // Focus first input in active tab
+            setTimeout(() => {
+                const firstInput = tabContent?.querySelector('input:not([type="checkbox"])');
+                if (firstInput) firstInput.focus();
+            }, 100);
         }
 
         function updateFooterText(tabName) {
             const footer = document.getElementById('auth-footer');
+            if (!footer) return;
+            
             if (tabName === 'login') {
                 footer.innerHTML = 'Нет аккаунта? <span class="footer-link" onclick="switchTab(\'register\')">Зарегистрируйтесь</span>';
             } else {
@@ -455,25 +491,111 @@
             }
         }
 
+        // Form validation helpers
+        function validateEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function validatePassword(password) {
+            return password.length >= 8;
+        }
+
+        function showFieldError(input, message) {
+            input.classList.add('error');
+            let errorMsg = input.parentElement.querySelector('.error-message');
+            if (!errorMsg) {
+                errorMsg = document.createElement('div');
+                errorMsg.className = 'error-message show';
+                input.parentElement.appendChild(errorMsg);
+            }
+            errorMsg.textContent = message;
+            errorMsg.classList.add('show');
+        }
+
+        function clearFieldError(input) {
+            input.classList.remove('error');
+            const errorMsg = input.parentElement.querySelector('.error-message');
+            if (errorMsg) {
+                errorMsg.classList.remove('show');
+            }
+        }
+
+        // Real-time validation for all inputs
         document.querySelectorAll('input').forEach(input => {
+            // Clear error on input
             input.addEventListener('input', function() {
-                if (this.classList.contains('error')) {
-                    this.classList.remove('error');
-                    const errorMsg = this.parentElement.querySelector('.error-message');
-                    if (errorMsg) {
-                        errorMsg.classList.remove('show');
+                clearFieldError(this);
+            });
+
+            // Validate on blur
+            input.addEventListener('blur', function() {
+                if (!this.value) return;
+
+                if (this.type === 'email') {
+                    if (!validateEmail(this.value)) {
+                        showFieldError(this, 'Введите корректный email адрес');
+                    }
+                } else if (this.type === 'password' && this.name === 'password') {
+                    if (!validatePassword(this.value)) {
+                        showFieldError(this, 'Пароль должен содержать минимум 8 символов');
+                    }
+                } else if (this.name === 'password_confirmation') {
+                    const passwordField = document.getElementById('password-reg');
+                    if (passwordField && this.value !== passwordField.value) {
+                        showFieldError(this, 'Пароли не совпадают');
                     }
                 }
-            }
+            });
+        });
+
+        // Password confirmation real-time check
+        const passwordConfirm = document.getElementById('password_confirmation');
+        if (passwordConfirm) {
+            passwordConfirm.addEventListener('input', function() {
+                const passwordField = document.getElementById('password-reg');
+                if (passwordField && this.value && passwordField.value) {
+                    if (this.value === passwordField.value) {
+                        clearFieldError(this);
+                    } else {
+                        showFieldError(this, 'Пароли не совпадают');
+                    }
+                }
+            });
+        }
+
+        // Form submission handling
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                const submitBtn = this.querySelector('button[type="submit"]');
+                if (submitBtn && !submitBtn.disabled) {
+                    // Disable button and show loading state
+                    submitBtn.disabled = true;
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '<svg class="h-5 w-5 animate-spin inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Загрузка...';
+                    
+                    // Re-enable after 3 seconds to prevent permanent lock
+                    setTimeout(() => {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalText;
+                    }, 3000);
+                }
+            });
         });
 
         // Initialize correct tab on page load
-        const hasRegistrationData = {{ old('name') ? 'true' : 'false' }};
-        if (hasRegistrationData) {
-            updateFooterText('register');
-        } else {
-            updateFooterText('login');
-        }
+        document.addEventListener('DOMContentLoaded', function() {
+            const hasRegistrationData = {{ old('name') ? 'true' : 'false' }};
+            const hasLoginErrors = {{ ($errors->has('email') || $errors->has('password')) && !old('name') ? 'true' : 'false' }};
+            
+            if (hasRegistrationData) {
+                switchTab('register');
+            } else if (hasLoginErrors) {
+                switchTab('login');
+            } else {
+                // Default to login tab
+                switchTab('login');
+            }
+        });
     </script>
 </body>
 </html>

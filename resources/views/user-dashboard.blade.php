@@ -7,78 +7,103 @@
 @endsection
 
 @section('content')
-    <div class="py-12">
+    <div class="py-8">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-xl sm:rounded-2xl">
-                <div class="p-8">
-                    <div class="mb-10">
-                        <h3 class="text-3xl font-bold text-gray-800 mb-8">Добро пожаловать, {{ Auth::user()->name }}!</h3>
+            <!-- Welcome Header -->
+            <div class="mb-8">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900">👋 Добро пожаловать, {{ Auth::user()->name }}!</h1>
+                        <p class="mt-2 text-gray-600">Вот обзор вашей продуктивности</p>
+                    </div>
+                    <div class="hidden md:flex items-center space-x-3">
+                        <span class="text-sm text-gray-500">Сегодня</span>
+                        <span class="text-lg font-semibold text-indigo-600">{{ \Carbon\Carbon::now()->format('d M, Y') }}</span>
+                    </div>
+                </div>
+            </div>
                         
-                        <!-- Stats Cards -->
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
-                            <x-stats-card 
-                                title="Всего задач"
-                                :value="$totalTasks"
-                                description="Все ваши задачи"
-                                color="blue"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                                </svg>
-                            </x-stats-card>
-                            
-                            <x-stats-card 
-                                title="Активные"
-                                :value="$pendingTasks"
-                                description="Еще не завершены"
-                                color="yellow"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            </x-stats-card>
-                            
-                            <x-stats-card 
-                                title="Завершены"
-                                :value="$completedTasks"
-                                description="Выполненные задачи"
-                                color="green"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            </x-stats-card>
-                            
-                            <!-- Donation Stats Widget -->
-                            @if($donationStats['count'] > 0)
-                                <x-donation-stats-widget 
-                                    :donations-count="$donationStats['count']"
-                                    :total-amount="$donationStats['amount']"
-                                    :currencies-count="$donationStats['currencies']"
-                                />
-                            @else
-                                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                                    <div class="p-5">
-                                        <div class="flex items-center justify-between">
-                                            <div>
-                                                <p class="text-sm font-medium text-gray-500">Донаты</p>
-                                                <p class="text-2xl font-bold text-gray-900">0</p>
-                                            </div>
-                                            <div class="bg-indigo-100 rounded-full p-3">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                </svg>
-                                            </div>
-                                        </div>
-                                        <div class="mt-4">
-                                            <a href="{{ route('donations.my') }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-500">
-                                                Создать первый донат
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-transform duration-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-blue-100 text-sm font-medium">Всего задач</p>
+                            <p class="text-3xl font-bold mt-2">{{ $totalTasks }}</p>
+                            <p class="text-blue-100 text-xs mt-1">Все ваши задачи</p>
                         </div>
+                        <div class="bg-white bg-opacity-20 rounded-full p-3">
+                            <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-transform duration-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-yellow-100 text-sm font-medium">Активные</p>
+                            <p class="text-3xl font-bold mt-2">{{ $pendingTasks }}</p>
+                            <p class="text-yellow-100 text-xs mt-1">Еще не завершены</p>
+                        </div>
+                        <div class="bg-white bg-opacity-20 rounded-full p-3">
+                            <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-transform duration-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-green-100 text-sm font-medium">Завершены</p>
+                            <p class="text-3xl font-bold mt-2">{{ $completedTasks }}</p>
+                            <p class="text-green-100 text-xs mt-1">Выполненные задачи</p>
+                        </div>
+                        <div class="bg-white bg-opacity-20 rounded-full p-3">
+                            <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                
+                @if($donationStats['count'] > 0)
+                    <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-transform duration-200">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-purple-100 text-sm font-medium">Донаты</p>
+                                <p class="text-3xl font-bold mt-2">{{ $donationStats['count'] }}</p>
+                                <p class="text-purple-100 text-xs mt-1">{{ number_format($donationStats['amount'], 2) }} ₽</p>
+                            </div>
+                            <div class="bg-white bg-opacity-20 rounded-full p-3">
+                                <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                @else
+                    <div class="bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-transform duration-200">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-indigo-100 text-sm font-medium">Донаты</p>
+                                <p class="text-3xl font-bold mt-2">0</p>
+                                <p class="text-indigo-100 text-xs mt-1">
+                                    <a href="{{ route('donations.my') }}" class="hover:underline">Создать первый →</a>
+                                </p>
+                            </div>
+                            <div class="bg-white bg-opacity-20 rounded-full p-3">
+                                <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+            </div>
                         
                         <!-- Рекомендации и умные подсказки -->
                         <x-dashboard-recommendations />
@@ -174,9 +199,10 @@
                                 </div>
                             @endif
                         </div>
+                        </div>
                     </div>
                 </div>
-            </div>
+            @endif
         </div>
     </div>
     
