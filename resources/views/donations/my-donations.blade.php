@@ -51,6 +51,22 @@
 
         <!-- Stats Overview -->
         @if($stats->count() > 0)
+            <!-- Charts Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
+                <!-- Donations by Currency Chart -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Донаты по валютам</h3>
+                    <canvas id="donationsByCurrencyChart" height="300"></canvas>
+                </div>
+                
+                <!-- Amount by Currency Chart -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Суммы по валютам</h3>
+                    <canvas id="amountByCurrencyChart" height="300"></canvas>
+                </div>
+            </div>
+            
+            <!-- Stats Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
                 @foreach($stats as $currencyStats)
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition">
@@ -315,6 +331,11 @@
         const currencySymbol = document.getElementById('currency-symbol');
         const editCurrencySymbol = document.getElementById('edit-currency-symbol');
         
+        // Initialize charts if stats are available
+        @if($stats->count() > 0)
+        initializeCharts();
+        @endif
+        
         if (modal) {
             modal.addEventListener('click', function(event) {
                 if (event.target === modal) {
@@ -440,6 +461,91 @@
             });
         }
     });
+    
+    // Initialize charts
+    function initializeCharts() {
+        // Prepare data
+        const currencies = [@foreach($stats as $stat)'{{ $stat->currency }}',@endforeach];
+        const counts = [@foreach($stats as $stat){{ $stat->count }},@endforeach];
+        const totals = [@foreach($stats as $stat){{ $stat->total }},@endforeach];
+        
+        // Color palette
+        const backgroundColors = [
+            'rgba(79, 70, 229, 0.8)',  // indigo-600
+            'rgba(59, 130, 246, 0.8)',  // blue-500
+            'rgba(16, 185, 129, 0.8)',  // green-500
+            'rgba(245, 158, 11, 0.8)',  // amber-500
+            'rgba(239, 68, 68, 0.8)',   // red-500
+            'rgba(139, 92, 246, 0.8)'   // violet-500
+        ];
+        
+        const borderColors = [
+            'rgba(79, 70, 229, 1)',
+            'rgba(59, 130, 246, 1)',
+            'rgba(16, 185, 129, 1)',
+            'rgba(245, 158, 11, 1)',
+            'rgba(239, 68, 68, 1)',
+            'rgba(139, 92, 246, 1)'
+        ];
+        
+        // Donations by currency chart
+        const donationsCtx = document.getElementById('donationsByCurrencyChart').getContext('2d');
+        new Chart(donationsCtx, {
+            type: 'bar',
+            data: {
+                labels: currencies,
+                datasets: [{
+                    label: 'Количество донатов',
+                    data: counts,
+                    backgroundColor: backgroundColors.slice(0, currencies.length),
+                    borderColor: borderColors.slice(0, currencies.length),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Amount by currency chart
+        const amountCtx = document.getElementById('amountByCurrencyChart').getContext('2d');
+        new Chart(amountCtx, {
+            type: 'pie',
+            data: {
+                labels: currencies,
+                datasets: [{
+                    label: 'Сумма донатов',
+                    data: totals,
+                    backgroundColor: backgroundColors.slice(0, currencies.length),
+                    borderColor: borderColors.slice(0, currencies.length),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
     
     // Open edit modal with donation data
     function openEditModal(id, currency, amount, description) {

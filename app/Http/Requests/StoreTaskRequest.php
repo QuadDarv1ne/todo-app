@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Rules\NotPastDate;
 
 class StoreTaskRequest extends FormRequest
 {
@@ -24,7 +25,7 @@ class StoreTaskRequest extends FormRequest
         return [
             'title' => 'required|string|max:255',
             'description' => 'nullable|string|max:65535',
-            'due_date' => 'nullable|date|after:today',
+            'due_date' => ['nullable', 'date', new NotPastDate()],
         ];
     }
 
@@ -42,7 +43,6 @@ class StoreTaskRequest extends FormRequest
             'description.string' => 'Описание задачи должно быть строкой.',
             'description.max' => 'Описание задачи не может превышать 65535 символов.',
             'due_date.date' => 'Дата выполнения должна быть корректной датой.',
-            'due_date.after' => 'Дата выполнения должна быть в будущем.',
         ];
     }
 }
