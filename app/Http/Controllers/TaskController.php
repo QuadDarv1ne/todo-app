@@ -94,8 +94,8 @@ class TaskController extends Controller
                 'completed' => false,
             ]);
 
-            // Очищаем кэш после создания задачи
-            TaskHelper::clearUserTasksCache($request->user());
+            // Генерируем событие
+            event(new TaskCreated($task));
 
             return response()->json([
                 'success' => true,
@@ -120,8 +120,8 @@ class TaskController extends Controller
 
             $task->update($request->validated());
 
-            // Очищаем кэш после обновления задачи
-            TaskHelper::clearUserTasksCache($request->user());
+            // Генерируем событие
+            event(new TaskUpdated($task));
 
             return response()->json([
                 'success' => true,
@@ -148,11 +148,11 @@ class TaskController extends Controller
     {
         try {
             $this->authorize('delete', $task);
-            $user = $task->user;
+            
+            // Генерируем событие до удаления (чтобы сохранить ссылку на user)
+            event(new TaskDeleted($task));
+            
             $task->delete();
-
-            // Очищаем кэш после удаления задачи
-            TaskHelper::clearUserTasksCache($user);
 
             return response()->json(['success' => true]);
         } catch (AuthorizationException $e) {
