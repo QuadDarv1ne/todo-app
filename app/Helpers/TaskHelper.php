@@ -41,6 +41,9 @@ class TaskHelper
         Cache::forget(self::getCacheKey($user, 'all'));
         Cache::forget(self::getCacheKey($user, 'completed'));
         Cache::forget(self::getCacheKey($user, 'pending'));
+        Cache::forget(self::getCacheKey($user, 'advanced_stats'));
+        Cache::forget(self::getCacheKey($user, 'tag_stats'));
+        Cache::forget(self::getCacheKey($user, 'tasks_by_day'));
     }
 
     /**
@@ -138,5 +141,115 @@ class TaskHelper
             Log::error('Error reordering tasks: ' . $e->getMessage());
             return false;
         }
+    }
+
+    /**
+     * Получить расширенную статистику задач пользователя.
+     *
+     * @param User $user
+     * @return array
+     */
+    public static function getAdvancedStats(User $user): array
+    {
+        return Cache::remember(self::getCacheKey($user, 'advanced_stats'), 300, function () use ($user) {
+            $tasks = $user->tasks()->with('tags')->get();
+            
+            return [
+                'total' => $tasks->count(),
+                'completed' => $tasks->where('completed', true)->count(),
+                'pending' => $tasks->where('completed', false)->count(),
+                'overdue' => $tasks->where('completed', false)
+                    ->filter(fn($task) => $task->due_date && $task->due_date->isPast())
+                    ->count(),
+                'high_priority' => $tasks->where('priority', 'high')->count(),
+                'medium_priority' => $tasks->where('priority', 'medium')->count(),
+                'low_priority' => $tasks->where('priority', 'low')->count(),
+                'with_tags' => $tasks->filter(fn($task) => $task->tags->count() > 0)->count(),
+                'completion_rate' => $tasks->count() > 0 
+                    ? round(($tasks->where('completed', true)->count() / $tasks->count()) * 100, 1) 
+                    : 0,
+                'avg_completion_time' => self::getAverageCompletionTime($user),
+                'tasks_by_priority' => [
+                    'high' => $tasks->where('priority', 'high')->count(),
+                    'medium' => $tasks->where('priority', 'medium')->count(),
+                    'low' => $tasks->where('priority', 'low')->count(),
+                ],
+                'tasks_created_last_7_days' => $tasks->where('created_at', '>=', now()->subDays(7))->count(),
+                'tasks_completed_last_7_days' => $tasks->where('completed', true)
+                    ->where('updated_at', '>=', now()->subDays(7))->count(),
+            ];
+        });
+    }
+
+    /**
+     * Получить среднее время выполнения задач (в часах).
+     *
+     * @param User $user
+     * @return float|null
+     */
+    private static function getAverageCompletionTime(User $user): ?float
+    {
+        $completedTasks = $user->tasks()
+            ->where('completed', true)
+            ->whereNotNull('updated_at')
+            ->get();
+
+        if ($completedTasks->isEmpty()) {
+            return null;
+        }
+
+        $totalHours = $completedTasks->sum(function ($task) {
+            return $task->created_at->diffInHours($task->updated_at);
+        });
+
+        return round($totalHours / $completedTasks->count(), 1);
+    }
+
+    /**
+     * Получить статистику по тегам.
+     *
+     * @param User $user
+     * @return array
+     */
+    public static function getTagStats(User $user): array
+    {
+        return Cache::remember(self::getCacheKey($user, 'tag_stats'), 300, function () use ($user) {
+            $tags = $user->tags()->withCount('tasks')->get();
+            
+            return $tags->map(function ($tag) {
+                return [
+                    'id' => $tag->id,
+                    'name' => $tag->name,
+                    'color' => $tag->color,
+                    'tasks_count' => $tag->tasks_count,
+                ];
+            })->sortByDesc('tasks_count')->values()->toArray();
+        });
+    }
+
+    /**
+     * Получить статистику задач по дням недели.
+     *
+     * @param User $user
+     * @return array
+     */
+    public static function getTasksByDayOfWeek(User $user): array
+    {
+        return Cache::remember(self::getCacheKey($user, 'tasks_by_day'), 300, function () use ($user) {
+            $tasks = $user->tasks;
+            $days = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+            
+            $byDay = collect($days)->mapWithKeys(function ($day) {
+                return [$day => 0];
+            });
+
+            $tasks->each(function ($task) use (&$byDay, $days) {
+                $dayOfWeek = $task->created_at->dayOfWeekIso - 1; // 0-6
+                $dayName = $days[$dayOfWeek];
+                $byDay[$dayName]++;
+            });
+
+            return $byDay->toArray();
+        });
     }
 }

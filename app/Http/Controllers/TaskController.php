@@ -46,7 +46,7 @@ class TaskController extends Controller
             });
         }
         
-        $tasks = $query->paginate(10)->appends($request->except('page'));
+        $tasks = $query->with('tags')->paginate(10)->appends($request->except('page'));
 
         return view('tasks.index', compact('tasks', 'filter'));
     }

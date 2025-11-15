@@ -5,6 +5,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\DonationController;
+use App\Http\Controllers\StatisticsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -45,6 +46,9 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/tags/{tag}', [TagController::class, 'destroy'])->name('tags.destroy');
     Route::post('/tags/attach', [TagController::class, 'attach'])->name('tags.attach');
     Route::post('/tags/detach', [TagController::class, 'detach'])->name('tags.detach');
+
+    // Статистика
+    Route::get('/statistics', [StatisticsController::class, 'show'])->name('statistics.show');
 
     // Профиль
     Route::get('/profile', [ProfileController::class, 'view'])->name('profile.view');
