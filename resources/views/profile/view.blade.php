@@ -63,7 +63,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+                            </div>
             
             <!-- Stats and Charts Section -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -87,7 +87,7 @@
                                     <div class="flex flex-col items-center flex-1">
                                         <div class="w-full bg-gray-200 rounded-t-lg overflow-hidden" style="height: 200px;">
                                             <div class="bg-indigo-500 w-full rounded-t-lg" 
-                                                 style="height: {{ ($tasksByDay->max('count') > 0) ? ($day->count / $tasksByDay->max('count')) * 100 : 0 }}%"></div>
+                                                 style="height: <?php echo e(($tasksByDay->max('count') > 0) ? ($day->count / $tasksByDay->max('count')) * 100 : 0); ?>%"></div>
                                         </div>
                                         <div class="text-sm text-gray-500 mt-3">
                                             {{ \Carbon\Carbon::parse($day->date)->format('d.m') }}
@@ -167,7 +167,7 @@
                 data: {
                     labels: ['Завершено', 'В процессе'],
                     datasets: [{
-                        data: [{{ $completionStats['completed'] }}, {{ $completionStats['pending'] }}],
+                        data: [<?php echo e($completionStats['completed']); ?>, <?php echo e($completionStats['pending']); ?>],
                         backgroundColor: [
                             '#10B981',
                             '#F59E0B'
