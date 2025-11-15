@@ -112,9 +112,33 @@
 
         <!-- Tasks List -->
         <?php if($tasks->count() > 0): ?>
-            <div class="space-y-5">
-                <?php $__currentLoopData = $tasks; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $task): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                    <?php if (isset($component)) { $__componentOriginal5c7e45c1b38a85fb63a7b75e56a24d35 = $component; } ?>
+            <?php if($filter === 'all'): ?>
+                <!-- Use drag and drop for all tasks view -->
+                <?php if (isset($component)) { $__componentOriginal0eb2861ead050f77aac1bcccb02b1de4 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal0eb2861ead050f77aac1bcccb02b1de4 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.drag-drop-task-list','data' => ['tasks' => $tasks]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('drag-drop-task-list'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['tasks' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($tasks)]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal0eb2861ead050f77aac1bcccb02b1de4)): ?>
+<?php $attributes = $__attributesOriginal0eb2861ead050f77aac1bcccb02b1de4; ?>
+<?php unset($__attributesOriginal0eb2861ead050f77aac1bcccb02b1de4); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal0eb2861ead050f77aac1bcccb02b1de4)): ?>
+<?php $component = $__componentOriginal0eb2861ead050f77aac1bcccb02b1de4; ?>
+<?php unset($__componentOriginal0eb2861ead050f77aac1bcccb02b1de4); ?>
+<?php endif; ?>
+            <?php else: ?>
+                <!-- Use regular list for filtered views -->
+                <div class="space-y-5">
+                    <?php $__currentLoopData = $tasks; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $task): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <?php if (isset($component)) { $__componentOriginal5c7e45c1b38a85fb63a7b75e56a24d35 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal5c7e45c1b38a85fb63a7b75e56a24d35 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.task-card','data' => ['task' => $task]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
 <?php $component->withName('task-card'); ?>
@@ -134,8 +158,9 @@
 <?php $component = $__componentOriginal5c7e45c1b38a85fb63a7b75e56a24d35; ?>
 <?php unset($__componentOriginal5c7e45c1b38a85fb63a7b75e56a24d35); ?>
 <?php endif; ?>
-                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-            </div>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </div>
+            <?php endif; ?>
         <?php else: ?>
             <div class="bg-white rounded-xl shadow-sm border border-gray-200">
                 <?php switch($filter):
@@ -242,16 +267,39 @@
     </div>
 </div>
 
+<!-- Edit Task Modal -->
+<?php if (isset($component)) { $__componentOriginal90bba21216398bc0c4d9b368855cda0b = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal90bba21216398bc0c4d9b368855cda0b = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.edit-task-modal','data' => []] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('edit-task-modal'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes([]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal90bba21216398bc0c4d9b368855cda0b)): ?>
+<?php $attributes = $__attributesOriginal90bba21216398bc0c4d9b368855cda0b; ?>
+<?php unset($__attributesOriginal90bba21216398bc0c4d9b368855cda0b); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal90bba21216398bc0c4d9b368855cda0b)): ?>
+<?php $component = $__componentOriginal90bba21216398bc0c4d9b368855cda0b; ?>
+<?php unset($__componentOriginal90bba21216398bc0c4d9b368855cda0b); ?>
+<?php endif; ?>
+
 <?php $__env->startPush('scripts'); ?>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('task-form');
     
-    // Добавление задачи
+    // Add task
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const title = document.getElementById('title').value.trim();
         const description = document.getElementById('description').value.trim();
+        const dueDate = document.getElementById('due_date').value;
         
         if (!title) return;
 
@@ -262,7 +310,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 },
-                body: JSON.stringify({ title, description: description || null })
+                body: JSON.stringify({ 
+                    title, 
+                    description: description || null,
+                    due_date: dueDate || null
+                })
             });
 
             if (res.ok) {
@@ -279,76 +331,90 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Редактирование по двойному клику
-    document.addEventListener('dblclick', async (e) => {
-        if (e.target.classList.contains('editable-title') || e.target.classList.contains('editable-description')) {
-            const isTitle = e.target.classList.contains('editable-title');
-            const taskId = e.target.dataset.id;
-            const currentValue = e.target.textContent.trim();
+    // Edit task modal
+    const editModal = document.getElementById('editTaskModal');
+    const editForm = document.getElementById('editTaskForm');
+    const cancelEdit = document.getElementById('cancelEdit');
+    
+    // Open edit modal
+    document.addEventListener('click', async (e) => {
+        const btn = e.target.closest('.edit-task');
+        if (!btn) return;
+        
+        const taskId = btn.dataset.id;
+        
+        try {
+            // Fetch task data
+            const res = await fetch(`/tasks/${taskId}`);
+            if (!res.ok) throw new Error('Не удалось загрузить задачу');
             
-            const input = isTitle 
-                ? document.createElement('input')
-                : document.createElement('textarea');
+            const data = await res.json();
+            const task = data.task;
             
-            input.type = isTitle ? 'text' : 'text';
-            input.value = currentValue;
-            input.className = 'px-3 py-2 border border-indigo-400 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full';
-            if (!isTitle) input.rows = 3;
-            input.autofocus = true;
-
-            e.target.replaceWith(input);
-
-            const saveEdit = async () => {
-                const newValue = input.value.trim();
-                if (newValue && newValue !== currentValue) {
-                    try {
-                        const res = await fetch(`/tasks/${taskId}`, {
-                            method: 'PATCH',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                            },
-                            body: JSON.stringify({ [isTitle ? 'title' : 'description']: newValue })
-                        });
-                        
-                        if (!res.ok) {
-                            const error = await res.json();
-                            throw new Error(error.message || 'Ошибка при сохранении');
-                        }
-                        
-                        window.location.reload();
-                    } catch (error) {
-                        console.error('Ошибка при сохранении:', error);
-                        alert(error.message || 'Ошибка при сохранении изменений');
-                        restoreElement(isTitle, taskId, currentValue);
-                    }
-                } else {
-                    restoreElement(isTitle, taskId, currentValue);
-                }
-            };
-
-            const restoreElement = (isTitle, taskId, value) => {
-                const element = isTitle 
-                    ? document.createElement('p')
-                    : document.createElement('p');
-                
-                element.className = isTitle 
-                    ? 'editable-title cursor-pointer text-lg font-semibold break-words'
-                    : 'editable-description cursor-pointer text-gray-600 mt-2 break-words';
-                element.dataset.id = taskId;
-                element.textContent = value;
-                input.replaceWith(element);
-            };
-
-            input.addEventListener('blur', saveEdit);
-            input.addEventListener('keypress', (e) => {
-                if (isTitle && e.key === 'Enter') saveEdit();
-                if (!isTitle && e.key === 'Enter' && e.ctrlKey) saveEdit();
+            // Populate form
+            document.getElementById('edit-title').value = task.title;
+            document.getElementById('edit-description').value = task.description || '';
+            document.getElementById('edit-due_date').value = task.due_date || '';
+            document.getElementById('edit-completed').checked = task.completed;
+            
+            // Set form action
+            editForm.action = `/tasks/${taskId}`;
+            
+            // Show modal
+            editModal.classList.remove('hidden');
+        } catch (error) {
+            console.error('Ошибка:', error);
+            alert('Не удалось загрузить данные задачи');
+        }
+    });
+    
+    // Close modal
+    cancelEdit.addEventListener('click', () => {
+        editModal.classList.add('hidden');
+    });
+    
+    // Close modal when clicking outside
+    editModal.addEventListener('click', (e) => {
+        if (e.target === editModal) {
+            editModal.classList.add('hidden');
+        }
+    });
+    
+    // Save edited task
+    editForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = new FormData(editForm);
+        const data = {
+            title: formData.get('title'),
+            description: formData.get('description') || null,
+            due_date: formData.get('due_date') || null,
+            completed: formData.get('completed') === '1'
+        };
+        
+        try {
+            const res = await fetch(editForm.action, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify(data)
             });
+            
+            if (res.ok) {
+                window.location.reload();
+            } else {
+                const error = await res.json();
+                alert(error.message || 'Ошибка при сохранении задачи');
+            }
+        } catch (error) {
+            console.error('Ошибка:', error);
+            alert('Ошибка при сохранении задачи');
         }
     });
 
-    // Переключение статуса
+    // Toggle task completion
     document.addEventListener('change', async (e) => {
         if (e.target.classList.contains('task-toggle')) {
             const taskId = e.target.dataset.id;
@@ -373,13 +439,13 @@ document.addEventListener('DOMContentLoaded', function () {
             } catch (error) {
                 console.error('Ошибка:', error);
                 alert(error.message || 'Ошибка при обновлении статуса задачи');
-                // Восстановить предыдущее состояние
+                // Restore previous state
                 e.target.checked = !completed;
             }
         }
     });
 
-    // Удаление задачи
+    // Delete task
     document.addEventListener('click', async (e) => {
         const btn = e.target.closest('.delete-task');
         if (!btn) return;
@@ -406,16 +472,6 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error('Ошибка при удалении:', error);
             alert(error.message || 'Ошибка при удалении задачи');
         }
-    });
-    
-    // Редактирование задачи
-    document.addEventListener('click', (e) => {
-        const btn = e.target.closest('.edit-task');
-        if (!btn) return;
-        
-        const taskId = btn.dataset.id;
-        // Здесь можно добавить логику для открытия модального окна редактирования
-        console.log('Edit task:', taskId);
     });
 });
 </script>

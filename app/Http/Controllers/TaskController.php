@@ -90,6 +90,9 @@ class TaskController extends Controller
                 'completed' => false,
             ]);
 
+            // Очищаем кэш после создания задачи
+            TaskHelper::clearUserTasksCache($request->user());
+
             return response()->json([
                 'success' => true,
                 'task' => $task->only(['id', 'title', 'description', 'completed', 'order', 'due_date', 'created_at', 'updated_at']),
@@ -112,6 +115,9 @@ class TaskController extends Controller
             $this->authorize('update', $task);
 
             $task->update($request->validated());
+
+            // Очищаем кэш после обновления задачи
+            TaskHelper::clearUserTasksCache($request->user());
 
             return response()->json([
                 'success' => true,
@@ -138,7 +144,11 @@ class TaskController extends Controller
     {
         try {
             $this->authorize('delete', $task);
+            $user = $task->user;
             $task->delete();
+
+            // Очищаем кэш после удаления задачи
+            TaskHelper::clearUserTasksCache($user);
 
             return response()->json(['success' => true]);
         } catch (AuthorizationException $e) {

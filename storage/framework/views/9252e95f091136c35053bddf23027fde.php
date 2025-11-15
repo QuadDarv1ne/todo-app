@@ -54,6 +54,11 @@ unset($__defined_vars, $__key, $__value); ?>
                         <textarea id="edit-description" name="description" rows="4"
                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition text-base shadow-sm resize-none"></textarea>
                     </div>
+                    <div>
+                        <label for="edit-due_date" class="block text-sm font-medium text-gray-700 mb-2">Дата выполнения (необязательно)</label>
+                        <input type="date" id="edit-due_date" name="due_date"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition text-base shadow-sm">
+                    </div>
                     <div class="flex items-center">
                         <input type="checkbox" id="edit-completed" name="completed" value="1"
                                class="h-5 w-5 text-indigo-600 rounded focus:ring-indigo-500">

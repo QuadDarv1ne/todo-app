@@ -5,6 +5,7 @@ namespace App\Helpers;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Class TaskHelper
@@ -16,6 +17,33 @@ use Illuminate\Support\Facades\Log;
 class TaskHelper
 {
     /**
+     * Получить ключ кэша для задач пользователя.
+     *
+     * @param User $user
+     * @param string $suffix
+     * @return string
+     */
+    private static function getCacheKey(User $user, string $suffix = ''): string
+    {
+        return "user_{$user->id}_tasks" . ($suffix ? "_{$suffix}" : '');
+    }
+
+    /**
+     * Очистить кэш задач пользователя.
+     *
+     * @param User $user
+     * @return void
+     */
+    public static function clearUserTasksCache(User $user): void
+    {
+        Cache::forget(self::getCacheKey($user, 'stats'));
+        Cache::forget(self::getCacheKey($user, 'recent'));
+        Cache::forget(self::getCacheKey($user, 'all'));
+        Cache::forget(self::getCacheKey($user, 'completed'));
+        Cache::forget(self::getCacheKey($user, 'pending'));
+    }
+
+    /**
      * Получить статистику задач пользователя.
      *
      * @param User $user
@@ -23,18 +51,20 @@ class TaskHelper
      */
     public static function getUserTaskStats(User $user): array
     {
-        $totalTasks = $user->tasks()->count();
-        $completedTasks = $user->tasks()->where('completed', true)->count();
-        $pendingTasks = $user->tasks()->where('completed', false)->count();
-        
-        $completionPercentage = $totalTasks > 0 ? round(($completedTasks / $totalTasks) * 100) : 0;
-        
-        return [
-            'total' => $totalTasks,
-            'completed' => $completedTasks,
-            'pending' => $pendingTasks,
-            'completion_percentage' => $completionPercentage
-        ];
+        return Cache::remember(self::getCacheKey($user, 'stats'), 300, function () use ($user) {
+            $totalTasks = $user->tasks()->count();
+            $completedTasks = $user->tasks()->where('completed', true)->count();
+            $pendingTasks = $user->tasks()->where('completed', false)->count();
+            
+            $completionPercentage = $totalTasks > 0 ? round(($completedTasks / $totalTasks) * 100) : 0;
+            
+            return [
+                'total' => $totalTasks,
+                'completed' => $completedTasks,
+                'pending' => $pendingTasks,
+                'completion_percentage' => $completionPercentage
+            ];
+        });
     }
 
     /**
@@ -46,7 +76,9 @@ class TaskHelper
      */
     public static function getRecentTasks(User $user, int $limit = 5)
     {
-        return $user->tasks()->orderBy('created_at', 'desc')->limit($limit)->get();
+        return Cache::remember(self::getCacheKey($user, 'recent'), 300, function () use ($user, $limit) {
+            return $user->tasks()->orderBy('created_at', 'desc')->limit($limit)->get();
+        });
     }
 
     /**
@@ -97,6 +129,9 @@ class TaskHelper
                     ->where('id', $item['id'])
                     ->update(['order' => $item['order']]);
             }
+
+            // Очищаем кэш после изменения порядка
+            self::clearUserTasksCache($user);
 
             return true;
         } catch (\Exception $e) {

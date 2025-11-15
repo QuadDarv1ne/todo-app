@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Web Routes
+ * 
+ * Определяет все маршруты приложения.
+ * 
+ * Middleware:
+ * - auth - требует авторизованного пользователя
+ * - verified - требует подтверждённого email
+ */
+
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\TaskController;
@@ -25,7 +35,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
     Route::get('/tasks/{task}', [TaskController::class, 'show'])->name('tasks.show');
     Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
-    Route::patch('/tasks/{task}', [TaskController::class, 'update'])->name('tasks.update');
+    Route::match(['put', 'patch'], '/tasks/{task}', [TaskController::class, 'update'])->name('tasks.update');
     Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
     Route::post('/tasks/reorder', [TaskController::class, 'reorder'])->name('tasks.reorder');
 
@@ -37,6 +47,8 @@ Route::middleware(['auth'])->group(function () {
     // Маршруты для донатов
     Route::get('/donations/my', [DonationController::class, 'myDonations'])->name('donations.my');
     Route::post('/donations', [DonationController::class, 'store'])->name('donations.store');
+    Route::match(['put', 'patch'], '/donations/{donation}', [DonationController::class, 'update'])->name('donations.update');
+    Route::delete('/donations/{donation}', [DonationController::class, 'destroy'])->name('donations.destroy');
     Route::get('/api/donations/stats', [DonationController::class, 'apiStats'])->name('donations.api.stats');
 });
 

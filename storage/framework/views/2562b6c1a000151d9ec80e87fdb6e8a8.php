@@ -20,11 +20,22 @@
                 </span>
             </button>
         </div>
-        <textarea 
-            id="description"
-            placeholder="Описание задачи (необязательно)..."
-            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition text-base resize-none shadow-sm"
-            rows="3"
-        ></textarea>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <textarea 
+                id="description"
+                placeholder="Описание задачи (необязательно)..."
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition text-base resize-none shadow-sm"
+                rows="3"
+            ></textarea>
+            <div>
+                <label for="due_date" class="block text-sm font-medium text-gray-700 mb-1">Дата выполнения (необязательно)</label>
+                <input
+                    type="date"
+                    id="due_date"
+                    min="<?php echo e(now()->addDay()->format('Y-m-d')); ?>"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition text-base shadow-sm"
+                >
+            </div>
+        </div>
     </form>
 </div><?php /**PATH C:\Users\maksi\OneDrive\Documents\GitHub\todo-app\resources\views/components/task-form.blade.php ENDPATH**/ ?>
