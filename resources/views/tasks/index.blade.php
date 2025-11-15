@@ -283,4 +283,227 @@
         @endif
     </div>
 </div>
+
+<!-- Create Task Modal -->
+<div id="createTaskModal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+    <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <!-- Background overlay -->
+        <div class="fixed inset-0 transition-opacity" aria-hidden="true" onclick="closeCreateTaskModal()">
+            <div class="absolute inset-0 bg-gray-900 opacity-75"></div>
+        </div>
+
+        <!-- Modal container -->
+        <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+            <form action="{{ route('tasks.store') }}" method="POST" id="createTaskForm">
+                @csrf
+                <div class="bg-gradient-to-r from-indigo-500 to-purple-600 px-6 py-5">
+                    <h3 class="text-2xl font-bold text-white">Создать новую задачу</h3>
+                </div>
+                <div class="px-6 py-6 space-y-5">
+                    <div>
+                        <label for="title" class="block text-sm font-semibold text-gray-700 mb-2">Название задачи *</label>
+                        <input type="text" id="title" name="title" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition text-base shadow-sm"
+                               placeholder="Введите название задачи">
+                    </div>
+                    <div>
+                        <label for="description" class="block text-sm font-semibold text-gray-700 mb-2">Описание</label>
+                        <textarea id="description" name="description" rows="4"
+                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition text-base shadow-sm resize-none"
+                                  placeholder="Опишите детали задачи..."></textarea>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="due_date" class="block text-sm font-semibold text-gray-700 mb-2">Дата выполнения</label>
+                            <input type="date" id="due_date" name="due_date"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition text-base shadow-sm">
+                        </div>
+                        <div>
+                            <label for="priority" class="block text-sm font-semibold text-gray-700 mb-2">Приоритет</label>
+                            <select id="priority" name="priority"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition text-base shadow-sm">
+                                <option value="low">Низкий</option>
+                                <option value="medium" selected>Средний</option>
+                                <option value="high">Высокий</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox" id="reminders_enabled" name="reminders_enabled" value="1"
+                                   class="h-5 w-5 text-indigo-600 rounded focus:ring-indigo-500">
+                            <span class="ml-3 text-sm font-medium text-gray-700">Включить напоминания</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="px-6 py-4 bg-gray-50 flex justify-end gap-3">
+                    <button type="button" onclick="closeCreateTaskModal()"
+                            class="px-6 py-2.5 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition">
+                        Отмена
+                    </button>
+                    <button type="submit"
+                            class="px-6 py-2.5 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition shadow-md hover:shadow-lg">
+                        Создать задачу
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Task Modal -->
+<x-edit-task-modal />
+
+@section('scripts')
+<script>
+function openCreateTaskModal() {
+    document.getElementById('createTaskModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeCreateTaskModal() {
+    document.getElementById('createTaskModal').classList.add('hidden');
+    document.body.style.overflow = 'auto';
+    document.getElementById('createTaskForm').reset();
+}
+
+// Close modal on Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeCreateTaskModal();
+        closeEditTaskModal();
+    }
+});
+
+// Edit Task functionality
+document.querySelectorAll('.edit-task').forEach(button => {
+    button.addEventListener('click', async function() {
+        const taskId = this.dataset.id;
+        
+        try {
+            const response = await fetch(`/tasks/${taskId}`);
+            const data = await response.json();
+            
+            if (data.success) {
+                const task = data.task;
+                document.getElementById('edit-title').value = task.title || '';
+                document.getElementById('edit-description').value = task.description || '';
+                document.getElementById('edit-due_date').value = task.due_date || '';
+                document.getElementById('edit-priority').value = task.priority || 'medium';
+                document.getElementById('edit-completed').checked = task.completed || false;
+                document.getElementById('edit-reminders').checked = task.reminders_enabled || false;
+                document.getElementById('editTaskForm').dataset.taskId = taskId;
+                
+                document.getElementById('editTaskModal').classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+        } catch (error) {
+            console.error('Error loading task:', error);
+            alert('Ошибка при загрузке задачи');
+        }
+    });
+});
+
+function closeEditTaskModal() {
+    document.getElementById('editTaskModal').classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+
+document.getElementById('cancelEdit')?.addEventListener('click', closeEditTaskModal);
+
+// Save edited task
+document.getElementById('editTaskForm')?.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const taskId = this.dataset.taskId;
+    const formData = new FormData(this);
+    
+    try {
+        const response = await fetch(`/tasks/${taskId}`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json',
+            },
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            window.location.reload();
+        } else {
+            alert(data.message || 'Ошибка при сохранении задачи');
+        }
+    } catch (error) {
+        console.error('Error updating task:', error);
+        alert('Ошибка при сохранении задачи');
+    }
+});
+
+// Delete Task functionality
+document.querySelectorAll('.delete-task').forEach(button => {
+    button.addEventListener('click', async function() {
+        if (!confirm('Вы уверены, что хотите удалить эту задачу?')) {
+            return;
+        }
+        
+        const taskId = this.dataset.id;
+        
+        try {
+            const response = await fetch(`/tasks/${taskId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json',
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                window.location.reload();
+            } else {
+                alert(data.message || 'Ошибка при удалении задачи');
+            }
+        } catch (error) {
+            console.error('Error deleting task:', error);
+            alert('Ошибка при удалении задачи');
+        }
+    });
+});
+
+// Toggle task completion
+document.querySelectorAll('.task-toggle').forEach(checkbox => {
+    checkbox.addEventListener('change', async function() {
+        const taskId = this.dataset.id;
+        const completed = this.checked;
+        
+        try {
+            const response = await fetch(`/tasks/${taskId}/toggle`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({ completed })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                window.location.reload();
+            } else {
+                this.checked = !completed;
+                alert(data.message || 'Ошибка при обновлении задачи');
+            }
+        } catch (error) {
+            console.error('Error toggling task:', error);
+            this.checked = !completed;
+            alert('Ошибка при обновлении задачи');
+        }
+    });
+});
+</script>
+@endsection
 @endsection
