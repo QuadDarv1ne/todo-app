@@ -28,8 +28,10 @@ class TaskController extends Controller
 {
     use AuthorizesRequests;
 
-    public function __construct(private ReportService $reportService)
-    {
+    public function __construct(
+        private \App\Services\AchievementService $achievementService,
+        private \App\Services\ReportService $reportService
+    ) {
     }
 
     /**
