@@ -1,6 +1,29 @@
 @props(['task', 'showActions' => true])
 
-<div class="task-card bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden {{ $task->is_overdue ? 'border-l-4 border-l-red-500' : '' }}">
+@php
+    $priorityColors = [
+        'high' => 'border-l-red-500 bg-red-50',
+        'medium' => 'border-l-yellow-400',
+        'low' => 'border-l-gray-300',
+    ];
+    $priorityColor = $priorityColors[$task->priority] ?? $priorityColors['medium'];
+    
+    $priorityBadges = [
+        'high' => 'bg-red-100 text-red-800',
+        'medium' => 'bg-yellow-100 text-yellow-800',
+        'low' => 'bg-gray-100 text-gray-800',
+    ];
+    $priorityBadge = $priorityBadges[$task->priority] ?? $priorityBadges['medium'];
+    
+    $priorityIcons = [
+        'high' => '🔴',
+        'medium' => '🟡',
+        'low' => '🟢',
+    ];
+    $priorityIcon = $priorityIcons[$task->priority] ?? $priorityIcons['medium'];
+@endphp
+
+<div class="task-card bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden border-l-4 {{ $task->is_overdue ? 'border-l-red-500' : $priorityColor }}">
     <div class="p-5">
         <div class="flex items-start gap-4">
             @if($showActions)
