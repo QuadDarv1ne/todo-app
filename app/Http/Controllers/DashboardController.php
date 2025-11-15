@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Helpers\TaskHelper;
 use App\Models\Task;
 use App\Models\Donation;
+use App\Services\TaskRecommendationService;
 
 /**
  * Class DashboardController
@@ -15,12 +16,22 @@ use App\Models\Donation;
  */
 class DashboardController extends Controller
 {
+    public function __construct(private TaskRecommendationService $recommendationService)
+    {
+    }
+
     public function index(Request $request)
     {
         $user = $request->user();
         
         $stats = TaskHelper::getUserTaskStats($user);
         $recentTasks = TaskHelper::getRecentTasks($user, 5);
+        
+        // Get recommendations
+        $recommendations = $this->recommendationService->getRecommendations($user);
+        $nextTask = $this->recommendationService->getNextTask($user);
+        $todayTasks = $this->recommendationService->getTodayTasks($user);
+        $performance = $this->recommendationService->getPerformanceScore($user);
         
         // Get tasks for the chart
         $tasksByDay = $user->tasks()
@@ -54,7 +65,11 @@ class DashboardController extends Controller
             'recentTasks' => $recentTasks,
             'tasksByDay' => $tasksByDay,
             'completionStats' => $completionStats,
-            'donationStats' => $donationStats
+            'donationStats' => $donationStats,
+            'recommendations' => $recommendations,
+            'nextTask' => $nextTask,
+            'todayTasks' => $todayTasks,
+            'performance' => $performance,
         ]);
     }
 }

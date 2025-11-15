@@ -10,26 +10,26 @@
 <div class="min-h-screen bg-gray-50">
     <!-- Header -->
     <div class="bg-white border-b border-gray-200 shadow-sm sticky top-16 z-40">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-5">
-                <h1 class="text-3xl font-bold text-gray-900">Мои донаты</h1>
-                <div class="grid grid-cols-3 gap-5 text-base">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 sm:gap-5">
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Мои донаты</h1>
+                <div class="grid grid-cols-3 gap-3 sm:gap-5 text-sm sm:text-base">
                     @php
                         $totalDonations = $stats->sum('count');
                         $totalAmount = $stats->sum('total');
                         $currenciesCount = $stats->count();
                     @endphp
                     <div class="text-center">
-                        <div class="text-2xl font-bold text-gray-900">{{ $totalDonations }}</div>
-                        <div class="text-gray-500">Всего</div>
+                        <div class="text-xl sm:text-2xl font-bold text-gray-900">{{ $totalDonations }}</div>
+                        <div class="text-gray-500 text-xs sm:text-sm">Всего</div>
                     </div>
                     <div class="text-center">
-                        <div class="text-2xl font-bold text-indigo-600">{{ $currenciesCount }}</div>
-                        <div class="text-gray-500">Валюты</div>
+                        <div class="text-xl sm:text-2xl font-bold text-indigo-600">{{ $currenciesCount }}</div>
+                        <div class="text-gray-500 text-xs sm:text-sm">Валюты</div>
                     </div>
                     <div class="text-center">
-                        <div class="text-2xl font-bold text-green-600">{{ number_format($totalAmount, 2, '.', ' ') }}</div>
-                        <div class="text-gray-500">Сумма</div>
+                        <div class="text-xl sm:text-2xl font-bold text-green-600">{{ number_format($totalAmount, 2, '.', ' ') }}</div>
+                        <div class="text-gray-500 text-xs sm:text-sm">Сумма</div>
                     </div>
                 </div>
             </div>

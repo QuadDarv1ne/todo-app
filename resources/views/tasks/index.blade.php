@@ -10,21 +10,21 @@
 <div class="min-h-screen bg-gray-50">
     <!-- Header -->
     <div class="bg-white border-b border-gray-200 shadow-sm sticky top-16 z-40">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-5">
-                <h1 class="text-3xl font-bold text-gray-900">Мои задачи</h1>
-                <div class="grid grid-cols-3 gap-5 text-base">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 sm:gap-5">
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Мои задачи</h1>
+                <div class="grid grid-cols-3 gap-3 sm:gap-5 text-sm sm:text-base">
                     <div class="text-center">
-                        <div class="text-2xl font-bold text-gray-900">{{ auth()->user()->tasks()->count() }}</div>
-                        <div class="text-gray-500">Всего</div>
+                        <div class="text-xl sm:text-2xl font-bold text-gray-900">{{ auth()->user()->tasks()->count() }}</div>
+                        <div class="text-gray-500 text-xs sm:text-sm">Всего</div>
                     </div>
                     <div class="text-center">
-                        <div class="text-2xl font-bold text-blue-600">{{ auth()->user()->tasks()->where('completed', false)->count() }}</div>
-                        <div class="text-gray-500">Активные</div>
+                        <div class="text-xl sm:text-2xl font-bold text-blue-600">{{ auth()->user()->tasks()->where('completed', false)->count() }}</div>
+                        <div class="text-gray-500 text-xs sm:text-sm">Активные</div>
                     </div>
                     <div class="text-center">
-                        <div class="text-2xl font-bold text-green-600">{{ auth()->user()->tasks()->where('completed', true)->count() }}</div>
-                        <div class="text-gray-500">Завершены</div>
+                        <div class="text-xl sm:text-2xl font-bold text-green-600">{{ auth()->user()->tasks()->where('completed', true)->count() }}</div>
+                        <div class="text-gray-500 text-xs sm:text-sm">Завершены</div>
                     </div>
                 </div>
             </div>

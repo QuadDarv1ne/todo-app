@@ -9,6 +9,7 @@ use App\Helpers\TaskHelper;
 use App\Events\TaskCreated;
 use App\Events\TaskUpdated;
 use App\Events\TaskDeleted;
+use App\Services\ReportService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -26,6 +27,10 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 class TaskController extends Controller
 {
     use AuthorizesRequests;
+
+    public function __construct(private ReportService $reportService)
+    {
+    }
 
     /**
      * Отображает список задач текущего пользователя.
@@ -323,6 +328,48 @@ class TaskController extends Controller
         } catch (\Exception $e) {
             Log::error('Error exporting tasks to CSV: ' . $e->getMessage());
             abort(500, 'Ошибка при экспорте задач');
+        }
+    }
+
+    /**
+     * Экспортирует задачи пользователя в PDF формате.
+     */
+    public function exportPdf(Request $request)
+    {
+        try {
+            $filter = $request->query('filter', 'all');
+            $pdf = $this->reportService->exportTasksToPdf($request->user(), $filter);
+            
+            $fileName = 'tasks_export_' . now()->format('Y-m-d_His') . '.pdf';
+            
+            return $pdf->download($fileName);
+        } catch (\Exception $e) {
+            Log::error('Error exporting tasks to PDF: ' . $e->getMessage());
+            abort(500, 'Ошибка при экспорте задач в PDF');
+        }
+    }
+
+    /**
+     * Генерирует полный отчет по задачам.
+     */
+    public function generateReport(Request $request)
+    {
+        try {
+            $options = [
+                'include_completed' => $request->boolean('include_completed', true),
+                'include_pending' => $request->boolean('include_pending', true),
+                'include_statistics' => $request->boolean('include_statistics', true),
+                'include_tags' => $request->boolean('include_tags', true),
+            ];
+
+            $pdf = $this->reportService->generateTaskReport($request->user(), $options);
+            
+            $fileName = 'task_report_' . now()->format('Y-m-d_His') . '.pdf';
+            
+            return $pdf->download($fileName);
+        } catch (\Exception $e) {
+            Log::error('Error generating task report: ' . $e->getMessage());
+            abort(500, 'Ошибка при генерации отчета');
         }
     }
 }

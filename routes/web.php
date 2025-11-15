@@ -39,6 +39,8 @@ Route::middleware(['auth'])->group(function () {
     // Экспорт задач
     Route::get('/tasks/export/json', [TaskController::class, 'exportJson'])->name('tasks.export.json');
     Route::get('/tasks/export/csv', [TaskController::class, 'exportCsv'])->name('tasks.export.csv');
+    Route::get('/tasks/export/pdf', [TaskController::class, 'exportPdf'])->name('tasks.export.pdf');
+    Route::get('/reports/tasks', [TaskController::class, 'generateReport'])->name('tasks.report');
 
     // Теги
     Route::get('/tags', [TagController::class, 'index'])->name('tags.index');

@@ -165,7 +165,10 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4">Распределение по приоритетам</h3>
-                    <div class="space-y-3">
+                    <div class="h-64">
+                        <canvas id="priorityChart"></canvas>
+                    </div>
+                    <div class="mt-4 space-y-3">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center">
                                 <span class="inline-block w-3 h-3 rounded-full bg-red-500 mr-2"></span>
@@ -192,7 +195,10 @@
 
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4">Популярные теги</h3>
-                    <div class="space-y-3">
+                    <div class="h-64">
+                        <canvas id="tagsChart"></canvas>
+                    </div>
+                    <div class="mt-4 space-y-3">
                         @forelse($stats['tags'] as $tag)
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center">
@@ -208,8 +214,27 @@
                 </div>
             </div>
 
+            <!-- Графики по времени -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <!-- Тренд выполнения за 30 дней -->
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Тренд выполнения (30 дней)</h3>
+                    <div class="h-64">
+                        <canvas id="completionTrendChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Активность по часам -->
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Активность по часам</h3>
+                    <div class="h-64">
+                        <canvas id="hourlyActivityChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
             <!-- График по дням недели -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 mb-6">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Создание задач по дням недели</h3>
                 <div class="grid grid-cols-7 gap-2">
                     @foreach($stats['by_day_of_week'] as $day => $count)
@@ -225,4 +250,191 @@
             </div>
         </div>
     </div>
+
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Productivity Score Chart
+            const productivityCtx = document.getElementById('productivityChart').getContext('2d');
+            const productivityChart = new Chart(productivityCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Продуктивность', 'Оставшееся'],
+                    datasets: [{
+                        data: [{{ round($stats['advanced']['productivity_score']) }}, {{ 100 - round($stats['advanced']['productivity_score']) }}],
+                        backgroundColor: [
+                            '#6366f1',
+                            '#e5e7eb'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+            // Priority Distribution Chart
+            const priorityCtx = document.getElementById('priorityChart').getContext('2d');
+            const priorityChart = new Chart(priorityCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Высокий', 'Средний', 'Низкий'],
+                    datasets: [{
+                        label: 'Количество задач',
+                        data: [
+                            {{ $stats['advanced']['tasks_by_priority']['high'] }},
+                            {{ $stats['advanced']['tasks_by_priority']['medium'] }},
+                            {{ $stats['advanced']['tasks_by_priority']['low'] }}
+                        ],
+                        backgroundColor: [
+                            '#ef4444',
+                            '#f59e0b',
+                            '#10b981'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+            // Tags Chart
+            const tagsCtx = document.getElementById('tagsChart').getContext('2d');
+            const tagsData = [
+                @foreach($stats['tags'] as $tag)
+                    {{ $tag['tasks_count'] }},
+                @endforeach
+            ];
+            const tagsLabels = [
+                @foreach($stats['tags'] as $tag)
+                    '{{ $tag['name'] }}',
+                @endforeach
+            ];
+            const tagsColors = [
+                @foreach($stats['tags'] as $tag)
+                    '{{ $tag['color'] }}',
+                @endforeach
+            ];
+
+            const tagsChart = new Chart(tagsCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: tagsLabels,
+                    datasets: [{
+                        data: tagsData,
+                        backgroundColor: tagsColors
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right'
+                        }
+                    }
+                }
+            });
+
+            // Completion Trend Chart
+            const trendCtx = document.getElementById('completionTrendChart').getContext('2d');
+            const trendDates = Object.keys({!! json_encode($stats['advanced']['completion_trend']) !!});
+            const trendValues = Object.values({!! json_encode($stats['advanced']['completion_trend']) !!});
+
+            const trendChart = new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: trendDates.map(date => {
+                        const d = new Date(date);
+                        return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
+                    }),
+                    datasets: [{
+                        label: 'Завершенные задачи',
+                        data: trendValues,
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Hourly Activity Chart
+            const hourlyCtx = document.getElementById('hourlyActivityChart').getContext('2d');
+            const hourlyData = [
+                @foreach($stats['advanced']['tasks_by_hour'] as $hour => $count)
+                    {{ $count }},
+                @endforeach
+            ];
+
+            const hourlyChart = new Chart(hourlyCtx, {
+                type: 'bar',
+                data: {
+                    labels: Array.from({length: 24}, (_, i) => `${i}:00`),
+                    datasets: [{
+                        label: 'Создано задач',
+                        data: hourlyData,
+                        backgroundColor: '#8b5cf6',
+                        borderColor: '#7c3aed',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                maxRotation: 0,
+                                autoSkip: true,
+                                maxTicksLimit: 12
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+    @endpush
 </x-app-layout>

@@ -3,11 +3,12 @@
         <div class="flex justify-between items-center h-16">
             
             <!-- Logo & Desktop Nav -->
-            <div class="flex items-center gap-8">
+            <div class="flex items-center gap-4 sm:gap-8">
                 <!-- Logo -->
-                <a href="{{ route('welcome') }}" class="flex-shrink-0 flex items-center gap-3">
-                    <x-application-logo class="h-10 w-10" />
-                    <span class="text-xl font-bold text-indigo-600 hidden sm:inline">Maestro7IT</span>
+                <a href="{{ route('welcome') }}" class="flex-shrink-0 flex items-center gap-2 sm:gap-3">
+                    <x-application-logo class="h-8 w-8 sm:h-10 sm:w-10" />
+                    <span class="text-lg sm:text-xl font-bold text-indigo-600 hidden sm:inline">Maestro7IT</span>
+                    <span class="text-lg font-bold text-indigo-600 sm:hidden">M7</span>
                 </a>
 
                 <!-- Desktop Navigation Links -->
@@ -152,34 +153,34 @@
         </div>
 
         <!-- Mobile Menu -->
-        <div x-show="mobileMenuOpen" x-transition class="md:hidden pb-5 space-y-2">
+        <div x-show="mobileMenuOpen" x-transition class="md:hidden pb-5 space-y-2 mt-2">
             @auth
                 <a href="{{ route('dashboard') }}" 
-                   class="block px-5 py-3 rounded-lg {{ request()->routeIs('dashboard') ? 'bg-indigo-50 text-indigo-600 font-medium' : 'text-gray-700 hover:bg-gray-50' }} transition-colors duration-200">
+                   class="block px-5 py-4 rounded-lg {{ request()->routeIs('dashboard') ? 'bg-indigo-50 text-indigo-600 font-medium' : 'text-gray-700 hover:bg-gray-50' }} transition-colors duration-200 text-lg">
                     Dashboard
                 </a>
                 <a href="{{ route('tasks.index') }}" 
-                   class="block px-5 py-3 rounded-lg {{ request()->routeIs('tasks.*') ? 'bg-indigo-50 text-indigo-600 font-medium' : 'text-gray-700 hover:bg-gray-50' }} transition-colors duration-200">
+                   class="block px-5 py-4 rounded-lg {{ request()->routeIs('tasks.*') ? 'bg-indigo-50 text-indigo-600 font-medium' : 'text-gray-700 hover:bg-gray-50' }} transition-colors duration-200 text-lg">
                     Задачи
                 </a>
                 <a href="{{ route('profile.edit') }}" 
-                   class="block px-5 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200">
+                   class="block px-5 py-4 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200 text-lg">
                     Профиль
                 </a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" class="w-full text-left px-5 py-3 rounded-lg text-red-600 hover:bg-red-50 transition-colors duration-200">
+                    <button type="submit" class="w-full text-left px-5 py-4 rounded-lg text-red-600 hover:bg-red-50 transition-colors duration-200 text-lg">
                         Выйти
                     </button>
                 </form>
             @else
                 <a href="{{ route('login') }}" 
-                   class="block px-5 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200">
+                   class="block px-5 py-4 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200 text-lg">
                     Вход
                 </a>
                 @if (Route::has('register'))
                     <a href="{{ route('register') }}" 
-                       class="block px-5 py-3 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition-colors duration-200 text-center shadow-md">
+                       class="block px-5 py-4 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition-colors duration-200 text-center shadow-md text-lg font-medium">
                         Регистрация
                     </a>
                 @endif
