@@ -5,7 +5,12 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Header -->
         <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900">📋 Мои задачи</h1>
+            <div class="flex items-center gap-3">
+                <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                </svg>
+                <h1 class="text-3xl font-bold text-gray-900">Мои задачи</h1>
+            </div>
             <p class="mt-2 text-sm text-gray-600">Управляйте своими задачами эффективно</p>
         </div>
 
@@ -79,11 +84,17 @@
                 </div>
 
                 <div class="flex gap-2">
-                    <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
-                        🔍 Применить фильтры
+                    <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        Применить фильтры
                     </button>
-                    <a href="{{ route('tasks.index') }}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
-                        ✖️ Сбросить
+                    <a href="{{ route('tasks.index') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        Сбросить
                     </a>
                 </div>
             </form>
@@ -92,7 +103,9 @@
         <!-- Tasks List -->
         @if($tasks->isEmpty())
             <div class="bg-white rounded-lg shadow-sm p-12 text-center">
-                <div class="text-6xl mb-4">📝</div>
+                <svg class="mx-auto w-24 h-24 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
                 <h3 class="text-xl font-semibold text-gray-900 mb-2">Задачи не найдены</h3>
                 <p class="text-gray-600">Создайте свою первую задачу или измените фильтры</p>
             </div>
@@ -127,36 +140,65 @@
                                         <div class="mt-3 flex flex-wrap gap-3 text-sm">
                                             <!-- Priority -->
                                             @if($task->priority)
-                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
+                                                <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium
                                                     {{ $task->priority === 'high' ? 'bg-red-100 text-red-800' : '' }}
                                                     {{ $task->priority === 'medium' ? 'bg-yellow-100 text-yellow-800' : '' }}
                                                     {{ $task->priority === 'low' ? 'bg-green-100 text-green-800' : '' }}
                                                 ">
-                                                    {{ $task->priority === 'high' ? '🔴 Высокий' : '' }}
-                                                    {{ $task->priority === 'medium' ? '🟡 Средний' : '' }}
-                                                    {{ $task->priority === 'low' ? '🟢 Низкий' : '' }}
+                                                    @if($task->priority === 'high')
+                                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" clip-rule="evenodd" />
+                                                        </svg>
+                                                        Высокий
+                                                    @elseif($task->priority === 'medium')
+                                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
+                                                        </svg>
+                                                        Средний
+                                                    @else
+                                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M10 2a8 8 0 100 16 8 8 0 000-16zM9 9V7a1 1 0 112 0v2.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 111.414-1.414L9 9.586z" clip-rule="evenodd" />
+                                                        </svg>
+                                                        Низкий
+                                                    @endif
                                                 </span>
                                             @endif
 
                                             <!-- Due date -->
                                             @if($task->due_date)
-                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                                    📅 {{ \Carbon\Carbon::parse($task->due_date)->format('d.m.Y') }}
+                                                <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    {{ \Carbon\Carbon::parse($task->due_date)->format('d.m.Y') }}
                                                 </span>
                                             @endif
 
                                             <!-- Status -->
-                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
+                                            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium
                                                 {{ $task->completed ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' }}
                                             ">
-                                                {{ $task->completed ? '✅ Завершено' : '⏳ Активно' }}
+                                                @if($task->completed)
+                                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    Завершено
+                                                @else
+                                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    Активно
+                                                @endif
                                             </span>
 
                                             <!-- Tags -->
                                             @if($task->tags && $task->tags->isNotEmpty())
                                                 @foreach($task->tags as $tag)
-                                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                                                        🏷️ {{ $tag->name }}
+                                                    <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M17.707 9.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-7-7A.997.997 0 012 10V5a3 3 0 013-3h5c.256 0 .512.098.707.293l7 7zM5 6a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                                                        </svg>
+                                                        {{ $tag->name }}
                                                     </span>
                                                 @endforeach
                                             @endif

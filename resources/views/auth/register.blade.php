@@ -185,12 +185,54 @@
             align-items: center;
             gap: 0.5rem;
             margin-bottom: 0.25rem;
+            color: #6b7280;
+            transition: color 0.3s;
         }
 
         .requirements-list li::before {
+            content: '○';
+            color: #d1d5db;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .requirements-list li.valid {
+            color: #10b981;
+        }
+
+        .requirements-list li.valid::before {
             content: '✓';
             color: #10b981;
-            font-weight: bold;
+        }
+
+        .password-strength {
+            margin-top: 0.75rem;
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .password-strength-bar {
+            height: 100%;
+            width: 0%;
+            transition: all 0.3s;
+            background: #d1d5db;
+        }
+
+        .password-strength-bar.weak {
+            width: 33%;
+            background: #ef4444;
+        }
+
+        .password-strength-bar.medium {
+            width: 66%;
+            background: #f59e0b;
+        }
+
+        .password-strength-bar.strong {
+            width: 100%;
+            background: #10b981;
         }
 
         .form-footer {
@@ -373,10 +415,13 @@
                     <div class="password-requirements">
                         <strong>Требования к паролю:</strong>
                         <ul class="requirements-list">
-                            <li>Минимум 8 символов</li>
-                            <li>Хотя бы одна заглавная буква</li>
-                            <li>Хотя бы одна цифра</li>
+                            <li id="req-length">Минимум 8 символов</li>
+                            <li id="req-uppercase">Хотя бы одна заглавная буква</li>
+                            <li id="req-number">Хотя бы одна цифра</li>
                         </ul>
+                        <div class="password-strength">
+                            <div class="password-strength-bar" id="strengthBar"></div>
+                        </div>
                     </div>
                 </div>
 
@@ -415,6 +460,52 @@
     <script>
         const form = document.getElementById('registerForm');
         const submitBtn = document.getElementById('submitBtn');
+        const passwordInput = document.getElementById('password');
+        const confirmInput = document.getElementById('password_confirmation');
+        const strengthBar = document.getElementById('strengthBar');
+        const reqLength = document.getElementById('req-length');
+        const reqUppercase = document.getElementById('req-uppercase');
+        const reqNumber = document.getElementById('req-number');
+
+        // Password strength checker
+        passwordInput.addEventListener('input', function() {
+            const password = this.value;
+            let strength = 0;
+
+            // Check length
+            if (password.length >= 8) {
+                reqLength.classList.add('valid');
+                strength++;
+            } else {
+                reqLength.classList.remove('valid');
+            }
+
+            // Check uppercase
+            if (/[A-Z]/.test(password)) {
+                reqUppercase.classList.add('valid');
+                strength++;
+            } else {
+                reqUppercase.classList.remove('valid');
+            }
+
+            // Check number
+            if (/[0-9]/.test(password)) {
+                reqNumber.classList.add('valid');
+                strength++;
+            } else {
+                reqNumber.classList.remove('valid');
+            }
+
+            // Update strength bar
+            strengthBar.className = 'password-strength-bar';
+            if (strength === 1) {
+                strengthBar.classList.add('weak');
+            } else if (strength === 2) {
+                strengthBar.classList.add('medium');
+            } else if (strength === 3) {
+                strengthBar.classList.add('strong');
+            }
+        });
 
         // Real-time validation
         const inputs = form.querySelectorAll('input[type="text"], input[type="email"], input[type="password"]');
@@ -424,6 +515,7 @@
                 if (this.classList.contains('error')) {
                     this.classList.remove('error');
                 }
+                validateField(this);
             });
 
             input.addEventListener('blur', function() {
@@ -439,12 +531,19 @@
             }
 
             if (field.name === 'password' && field.value) {
-                isValid = field.value.length >= 8;
+                isValid = field.value.length >= 8 && /[A-Z]/.test(field.value) && /[0-9]/.test(field.value);
             }
 
             if (field.name === 'password_confirmation' && field.value) {
                 const password = document.getElementById('password').value;
                 isValid = field.value === password;
+                
+                if (!isValid && field.value) {
+                    showError(field, 'Пароли не совпадают');
+                } else if (isValid) {
+                    clearError(field);
+                }
+                return;
             }
 
             if (!isValid && field.value) {
@@ -454,8 +553,52 @@
             }
         }
 
+        function showError(field, message) {
+            field.classList.add('error');
+            let errorMsg = field.parentElement.querySelector('.error-message');
+            if (!errorMsg) {
+                errorMsg = document.createElement('span');
+                errorMsg.className = 'error-message';
+                field.parentElement.appendChild(errorMsg);
+            }
+            errorMsg.textContent = message;
+        }
+
+        function clearError(field) {
+            field.classList.remove('error');
+            const errorMsg = field.parentElement.querySelector('.error-message');
+            if (errorMsg && !errorMsg.textContent.startsWith('Поле')) {
+                errorMsg.remove();
+            }
+        }
+
+        // Password confirmation real-time check
+        confirmInput.addEventListener('input', function() {
+            if (this.value && passwordInput.value) {
+                if (this.value === passwordInput.value) {
+                    clearError(this);
+                } else {
+                    showError(this, 'Пароли не совпадают');
+                }
+            }
+        });
+
         // Prevent double submission
-        form.addEventListener('submit', function() {
+        form.addEventListener('submit', function(e) {
+            // Final validation
+            let hasErrors = false;
+            inputs.forEach(input => {
+                if (input.value === '' || input.classList.contains('error')) {
+                    hasErrors = true;
+                }
+            });
+
+            if (hasErrors) {
+                e.preventDefault();
+                alert('Пожалуйста, заполните все поля корректно');
+                return;
+            }
+
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<span>Регистрация...</span>';
         });

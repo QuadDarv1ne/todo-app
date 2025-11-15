@@ -24,11 +24,11 @@
                         </a>
                         <a href="{{ route('achievements.index') }}" 
                            class="px-1 py-2 text-base font-medium {{ request()->routeIs('achievements.*') ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-700 hover:text-indigo-600' }} transition-colors duration-200">
-                            🎮 Достижения
+                            Достижения
                         </a>
                         <a href="{{ route('activity-logs.index') }}" 
                            class="px-1 py-2 text-base font-medium {{ request()->routeIs('activity-logs.*') ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-700 hover:text-indigo-600' }} transition-colors duration-200">
-                            📊 История
+                            История
                         </a>
                     @endif
                 </div>
@@ -173,11 +173,11 @@
                 </a>
                 <a href="{{ route('achievements.index') }}" 
                    class="block px-5 py-4 rounded-lg {{ request()->routeIs('achievements.*') ? 'bg-indigo-50 text-indigo-600 font-medium' : 'text-gray-700 hover:bg-gray-50' }} transition-colors duration-200 text-lg">
-                    🎮 Достижения
+                    Достижения
                 </a>
                 <a href="{{ route('activity-logs.index') }}" 
                    class="block px-5 py-4 rounded-lg {{ request()->routeIs('activity-logs.*') ? 'bg-indigo-50 text-indigo-600 font-medium' : 'text-gray-700 hover:bg-gray-50' }} transition-colors duration-200 text-lg">
-                    📊 История
+                    История
                 </a>
                 <a href="{{ route('profile.edit') }}" 
                    class="block px-5 py-4 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200 text-lg">

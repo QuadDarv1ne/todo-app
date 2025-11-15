@@ -319,12 +319,12 @@
 
             <!-- Tabs -->
             <div class="tabs">
-                <button class="tab active" onclick="switchTab('login', event)" data-tab="login">Вход</button>
-                <button class="tab" onclick="switchTab('register', event)" data-tab="register">Регистрация</button>
+                <button class="tab {{ request()->routeIs('login') && !old('name') ? 'active' : '' }}" onclick="switchTab('login', event)" data-tab="login">Вход</button>
+                <button class="tab {{ old('name') ? 'active' : '' }}" onclick="switchTab('register', event)" data-tab="register">Регистрация</button>
             </div>
 
             <!-- Login Tab -->
-            <div id="login" class="tab-content active">
+            <div id="login" class="tab-content {{ request()->routeIs('login') && !old('name') ? 'active' : '' }}">
                 @if ($errors->any())
                     <div class="alert alert-error">
                         @foreach ($errors->all() as $error)
@@ -370,8 +370,8 @@
             </div>
 
             <!-- Register Tab -->
-            <div id="register" class="tab-content">
-                @if ($errors->any())
+            <div id="register" class="tab-content {{ old('name') ? 'active' : '' }}">
+                @if ($errors->any() && old('name'))
                     <div class="alert alert-error">
                         @foreach ($errors->all() as $error)
                             <div>{{ $error }}</div>
@@ -464,10 +464,16 @@
                         errorMsg.classList.remove('show');
                     }
                 }
-            });
+            }
         });
 
-        updateFooterText('login');
+        // Initialize correct tab on page load
+        const hasRegistrationData = {{ old('name') ? 'true' : 'false' }};
+        if (hasRegistrationData) {
+            updateFooterText('register');
+        } else {
+            updateFooterText('login');
+        }
     </script>
 </body>
 </html>
