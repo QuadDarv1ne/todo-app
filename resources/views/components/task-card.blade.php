@@ -61,6 +61,17 @@
                     </p>
                 @endif
                 
+                @if($task->tags && $task->tags->count() > 0)
+                    <div class="flex flex-wrap gap-2 mt-3">
+                        @foreach($task->tags as $tag)
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium"
+                                  style="background-color: {{ $tag->color }}22; color: {{ $tag->color }}; border: 1px solid {{ $tag->color }}44;">
+                                {{ $tag->name }}
+                            </span>
+                        @endforeach
+                    </div>
+                @endif
+                
                 <div class="flex items-center gap-3 mt-4 text-sm text-gray-500">
                     <span class="flex items-center gap-1">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Tag;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -16,8 +18,15 @@ class TagFactory extends Factory
      */
     public function definition(): array
     {
+        $tagNames = [
+            'Работа', 'Личное', 'Срочно', 'Важно', 'Проект',
+            'Покупки', 'Здоровье', 'Учеба', 'Дом', 'Идеи'
+        ];
+        
         return [
-            //
+            'user_id' => User::factory(),
+            'name' => $this->faker->unique()->randomElement($tagNames),
+            'color' => $this->faker->randomElement(Tag::COLORS),
         ];
     }
 }

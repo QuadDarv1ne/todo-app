@@ -3,6 +3,7 @@
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\TagController;
 use App\Http\Controllers\DonationController;
 use Illuminate\Support\Facades\Route;
 
@@ -36,6 +37,14 @@ Route::middleware(['auth'])->group(function () {
     // Экспорт задач
     Route::get('/tasks/export/json', [TaskController::class, 'exportJson'])->name('tasks.export.json');
     Route::get('/tasks/export/csv', [TaskController::class, 'exportCsv'])->name('tasks.export.csv');
+
+    // Теги
+    Route::get('/tags', [TagController::class, 'index'])->name('tags.index');
+    Route::post('/tags', [TagController::class, 'store'])->name('tags.store');
+    Route::patch('/tags/{tag}', [TagController::class, 'update'])->name('tags.update');
+    Route::delete('/tags/{tag}', [TagController::class, 'destroy'])->name('tags.destroy');
+    Route::post('/tags/attach', [TagController::class, 'attach'])->name('tags.attach');
+    Route::post('/tags/detach', [TagController::class, 'detach'])->name('tags.detach');
 
     // Профиль
     Route::get('/profile', [ProfileController::class, 'view'])->name('profile.view');

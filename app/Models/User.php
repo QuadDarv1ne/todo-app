@@ -100,6 +100,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Теги пользователя
+     */
+    public function tags(): HasMany
+    {
+        return $this->hasMany(Tag::class)->orderBy('name');
+    }
+
+    /**
      * Все донаты пользователя
      */
     public function donations(): HasMany
