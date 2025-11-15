@@ -20,6 +20,7 @@ class DonationTest extends TestCase
             'user_id' => $user->id,
             'currency' => 'USD',
             'amount' => 100.50,
+            'status' => 'completed',
             'description' => 'Test donation',
         ]);
 
@@ -28,6 +29,7 @@ class DonationTest extends TestCase
             'user_id' => $user->id,
             'currency' => 'USD',
             'amount' => 100.50,
+            'status' => 'completed',
             'description' => 'Test donation',
         ]);
     }
@@ -36,7 +38,7 @@ class DonationTest extends TestCase
     public function it_belongs_to_a_user()
     {
         $user = User::factory()->create();
-        $donation = Donation::factory()->create(['user_id' => $user->id]);
+        $donation = Donation::factory()->completed()->create(['user_id' => $user->id]);
 
         $this->assertInstanceOf(User::class, $donation->user);
         $this->assertEquals($user->id, $donation->user->id);
@@ -48,7 +50,7 @@ class DonationTest extends TestCase
         $user = User::factory()->create();
         
         // Create donations
-        Donation::factory()->count(3)->create([
+        Donation::factory()->count(3)->completed()->create([
             'user_id' => $user->id,
             'currency' => 'USD',
             'amount' => 100,
@@ -69,13 +71,13 @@ class DonationTest extends TestCase
         $user = User::factory()->create();
         
         // Create donations in different currencies
-        Donation::factory()->count(2)->create([
+        Donation::factory()->count(2)->completed()->create([
             'user_id' => $user->id,
             'currency' => 'USD',
             'amount' => 100,
         ]);
 
-        Donation::factory()->count(3)->create([
+        Donation::factory()->count(3)->completed()->create([
             'user_id' => $user->id,
             'currency' => 'EUR',
             'amount' => 50,
@@ -99,7 +101,7 @@ class DonationTest extends TestCase
     /** @test */
     public function it_casts_amount_to_decimal()
     {
-        $donation = Donation::factory()->create(['amount' => 123.45678901]);
+        $donation = Donation::factory()->completed()->create(['amount' => 123.45678901]);
 
         // The amount should be cast to 8 decimal places
         $this->assertEquals(123.45678901, $donation->amount);
@@ -109,7 +111,7 @@ class DonationTest extends TestCase
     public function it_can_get_formatted_amount()
     {
         // Test USD formatting
-        $donation = Donation::factory()->create([
+        $donation = Donation::factory()->completed()->create([
             'currency' => 'USD',
             'amount' => 123.45
         ]);
@@ -117,7 +119,7 @@ class DonationTest extends TestCase
         $this->assertEquals('123.45', $donation->formatted_amount);
         
         // Test BTC formatting
-        $donation = Donation::factory()->create([
+        $donation = Donation::factory()->completed()->create([
             'currency' => 'BTC',
             'amount' => 0.12345678
         ]);
@@ -128,12 +130,12 @@ class DonationTest extends TestCase
     /** @test */
     public function it_can_get_currency_name_and_symbol()
     {
-        $donation = Donation::factory()->create(['currency' => 'USD']);
+        $donation = Donation::factory()->completed()->create(['currency' => 'USD']);
         
         $this->assertEquals('Доллар США', $donation->currency_name);
         $this->assertEquals('$', $donation->currency_symbol);
         
-        $donation = Donation::factory()->create(['currency' => 'BTC']);
+        $donation = Donation::factory()->completed()->create(['currency' => 'BTC']);
         
         $this->assertEquals('Биткойн', $donation->currency_name);
         $this->assertEquals('₿', $donation->currency_symbol);
@@ -145,7 +147,7 @@ class DonationTest extends TestCase
         $user = User::factory()->create();
         
         // Create donations
-        Donation::factory()->count(3)->create([
+        Donation::factory()->count(3)->completed()->create([
             'user_id' => $user->id,
         ]);
 
@@ -160,12 +162,12 @@ class DonationTest extends TestCase
         $user = User::factory()->create();
         
         // Create donations
-        Donation::factory()->create([
+        Donation::factory()->completed()->create([
             'user_id' => $user->id,
             'amount' => 100
         ]);
         
-        Donation::factory()->create([
+        Donation::factory()->completed()->create([
             'user_id' => $user->id,
             'amount' => 50
         ]);
@@ -181,12 +183,12 @@ class DonationTest extends TestCase
         $user = User::factory()->create();
         
         // Create donations
-        $recentDonation = Donation::factory()->create([
+        $recentDonation = Donation::factory()->completed()->create([
             'user_id' => $user->id,
             'amount' => 100
         ]);
         
-        $olderDonation = Donation::factory()->create([
+        $olderDonation = Donation::factory()->completed()->create([
             'user_id' => $user->id,
             'amount' => 50,
             'created_at' => now()->subDay()
