@@ -199,10 +199,8 @@
                                 </div>
                             @endif
                         </div>
-                        </div>
                     </div>
                 </div>
-            @endif
         </div>
     </div>
     
