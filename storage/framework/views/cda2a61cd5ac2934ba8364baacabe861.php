@@ -475,7 +475,7 @@
     <!-- Header -->
     <header>
         <div class="header-container">
-            <a href="<?php echo e(route('welcome')); ?>" class="logo">
+            <a href="<?php echo e(route('home')); ?>" class="logo">
                 <div class="logo-icon">M7</div>
                 <span>Maestro7IT</span>
             </a>

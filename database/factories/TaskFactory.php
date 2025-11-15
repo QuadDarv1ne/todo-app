@@ -25,6 +25,7 @@ class TaskFactory extends Factory
             'order' => $this->faker->numberBetween(0, 100),
             'priority' => $this->faker->randomElement(['low', 'medium', 'high']),
             'due_date' => $this->faker->optional()->dateTimeBetween('now', '+30 days'),
+            'reminders_enabled' => true,
         ];
     }
 }

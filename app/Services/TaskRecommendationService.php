@@ -284,17 +284,20 @@ class TaskRecommendationService
      */
     public function getNextTask(User $user): ?Task
     {
+        $now = now()->toDateTimeString();
+        $today = now()->toDateString();
+        
         return $user->tasks()
             ->where('completed', false)
             ->orderByRaw("
                 CASE 
-                    WHEN due_date < NOW() THEN 1
-                    WHEN DATE(due_date) = CURDATE() THEN 2
+                    WHEN due_date < ? THEN 1
+                    WHEN DATE(due_date) = ? THEN 2
                     WHEN priority = 'high' THEN 3
                     WHEN priority = 'medium' THEN 4
                     ELSE 5
                 END
-            ")
+            ", [$now, $today])
             ->orderBy('due_date', 'asc')
             ->first();
     }
