@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property bool $completed Статус выполнения задачи
  * @property int $order Порядковый номер задачи для сортировки
  * @property int $user_id Идентификатор пользователя, которому принадлежит задача
+ * @property \Carbon\Carbon|null $due_date Дата выполнения задачи (необязательно)
  * @property \Carbon\Carbon $created_at Время создания задачи
  * @property \Carbon\Carbon $updated_at Время последнего обновления задачи
  * 
@@ -40,6 +41,7 @@ class Task extends Model
         'description',
         'completed',
         'order', // ← обязательно для сортировки!
+        'due_date',
     ];
 
     /**
@@ -50,6 +52,7 @@ class Task extends Model
     protected $casts = [
         'completed' => 'boolean',
         'order'     => 'integer',
+        'due_date'  => 'date',
     ];
 
     /**
@@ -102,6 +105,16 @@ class Task extends Model
     }
 
     /**
+     * Проверить, просрочена ли задача.
+     *
+     * @return bool
+     */
+    public function getIsOverdueAttribute(): bool
+    {
+        return !$this->completed && $this->due_date && $this->due_date->isPast();
+    }
+
+    /**
      * Область запроса для активных задач.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
@@ -133,5 +146,29 @@ class Task extends Model
     public function scopeForUser($query, $userId)
     {
         return $query->where('user_id', $userId);
+    }
+
+    /**
+     * Область запроса для просроченных задач.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeOverdue($query)
+    {
+        return $query->where('completed', false)
+                     ->whereNotNull('due_date')
+                     ->where('due_date', '<', now());
+    }
+
+    /**
+     * Область запроса для задач с датой выполнения.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeWithDueDate($query)
+    {
+        return $query->whereNotNull('due_date');
     }
 }

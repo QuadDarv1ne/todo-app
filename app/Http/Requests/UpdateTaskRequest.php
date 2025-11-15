@@ -26,6 +26,7 @@ class UpdateTaskRequest extends FormRequest
             'title' => 'sometimes|required|string|max:255',
             'description' => 'nullable|string|max:65535',
             'completed' => 'sometimes|boolean',
+            'due_date' => 'nullable|date|after:today',
         ];
     }
 
@@ -43,6 +44,8 @@ class UpdateTaskRequest extends FormRequest
             'description.string' => 'Описание задачи должно быть строкой.',
             'description.max' => 'Описание задачи не может превышать 65535 символов.',
             'completed.boolean' => 'Статус завершения должен быть булевым значением.',
+            'due_date.date' => 'Дата выполнения должна быть корректной датой.',
+            'due_date.after' => 'Дата выполнения должна быть в будущем.',
         ];
     }
 }
