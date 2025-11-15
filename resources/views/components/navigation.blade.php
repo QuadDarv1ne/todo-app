@@ -5,7 +5,7 @@
             <!-- Logo & Desktop Nav -->
             <div class="flex items-center gap-4 sm:gap-8">
                 <!-- Logo -->
-                <a href="{{ route('welcome') }}" class="flex-shrink-0 flex items-center gap-2 sm:gap-3">
+                <a href="{{ route('home') }}" class="flex-shrink-0 flex items-center gap-2 sm:gap-3">
                     <x-application-logo class="h-8 w-8 sm:h-10 sm:w-10" />
                     <span class="text-lg sm:text-xl font-bold text-indigo-600 hidden sm:inline">Maestro7IT</span>
                     <span class="text-lg font-bold text-indigo-600 sm:hidden">M7</span>

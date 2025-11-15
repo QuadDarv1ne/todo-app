@@ -475,7 +475,7 @@
     <!-- Header -->
     <header>
         <div class="header-container">
-            <a href="{{ route('welcome') }}" class="logo">
+            <a href="{{ route('home') }}" class="logo">
                 <div class="logo-icon">M7</div>
                 <span>Maestro7IT</span>
             </a>

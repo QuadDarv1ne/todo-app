@@ -42,10 +42,17 @@
                             </select>
                         </div>
                     </div>
-                    <div class="flex items-center">
-                        <input type="checkbox" id="edit-completed" name="completed" value="1"
-                               class="h-5 w-5 text-indigo-600 rounded focus:ring-indigo-500">
-                        <label for="edit-completed" class="ml-2 block text-sm text-gray-700">Завершено</label>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="edit-completed" name="completed" value="1"
+                                   class="h-5 w-5 text-indigo-600 rounded focus:ring-indigo-500">
+                            <label for="edit-completed" class="ml-2 block text-sm text-gray-700">Завершено</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="edit-reminders" name="reminders_enabled" value="1"
+                                   class="h-5 w-5 text-indigo-600 rounded focus:ring-indigo-500">
+                            <label for="edit-reminders" class="ml-2 block text-sm text-gray-700">Напоминания</label>
+                        </div>
                     </div>
                 </div>
                 <div class="px-6 py-4 bg-gray-50 flex justify-end gap-3">

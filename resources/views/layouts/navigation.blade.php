@@ -5,7 +5,7 @@
             <!-- Logo & Desktop Nav -->
             <div class="flex items-center gap-8">
                 <!-- Logo -->
-                <a href="{{ route('welcome') }}" class="flex-shrink-0 flex items-center gap-2">
+                <a href="{{ route('home') }}" class="flex-shrink-0 flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                     </svg>

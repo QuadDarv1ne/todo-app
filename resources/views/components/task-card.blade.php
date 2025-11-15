@@ -53,6 +53,12 @@
                                 <span class="hidden sm:inline">{{ $task->completed ? 'Завершено' : ($task->is_overdue ? 'Просрочено' : 'Активно') }}</span>
                                 <span class="sm:hidden">{{ $task->completed ? '✓' : ($task->is_overdue ? '⚠' : '○') }}</span>
                             </span>
+                            @if($task->reminders_enabled)
+                                <span class="px-2 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                                    <span class="hidden sm:inline">🔔 Напоминания</span>
+                                    <span class="sm:hidden">🔔</span>
+                                </span>
+                            @endif
                         </div>
                     @endif
                 </div>
