@@ -226,16 +226,33 @@ document.addEventListener('DOMContentLoaded', function() {
             submitButton.innerHTML = '<svg class="h-5 w-5 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
             submitButton.disabled = true;
             
-            const formData = new FormData(this);
-            const data = {};
+            // Collect form data
+            const title = document.getElementById('edit-title').value.trim();
+            const description = document.getElementById('edit-description').value.trim();
+            const completed = document.getElementById('edit-completed').checked;
             
-            for (let [key, value] of formData.entries()) {
-                if (key === 'completed') {
-                    data[key] = formData.getAll('completed').length > 0;
-                } else {
-                    data[key] = value;
-                }
+            if (!title) {
+                alert('Название задачи не может быть пустым');
+                submitButton.innerHTML = originalContent;
+                submitButton.disabled = false;
+                return;
             }
+            
+            const data = {
+                title,
+                description: description || null,
+                completed
+            };
+            
+            // Add optional fields if they exist
+            const dueDateField = document.getElementById('edit-due_date');
+            if (dueDateField) data.due_date = dueDateField.value || null;
+            
+            const priorityField = document.getElementById('edit-priority');
+            if (priorityField) data.priority = priorityField.value;
+            
+            const remindersField = document.getElementById('edit-reminders');
+            if (remindersField) data.reminders_enabled = remindersField.checked;
             
             try {
                 const response = await fetch(`/tasks/${currentTaskId}`, {
@@ -248,14 +265,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
                 
                 if (!response.ok) {
-                    throw new Error('Failed to update task');
+                    const error = await response.json();
+                    throw new Error(error.message || 'Не удалось обновить задачу');
                 }
                 
                 closeEditModal();
                 window.location.reload();
             } catch (error) {
-                console.error('Error updating task:', error);
-                alert('Ошибка при обновлении задачи');
+                console.error('Ошибка:', error);
+                alert(error.message || 'Не удалось обновить задачу');
             } finally {
                 // Restore submit button
                 submitButton.innerHTML = originalContent;
@@ -281,25 +299,40 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Modal functions
-function openEditModal(taskId) {
+async function openEditModal(taskId) {
     currentTaskId = taskId;
     const editTaskModal = document.getElementById('editTaskModal');
     if (editTaskModal) {
-        editTaskModal.classList.remove('hidden');
-        editTaskModal.classList.add('block');
-        
-        // Fetch task data and populate form
-        fetch(`/tasks/${taskId}/edit`)
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('edit-title').value = data.title;
-                document.getElementById('edit-description').value = data.description || '';
-                document.getElementById('edit-completed').checked = data.completed;
-            })
-            .catch(error => {
-                console.error('Error fetching task:', error);
-                alert('Ошибка при загрузке данных задачи');
-            });
+        try {
+            // Fetch task data
+            const res = await fetch(`/tasks/${taskId}`);
+            if (!res.ok) throw new Error('Не удалось загрузить задачу');
+            
+            const data = await res.json();
+            const task = data.task;
+            
+            // Populate form with all fields
+            document.getElementById('edit-title').value = task.title;
+            document.getElementById('edit-description').value = task.description || '';
+            document.getElementById('edit-completed').checked = task.completed;
+            
+            // Additional fields if they exist
+            const dueDateField = document.getElementById('edit-due_date');
+            if (dueDateField) dueDateField.value = task.due_date || '';
+            
+            const priorityField = document.getElementById('edit-priority');
+            if (priorityField) priorityField.value = task.priority || 'medium';
+            
+            const remindersField = document.getElementById('edit-reminders');
+            if (remindersField) remindersField.checked = task.reminders_enabled || false;
+            
+            // Show modal
+            editTaskModal.classList.remove('hidden');
+            editTaskModal.classList.add('block');
+        } catch (error) {
+            console.error('Ошибка:', error);
+            alert('Не удалось загрузить задачу');
+        }
     }
 }
 

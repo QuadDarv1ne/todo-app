@@ -33,13 +33,26 @@ class DashboardController extends Controller
         $todayTasks = $this->recommendationService->getTodayTasks($user);
         $performance = $this->recommendationService->getPerformanceScore($user);
         
-        // Get tasks for the chart
-        $tasksByDay = $user->tasks()
+        // Get tasks for the chart - database agnostic approach
+        $tasksLastWeek = $user->tasks()
             ->where('created_at', '>=', now()->subDays(7))
-            ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
-            ->groupBy('date')
-            ->orderBy('date')
             ->get();
+            
+        // Group tasks by date on PHP side instead of using SQL DATE() function
+        $tasksByDay = collect();
+        foreach ($tasksLastWeek as $task) {
+            $date = $task->created_at->format('Y-m-d');
+            if (!$tasksByDay->has($date)) {
+                $tasksByDay->put($date, [
+                    'date' => $date,
+                    'count' => 0
+                ]);
+            }
+            $tasksByDay[$date]['count']++;
+        }
+        
+        // Sort by date and convert to array
+        $tasksByDay = $tasksByDay->sortBy('date')->values();
         
         // Get tasks by completion status
         $completionStats = [

@@ -135,6 +135,72 @@
                             <?php endif; ?>
                         </div>
                         
+                        <!-- Рекомендации и умные подсказки -->
+                        <?php if (isset($component)) { $__componentOriginal493ffe803661bb40fb31ef6ef839ccf3 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal493ffe803661bb40fb31ef6ef839ccf3 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.dashboard-recommendations','data' => []] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('dashboard-recommendations'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes([]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal493ffe803661bb40fb31ef6ef839ccf3)): ?>
+<?php $attributes = $__attributesOriginal493ffe803661bb40fb31ef6ef839ccf3; ?>
+<?php unset($__attributesOriginal493ffe803661bb40fb31ef6ef839ccf3); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal493ffe803661bb40fb31ef6ef839ccf3)): ?>
+<?php $component = $__componentOriginal493ffe803661bb40fb31ef6ef839ccf3; ?>
+<?php unset($__componentOriginal493ffe803661bb40fb31ef6ef839ccf3); ?>
+<?php endif; ?>
+                        
+                        <!-- Игровой прогресс -->
+                        <?php if (isset($component)) { $__componentOriginal77f189266873d519d0895b84f8239794 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal77f189266873d519d0895b84f8239794 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.dashboard-gamification','data' => []] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('dashboard-gamification'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes([]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal77f189266873d519d0895b84f8239794)): ?>
+<?php $attributes = $__attributesOriginal77f189266873d519d0895b84f8239794; ?>
+<?php unset($__attributesOriginal77f189266873d519d0895b84f8239794); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal77f189266873d519d0895b84f8239794)): ?>
+<?php $component = $__componentOriginal77f189266873d519d0895b84f8239794; ?>
+<?php unset($__componentOriginal77f189266873d519d0895b84f8239794); ?>
+<?php endif; ?>
+                        
+                        <!-- Недавняя активность -->
+                        <?php if (isset($component)) { $__componentOriginal54f8e7e739c02f5471d42d29af744b9e = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal54f8e7e739c02f5471d42d29af744b9e = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.dashboard-activity','data' => []] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('dashboard-activity'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes([]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal54f8e7e739c02f5471d42d29af744b9e)): ?>
+<?php $attributes = $__attributesOriginal54f8e7e739c02f5471d42d29af744b9e; ?>
+<?php unset($__attributesOriginal54f8e7e739c02f5471d42d29af744b9e); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal54f8e7e739c02f5471d42d29af744b9e)): ?>
+<?php $component = $__componentOriginal54f8e7e739c02f5471d42d29af744b9e; ?>
+<?php unset($__componentOriginal54f8e7e739c02f5471d42d29af744b9e); ?>
+<?php endif; ?>
+                        
                         <!-- Progress Section -->
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
                             <!-- Progress Bar -->
