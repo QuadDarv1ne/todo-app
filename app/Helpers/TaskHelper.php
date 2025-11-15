@@ -256,4 +256,93 @@ class TaskHelper
             return $byDay->toArray();
         });
     }
+
+    /**
+     * Получить тренд выполнения задач за последние 30 дней.
+     *
+     * @param User $user
+     * @return array
+     */
+    public static function getCompletionTrend(User $user): array
+    {
+        $startDate = now()->subDays(30);
+        
+        // Получаем завершенные задачи за последние 30 дней
+        $completedTasks = $user->tasks()
+            ->where('completed', true)
+            ->where('updated_at', '>=', $startDate)
+            ->get();
+        
+        // Группируем по дням
+        $trend = [];
+        for ($i = 0; $i < 30; $i++) {
+            $date = $startDate->copy()->addDays($i)->format('Y-m-d');
+            $trend[$date] = 0;
+        }
+        
+        $completedTasks->each(function ($task) use (&$trend) {
+            $date = $task->updated_at->format('Y-m-d');
+            if (isset($trend[$date])) {
+                $trend[$date]++;
+            }
+        });
+        
+        return $trend;
+    }
+
+    /**
+     * Рассчитать показатель продуктивности пользователя.
+     *
+     * @param User $user
+     * @param \Illuminate\Support\Collection $tasks
+     * @return float
+     */
+    public static function calculateProductivityScore(User $user, $tasks): float
+    {
+        if ($tasks->isEmpty()) {
+            return 0;
+        }
+        
+        // Базовый показатель: процент выполненных задач
+        $completionRate = ($tasks->where('completed', true)->count() / $tasks->count()) * 100;
+        
+        // Учитываем просроченные задачи (отрицательный фактор)
+        $overdueCount = $tasks->where('completed', false)
+            ->filter(fn($task) => $task->due_date && $task->due_date->isPast())
+            ->count();
+        
+        // Учитываем задачи с датой выполнения (положительный фактор)
+        $withDueDateCount = $tasks->filter(fn($task) => $task->due_date)->count();
+        $dueDateRate = $withDueDateCount > 0 ? ($withDueDateCount / $tasks->count()) * 100 : 0;
+        
+        // Рассчитываем общий показатель
+        $score = ($completionRate * 0.6) + ($dueDateRate * 0.3) - ($overdueCount * 2);
+        
+        // Ограничиваем диапазон от 0 до 100
+        return max(0, min(100, $score));
+    }
+
+    /**
+     * Получить статистику задач по часам создания.
+     *
+     * @param User $user
+     * @return array
+     */
+    public static function getTasksByHour(User $user): array
+    {
+        $tasks = $user->tasks;
+        
+        // Инициализируем массив для 24 часов
+        $byHour = [];
+        for ($i = 0; $i < 24; $i++) {
+            $byHour[$i] = 0;
+        }
+        
+        $tasks->each(function ($task) use (&$byHour) {
+            $hour = $task->created_at->format('H');
+            $byHour[(int)$hour]++;
+        });
+        
+        return $byHour;
+    }
 }
