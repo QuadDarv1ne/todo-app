@@ -177,6 +177,10 @@ class TaskHelper
                 'tasks_created_last_7_days' => $tasks->where('created_at', '>=', now()->subDays(7))->count(),
                 'tasks_completed_last_7_days' => $tasks->where('completed', true)
                     ->where('updated_at', '>=', now()->subDays(7))->count(),
+                // New statistics
+                'completion_trend' => self::getCompletionTrend($user),
+                'productivity_score' => self::calculateProductivityScore($user, $tasks),
+                'tasks_by_hour' => self::getTasksByHour($user),
             ];
         });
     }

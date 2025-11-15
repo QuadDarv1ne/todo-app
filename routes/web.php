@@ -6,6 +6,7 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\DonationController;
 use App\Http\Controllers\StatisticsController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -49,6 +50,12 @@ Route::middleware(['auth'])->group(function () {
 
     // Статистика
     Route::get('/statistics', [StatisticsController::class, 'show'])->name('statistics.show');
+
+    // Уведомления
+    Route::get('/notifications', [NotificationController::class, 'show'])->name('notifications.show');
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
+    Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
 
     // Профиль
     Route::get('/profile', [ProfileController::class, 'view'])->name('profile.view');

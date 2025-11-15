@@ -32,13 +32,16 @@ class TaskController extends Controller
      */
     public function index(Request $request)
     {
-        // Получаем параметр фильтрации
+        // Получаем параметры фильтрации
         $filter = $request->query('filter', 'all');
         $search = $request->query('search');
+        $priority = $request->query('priority');
+        $tag = $request->query('tag');
+        $dueDate = $request->query('due_date');
         
         $query = TaskHelper::getFilteredTasks($request->user(), $filter);
         
-        // Добавляем поиск, если он есть
+        // Поиск по названию и описанию
         if ($search) {
             $query->where(function($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
@@ -46,9 +49,44 @@ class TaskController extends Controller
             });
         }
         
-        $tasks = $query->with('tags')->paginate(10)->appends($request->except('page'));
+        // Фильтр по приоритету
+        if ($priority && in_array($priority, ['low', 'medium', 'high'])) {
+            $query->where('priority', $priority);
+        }
+        
+        // Фильтр по тегу
+        if ($tag) {
+            $query->whereHas('tags', function($q) use ($tag) {
+                $q->where('tags.id', $tag);
+            });
+        }
+        
+        // Фильтр по дате выполнения
+        if ($dueDate) {
+            switch ($dueDate) {
+                case 'today':
+                    $query->whereDate('due_date', today());
+                    break;
+                case 'tomorrow':
+                    $query->whereDate('due_date', today()->addDay());
+                    break;
+                case 'week':
+                    $query->whereBetween('due_date', [today(), today()->addWeek()]);
+                    break;
+                case 'overdue':
+                    $query->where('completed', false)
+                          ->whereNotNull('due_date')
+                          ->where('due_date', '<', now());
+                    break;
+            }
+        }
+        
+        $tasks = $query->with('tags')->paginate(15)->appends($request->except('page'));
+        
+        // Получаем теги для фильтра
+        $userTags = $request->user()->tags()->withCount('tasks')->orderBy('name')->get();
 
-        return view('tasks.index', compact('tasks', 'filter'));
+        return view('tasks.index', compact('tasks', 'filter', 'userTags'));
     }
 
     /**
