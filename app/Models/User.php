@@ -427,18 +427,6 @@ class User extends Authenticatable
             Cache::forget("user:{$user->id}:pending_task_count");
         });
 
-        static::saving(function ($user) {
-            // Нормализация email при сохранении
-            if ($user->isDirty('email')) {
-                $user->email = strtolower(trim($user->email));
-            }
-            
-            // Очистка пробелов в биографии
-            if ($user->isDirty('bio')) {
-                $user->bio = $user->bio ? trim($user->bio) : null;
-            }
-        });
-
         static::deleting(function ($user) {
             // Удаление файла аватара при удалении пользователя
             if ($user->avatar_path && file_exists(storage_path('app/public/avatars/' . $user->avatar_path))) {

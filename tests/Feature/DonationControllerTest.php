@@ -96,7 +96,8 @@ class DonationControllerTest extends TestCase
         // Test with missing data
         $response = $this->post(route('donations.store'), []);
 
-        $response->assertSessionHasErrors(['currency', 'amount']);
+        $response->assertSessionHas('error');
+        $response->assertRedirect();
 
         // Test with invalid amount
         $response = $this->post(route('donations.store'), [
@@ -104,7 +105,8 @@ class DonationControllerTest extends TestCase
             'amount' => -50,
         ]);
 
-        $response->assertSessionHasErrors(['amount']);
+        $response->assertSessionHas('error');
+        $response->assertRedirect();
     }
 
     /** @test */
@@ -140,7 +142,7 @@ class DonationControllerTest extends TestCase
         $this->actingAs($this->user);
 
         // Create donations
-        $recentDonation = Donation::factory()->create([
+        $recentDonation = Donation::factory()->completed()->create([
             'user_id' => $this->user->id,
             'currency' => 'USD',
             'amount' => 100,

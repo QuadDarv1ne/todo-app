@@ -33,9 +33,9 @@ class UserObserverTest extends TestCase
         ]);
         
         // Создаем 9 задач (90% от лимита)
-        $user->tasks()->createMany(
-            \App\Models\Task::factory()->count(9)->make()->toArray()
-        );
+        \App\Models\Task::factory()->count(9)->create([
+            'user_id' => $user->id
+        ]);
         
         // Обновляем пользователя для срабатывания observer
         $user->update(['name' => 'Updated Name']);
