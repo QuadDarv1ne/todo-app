@@ -107,6 +107,60 @@
                 </div>
             </div>
 
+            <!-- Новые метрики -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Показатель продуктивности</h3>
+                    <div class="flex items-center justify-between">
+                        <p class="text-3xl font-bold text-indigo-600">{{ round($stats['advanced']['productivity_score']) }}%</p>
+                        <div class="w-16 h-16">
+                            <canvas id="productivityChart"></canvas>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-600 mt-2">Общий показатель эффективности</p>
+                </div>
+
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Задачи с тегами</h3>
+                    <p class="text-3xl font-bold text-purple-600">{{ $stats['advanced']['with_tags'] }}</p>
+                    <div class="mt-4">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-sm text-gray-600">Процент</span>
+                            <span class="text-sm font-medium text-gray-900">{{ $stats['advanced']['total'] > 0 ? round(($stats['advanced']['with_tags'] / $stats['advanced']['total']) * 100) : 0 }}%</span>
+                        </div>
+                        <div class="overflow-hidden h-2 text-xs flex rounded bg-gray-200">
+                            <div style="width:{{ $stats['advanced']['total'] > 0 ? round(($stats['advanced']['with_tags'] / $stats['advanced']['total']) * 100) : 0 }}%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-purple-500"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Тренд выполнения</h3>
+                    <div class="flex items-center">
+                        @php
+                            $trendData = array_values($stats['advanced']['completion_trend']);
+                            $lastWeek = array_slice($trendData, -7);
+                            $trendSum = array_sum($lastWeek);
+                            $prevWeek = array_slice($trendData, -14, 7);
+                            $prevSum = array_sum($prevWeek);
+                            $trendChange = $prevSum > 0 ? round((($trendSum - $prevSum) / $prevSum) * 100) : 0;
+                        @endphp
+                        <p class="text-3xl font-bold {{ $trendChange >= 0 ? 'text-green-600' : 'text-red-600' }}">
+                            {{ $trendSum }}
+                        </p>
+                        <div class="ml-4">
+                            <div class="flex items-center {{ $trendChange >= 0 ? 'text-green-600' : 'text-red-600' }}">
+                                <svg class="w-5 h-5 {{ $trendChange >= 0 ? '' : 'transform rotate-180' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                                </svg>
+                                <span class="ml-1 text-sm font-medium">{{ abs($trendChange) }}%</span>
+                            </div>
+                            <p class="text-xs text-gray-600 mt-1">за последние 7 дней</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Приоритеты и теги -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">

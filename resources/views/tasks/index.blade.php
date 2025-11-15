@@ -55,7 +55,7 @@
         <x-task-form class="mb-10" />
 
         <!-- Search and Filters -->
-        <x-task-filters :current-filter="$filter" :search-query="request('search')" class="mb-10" />
+        <x-task-filters :current-filter="$filter" :search-query="request('search')" :user-tags="$userTags" class="mb-10" />
 
         <!-- Tasks List -->
         @if($tasks->count() > 0)
