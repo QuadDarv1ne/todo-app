@@ -59,11 +59,17 @@
 
         <!-- Tasks List -->
         @if($tasks->count() > 0)
-            <div class="space-y-5">
-                @foreach($tasks as $task)
-                    <x-task-card :task="$task" />
-                @endforeach
-            </div>
+            @if($filter === 'all')
+                <!-- Use drag and drop for all tasks view -->
+                <x-drag-drop-task-list :tasks="$tasks" />
+            @else
+                <!-- Use regular list for filtered views -->
+                <div class="space-y-5">
+                    @foreach($tasks as $task)
+                        <x-task-card :task="$task" />
+                    @endforeach
+                </div>
+            @endif
         @else
             <div class="bg-white rounded-xl shadow-sm border border-gray-200">
                 @switch($filter)
