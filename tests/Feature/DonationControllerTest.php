@@ -106,4 +106,52 @@ class DonationControllerTest extends TestCase
 
         $response->assertSessionHasErrors(['amount']);
     }
+
+    /** @test */
+    public function user_can_see_their_donation_statistics()
+    {
+        $this->actingAs($this->user);
+
+        // Create donations in different currencies
+        Donation::factory()->count(2)->completed()->create([
+            'user_id' => $this->user->id,
+            'currency' => 'USD',
+            'amount' => 100,
+        ]);
+
+        Donation::factory()->count(3)->completed()->create([
+            'user_id' => $this->user->id,
+            'currency' => 'EUR',
+            'amount' => 50,
+        ]);
+
+        $response = $this->get(route('donations.my'));
+
+        $response->assertStatus(200);
+        $response->assertSee('USD');
+        $response->assertSee('EUR');
+        $response->assertSee('2'); // USD count
+        $response->assertSee('3'); // EUR count
+    }
+
+    /** @test */
+    public function user_can_see_recent_donations()
+    {
+        $this->actingAs($this->user);
+
+        // Create donations
+        $recentDonation = Donation::factory()->create([
+            'user_id' => $this->user->id,
+            'currency' => 'USD',
+            'amount' => 100,
+            'description' => 'Recent donation',
+        ]);
+
+        $response = $this->get(route('donations.my'));
+
+        $response->assertStatus(200);
+        $response->assertSee('100.00');
+        $response->assertSee('USD');
+        $response->assertSee('Recent donation');
+    }
 }

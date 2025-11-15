@@ -24,6 +24,7 @@ namespace App\Http\Controllers;
 use App\Models\Donation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class DonationController extends Controller
 {
@@ -32,19 +33,20 @@ class DonationController extends Controller
      */
     public function myDonations()
     {
-        $userId = Auth::id();
-        
-        // Получаем статистику по всем валютам
-        $stats = Donation::getUserStats($userId);
-        
-        // Получаем последние донаты
-        $recentDonations = Donation::where('user_id', $userId)
-            ->where('status', 'completed')
-            ->orderBy('created_at', 'desc')
-            ->limit(10)
-            ->get();
-        
-        return view('donations.my-donations', compact('stats', 'recentDonations'));
+        try {
+            $userId = Auth::id();
+            
+            // Получаем статистику по всем валютам
+            $stats = Donation::getUserStats($userId);
+            
+            // Получаем последние донаты
+            $recentDonations = Donation::getRecentDonations($userId, 10);
+            
+            return view('donations.my-donations', compact('stats', 'recentDonations'));
+        } catch (\Exception $e) {
+            Log::error('Error loading donations page: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Ошибка при загрузке страницы донатов');
+        }
     }
 
     /**
@@ -52,22 +54,51 @@ class DonationController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'currency' => 'required|string|max:10',
-            'amount' => 'required|numeric|min:0.01|max:1000000',
-            'description' => 'nullable|string|max:500',
-        ]);
+        try {
+            $validated = $request->validate([
+                'currency' => 'required|string|max:10',
+                'amount' => 'required|numeric|min:0.01|max:1000000',
+                'description' => 'nullable|string|max:500',
+            ], [
+                'currency.required' => 'Пожалуйста, выберите валюту',
+                'amount.required' => 'Пожалуйста, укажите сумму',
+                'amount.min' => 'Сумма должна быть больше 0',
+                'amount.max' => 'Сумма не может превышать 1,000,000',
+                'description.max' => 'Описание не может превышать 500 символов',
+            ]);
 
-        $donation = Donation::create([
-            'user_id' => Auth::id(),
-            'currency' => $validated['currency'],
-            'amount' => $validated['amount'],
-            'description' => $validated['description'] ?? null,
-            'status' => 'completed',
-        ]);
+            $donation = Donation::create([
+                'user_id' => Auth::id(),
+                'currency' => $validated['currency'],
+                'amount' => $validated['amount'],
+                'description' => $validated['description'] ?? null,
+                'status' => 'completed',
+            ]);
 
-        return redirect()->route('donations.my')
-            ->with('success', 'Донат успешно создан!');
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Донат успешно создан!',
+                    'donation' => $donation
+                ]);
+            }
+
+            return redirect()->route('donations.my')
+                ->with('success', 'Донат успешно создан!');
+        } catch (\Exception $e) {
+            Log::error('Error creating donation: ' . $e->getMessage());
+            
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Ошибка при создании доната: ' . $e->getMessage()
+                ], 500);
+            }
+            
+            return redirect()->back()
+                ->with('error', 'Ошибка при создании доната: ' . $e->getMessage())
+                ->withInput();
+        }
     }
 
     /**
@@ -75,15 +106,22 @@ class DonationController extends Controller
      */
     public function apiStats(Request $request)
     {
-        $currency = $request->input('currency');
-        $userId = Auth::id();
+        try {
+            $currency = $request->input('currency');
+            $userId = Auth::id();
 
-        if ($currency) {
-            $stats = Donation::getStatsByCurrency($currency, $userId);
+            if ($currency) {
+                $stats = Donation::getStatsByCurrency($currency, $userId);
+                return response()->json($stats);
+            }
+
+            $stats = Donation::getUserStats($userId);
             return response()->json($stats);
+        } catch (\Exception $e) {
+            Log::error('Error fetching donation stats: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'Ошибка при получении статистики'
+            ], 500);
         }
-
-        $stats = Donation::getUserStats($userId);
-        return response()->json($stats);
     }
 }

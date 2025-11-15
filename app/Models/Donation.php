@@ -45,6 +45,8 @@ class Donation extends Model
 
     protected $casts = [
         'amount' => 'decimal:8',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
     public function user()
@@ -90,5 +92,119 @@ class Donation extends Model
             ->where('status', 'completed')
             ->groupBy('currency')
             ->get();
+    }
+
+    /**
+     * Получить общее количество донатов пользователя
+     */
+    public static function getTotalDonationCount(int $userId)
+    {
+        return self::where('user_id', $userId)
+            ->where('status', 'completed')
+            ->count();
+    }
+
+    /**
+     * Получить общую сумму всех донатов пользователя
+     */
+    public static function getTotalDonationAmount(int $userId)
+    {
+        return self::where('user_id', $userId)
+            ->where('status', 'completed')
+            ->sum('amount');
+    }
+
+    /**
+     * Получить последние донаты пользователя
+     */
+    public static function getRecentDonations(int $userId, int $limit = 10)
+    {
+        return self::where('user_id', $userId)
+            ->where('status', 'completed')
+            ->orderBy('created_at', 'desc')
+            ->limit($limit)
+            ->get();
+    }
+
+    /**
+     * Получить донаты по статусу
+     */
+    public static function getByStatus(int $userId, string $status)
+    {
+        return self::where('user_id', $userId)
+            ->where('status', $status)
+            ->get();
+    }
+
+    /**
+     * Форматировать сумму в зависимости от валюты
+     */
+    public function getFormattedAmountAttribute()
+    {
+        $decimals = match($this->currency) {
+            'BTC', 'ETH' => 8,
+            'USD', 'EUR', 'RUB', 'UAH' => 2,
+            default => 2
+        };
+
+        return number_format($this->amount, $decimals, '.', ' ');
+    }
+
+    /**
+     * Получить название валюты
+     */
+    public function getCurrencyNameAttribute()
+    {
+        $names = [
+            'USD' => 'Доллар США',
+            'EUR' => 'Евро',
+            'BTC' => 'Биткойн',
+            'ETH' => 'Эфириум',
+            'RUB' => 'Российский рубль',
+            'UAH' => 'Украинская гривна',
+        ];
+
+        return $names[$this->currency] ?? $this->currency;
+    }
+
+    /**
+     * Получить символ валюты
+     */
+    public function getCurrencySymbolAttribute()
+    {
+        $symbols = [
+            'USD' => '$',
+            'EUR' => '€',
+            'BTC' => '₿',
+            'ETH' => 'Ξ',
+            'RUB' => '₽',
+            'UAH' => '₴',
+        ];
+
+        return $symbols[$this->currency] ?? $this->currency;
+    }
+
+    /**
+     * Scope для фильтрации по валюте
+     */
+    public function scopeCurrency($query, string $currency)
+    {
+        return $query->where('currency', $currency);
+    }
+
+    /**
+     * Scope для фильтрации по статусу
+     */
+    public function scopeStatus($query, string $status)
+    {
+        return $query->where('status', $status);
+    }
+
+    /**
+     * Scope для фильтрации по пользователю
+     */
+    public function scopeForUser($query, int $userId)
+    {
+        return $query->where('user_id', $userId);
     }
 }

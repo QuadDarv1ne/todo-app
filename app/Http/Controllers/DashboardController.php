@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Helpers\TaskHelper;
 use App\Models\Task;
+use App\Models\Donation;
 
 /**
  * Class DashboardController
@@ -35,6 +36,16 @@ class DashboardController extends Controller
             'pending' => $user->tasks()->where('completed', false)->count(),
         ];
         
+        // Get donation statistics
+        $donationStats = [
+            'count' => Donation::getTotalDonationCount($user->id),
+            'amount' => Donation::getTotalDonationAmount($user->id),
+            'currencies' => Donation::where('user_id', $user->id)
+                ->where('status', 'completed')
+                ->distinct('currency')
+                ->count('currency'),
+        ];
+        
         return view('user-dashboard', [
             'totalTasks' => $stats['total'],
             'completedTasks' => $stats['completed'],
@@ -42,7 +53,8 @@ class DashboardController extends Controller
             'completionPercentage' => $stats['completion_percentage'],
             'recentTasks' => $recentTasks,
             'tasksByDay' => $tasksByDay,
-            'completionStats' => $completionStats
+            'completionStats' => $completionStats,
+            'donationStats' => $donationStats
         ]);
     }
 }
