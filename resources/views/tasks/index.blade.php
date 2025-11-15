@@ -140,6 +140,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const title = document.getElementById('title').value.trim();
         const description = document.getElementById('description').value.trim();
         const dueDate = document.getElementById('due_date').value;
+        const priority = document.getElementById('priority').value;
         
         if (!title) return;
 
@@ -153,7 +154,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 body: JSON.stringify({ 
                     title, 
                     description: description || null,
-                    due_date: dueDate || null
+                    due_date: dueDate || null,
+                    priority: priority
                 })
             });
 

@@ -27,14 +27,27 @@
                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition text-base resize-none shadow-sm"
                 rows="3"
             ></textarea>
-            <div>
-                <label for="due_date" class="block text-sm font-medium text-gray-700 mb-1">Дата выполнения (необязательно)</label>
-                <input
-                    type="date"
-                    id="due_date"
-                    min="{{ now()->addDay()->format('Y-m-d') }}"
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition text-base shadow-sm"
-                >
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label for="due_date" class="block text-sm font-medium text-gray-700 mb-1">Дата выполнения</label>
+                    <input
+                        type="date"
+                        id="due_date"
+                        min="{{ now()->addDay()->format('Y-m-d') }}"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition text-base shadow-sm"
+                    >
+                </div>
+                <div>
+                    <label for="priority" class="block text-sm font-medium text-gray-700 mb-1">Приоритет</label>
+                    <select 
+                        id="priority"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition text-base shadow-sm"
+                    >
+                        <option value="low">🟢 Низкий</option>
+                        <option value="medium" selected>🟡 Средний</option>
+                        <option value="high">🔴 Высокий</option>
+                    </select>
+                </div>
             </div>
         </div>
     </form>

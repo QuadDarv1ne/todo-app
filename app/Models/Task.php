@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $order Порядковый номер задачи для сортировки
  * @property int $user_id Идентификатор пользователя, которому принадлежит задача
  * @property \Carbon\Carbon|null $due_date Дата выполнения задачи (необязательно)
+ * @property string $priority Приоритет задачи (low, medium, high)
  * @property \Carbon\Carbon $created_at Время создания задачи
  * @property \Carbon\Carbon $updated_at Время последнего обновления задачи
  * 
@@ -32,6 +33,27 @@ class Task extends Model
     use HasFactory;
 
     /**
+     * Константы приоритетов задач.
+     */
+    public const PRIORITY_LOW = 'low';
+    public const PRIORITY_MEDIUM = 'medium';
+    public const PRIORITY_HIGH = 'high';
+
+    /**
+     * Получить все доступные приоритеты.
+     *
+     * @return array
+     */
+    public static function getPriorities(): array
+    {
+        return [
+            self::PRIORITY_LOW => 'Низкий',
+            self::PRIORITY_MEDIUM => 'Средний',
+            self::PRIORITY_HIGH => 'Высокий',
+        ];
+    }
+
+    /**
      * Поля, разрешённые для массового заполнения.
      *
      * @var array<int, string>
@@ -42,6 +64,7 @@ class Task extends Model
         'completed',
         'order', // ← обязательно для сортировки!
         'due_date',
+        'priority',
     ];
 
     /**
@@ -115,6 +138,46 @@ class Task extends Model
     }
 
     /**
+     * Получить цвет приоритета задачи.
+     *
+     * @return string
+     */
+    public function getPriorityColorAttribute(): string
+    {
+        return match($this->priority) {
+            self::PRIORITY_HIGH => 'red',
+            self::PRIORITY_MEDIUM => 'yellow',
+            self::PRIORITY_LOW => 'gray',
+            default => 'gray',
+        };
+    }
+
+    /**
+     * Получить название приоритета задачи.
+     *
+     * @return string
+     */
+    public function getPriorityNameAttribute(): string
+    {
+        return self::getPriorities()[$this->priority] ?? 'Средний';
+    }
+
+    /**
+     * Получить значение приоритета для сортировки (чем выше, тем важнее).
+     *
+     * @return int
+     */
+    public function getPriorityValueAttribute(): int
+    {
+        return match($this->priority) {
+            self::PRIORITY_HIGH => 3,
+            self::PRIORITY_MEDIUM => 2,
+            self::PRIORITY_LOW => 1,
+            default => 2,
+        };
+    }
+
+    /**
      * Область запроса для активных задач.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
@@ -170,5 +233,28 @@ class Task extends Model
     public function scopeWithDueDate($query)
     {
         return $query->whereNotNull('due_date');
+    }
+
+    /**
+     * Область запроса для задач с определенным приоритетом.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param string $priority
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeByPriority($query, $priority)
+    {
+        return $query->where('priority', $priority);
+    }
+
+    /**
+     * Область запроса для задач с высоким приоритетом.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeHighPriority($query)
+    {
+        return $query->where('priority', self::PRIORITY_HIGH);
     }
 }

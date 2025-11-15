@@ -26,6 +26,7 @@ class StoreTaskRequest extends FormRequest
             'title' => 'required|string|max:255',
             'description' => 'nullable|string|max:65535',
             'due_date' => ['nullable', 'date', new NotPastDate()],
+            'priority' => 'nullable|string|in:low,medium,high',
         ];
     }
 
@@ -43,6 +44,7 @@ class StoreTaskRequest extends FormRequest
             'description.string' => 'Описание задачи должно быть строкой.',
             'description.max' => 'Описание задачи не может превышать 65535 символов.',
             'due_date.date' => 'Дата выполнения должна быть корректной датой.',
+            'priority.in' => 'Приоритет должен быть одним из: низкий, средний, высокий.',
         ];
     }
 }

@@ -33,18 +33,50 @@ class DonationController extends Controller
     /**
      * Показать страницу "Мои донаты" с статистикой
      */
-    public function myDonations()
+    public function myDonations(Request $request)
     {
         try {
             $userId = Auth::id();
             
-            // Получаем статистику по всем валютам
-            $stats = Donation::getUserStats($userId);
+            // Получаем параметры фильтрации и сортировки
+            $currency = $request->query('currency');
+            $sortBy = $request->query('sort_by', 'created_at');
+            $sortOrder = $request->query('sort_order', 'desc');
             
-            // Получаем последние донаты
-            $recentDonations = Donation::getRecentDonations($userId, 10);
+            // Валидация параметров сортировки
+            $validSortColumns = ['created_at', 'amount', 'currency'];
+            $validSortOrders = ['asc', 'desc'];
             
-            return view('donations.my-donations', compact('stats', 'recentDonations'));
+            if (!in_array($sortBy, $validSortColumns)) {
+                $sortBy = 'created_at';
+            }
+            
+            if (!in_array($sortOrder, $validSortOrders)) {
+                $sortOrder = 'desc';
+            }
+            
+            // Получаем статистику по всем валютам или по конкретной валюте
+            if ($currency) {
+                $stats = collect([Donation::getStatsByCurrency($currency, $userId)]);
+            } else {
+                $stats = Donation::getUserStats($userId);
+            }
+            
+            // Получаем последние донаты с фильтрацией и сортировкой
+            $recentDonationsQuery = Donation::where('user_id', $userId)
+                ->where('status', 'completed');
+            
+            // Применяем фильтр по валюте если указан
+            if ($currency) {
+                $recentDonationsQuery->where('currency', $currency);
+            }
+            
+            // Применяем сортировку
+            $recentDonationsQuery->orderBy($sortBy, $sortOrder);
+            
+            $recentDonations = $recentDonationsQuery->paginate(10)->appends($request->except('page'));
+            
+            return view('donations.my-donations', compact('stats', 'recentDonations', 'currency', 'sortBy', 'sortOrder'));
         } catch (\Exception $e) {
             Log::error('Error loading donations page: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Ошибка при загрузке страницы донатов');

@@ -90,6 +90,7 @@ class TaskController extends Controller
                 'title' => $data['title'],
                 'description' => $data['description'] ?? null,
                 'due_date' => $data['due_date'] ?? null,
+                'priority' => $data['priority'] ?? 'medium',
                 'order' => $maxOrder + 1,
                 'completed' => false,
             ]);
@@ -99,7 +100,7 @@ class TaskController extends Controller
 
             return response()->json([
                 'success' => true,
-                'task' => $task->only(['id', 'title', 'description', 'completed', 'order', 'due_date', 'created_at', 'updated_at']),
+                'task' => $task->only(['id', 'title', 'description', 'completed', 'order', 'due_date', 'priority', 'created_at', 'updated_at']),
             ], 201);
         } catch (\Exception $e) {
             Log::error('Error creating task: ' . $e->getMessage());
@@ -125,7 +126,7 @@ class TaskController extends Controller
 
             return response()->json([
                 'success' => true,
-                'task' => $task->only(['id', 'title', 'description', 'completed', 'order', 'due_date', 'updated_at']),
+                'task' => $task->only(['id', 'title', 'description', 'completed', 'order', 'due_date', 'priority', 'updated_at']),
             ]);
         } catch (AuthorizationException $e) {
             return response()->json([
