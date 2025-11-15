@@ -11,6 +11,7 @@ use Illuminate\View\View;
 use App\Models\User;
 use App\Helpers\TaskHelper;
 use App\Models\Donation;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Class ProfileController
@@ -79,6 +80,18 @@ class ProfileController extends Controller
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
         $user = $request->user();
+        
+        // Handle avatar upload
+        if ($request->hasFile('avatar')) {
+            // Delete old avatar if exists
+            if ($user->avatar_path && Storage::disk('public')->exists('avatars/' . $user->avatar_path)) {
+                Storage::disk('public')->delete('avatars/' . $user->avatar_path);
+            }
+            
+            // Store new avatar
+            $avatarPath = $request->file('avatar')->store('avatars', 'public');
+            $user->avatar_path = basename($avatarPath);
+        }
         
         // Fill user data
         $user->fill($request->validated());

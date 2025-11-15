@@ -13,7 +13,13 @@ return new class extends Migration
     {
         Schema::create('tags', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('name', 50);
+            $table->string('color', 7)->default('#6366f1'); // indigo по умолчанию
             $table->timestamps();
+            
+            $table->unique(['user_id', 'name']); // Уникальное имя тега для каждого пользователя
+            $table->index('user_id');
         });
     }
 

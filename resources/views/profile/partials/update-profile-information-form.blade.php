@@ -13,7 +13,7 @@
         @csrf
     </form>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
+    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6" enctype="multipart/form-data">
         @csrf
         @method('patch')
 
@@ -60,6 +60,37 @@
                 Share something about yourself (optional, max 1000 characters)
             </div>
             <x-input-error class="mt-2" :messages="$errors->get('bio')" />
+        </div>
+
+        <div>
+            <x-input-label for="avatar" :value="__('Profile Picture')" />
+            <div class="mt-1 flex items-center">
+                <!-- Current avatar preview -->
+                <div class="flex-shrink-0">
+                    @if($user->avatar_path)
+                        <img class="h-16 w-16 rounded-full object-cover" src="{{ asset('storage/avatars/' . $user->avatar_path) }}" alt="Current profile photo" />
+                    @else
+                        <div class="h-16 w-16 rounded-full bg-indigo-100 flex items-center justify-center">
+                            <span class="text-xl font-bold text-indigo-700">{{ substr($user->name, 0, 1) }}</span>
+                        </div>
+                    @endif
+                </div>
+                
+                <!-- File input -->
+                <div class="ml-5 rounded-md shadow-sm">
+                    <input type="file" id="avatar" name="avatar" class="sr-only">
+                    <label for="avatar" class="cursor-pointer inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <svg class="mr-2 -ml-1 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
+                        </svg>
+                        <span>Выбрать файл</span>
+                    </label>
+                </div>
+            </div>
+            <div class="mt-1 text-sm text-gray-500">
+                JPG, PNG, GIF до 2MB
+            </div>
+            <x-input-error class="mt-2" :messages="$errors->get('avatar')" />
         </div>
 
         <div class="flex items-center gap-4">

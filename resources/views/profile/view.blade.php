@@ -13,9 +13,13 @@
                     <div class="flex flex-col md:flex-row items-center md:items-start gap-8">
                         <!-- Avatar -->
                         <div class="flex-shrink-0">
-                            <div class="h-24 w-24 rounded-full bg-indigo-100 flex items-center justify-center">
-                                <span class="text-3xl font-bold text-indigo-700">{{ substr($user->name, 0, 1) }}</span>
-                            </div>
+                            @if($user->avatar_path)
+                                <img class="h-24 w-24 rounded-full object-cover" src="{{ asset('storage/avatars/' . $user->avatar_path) }}" alt="{{ $user->name }}" />
+                            @else
+                                <div class="h-24 w-24 rounded-full bg-indigo-100 flex items-center justify-center">
+                                    <span class="text-3xl font-bold text-indigo-700">{{ substr($user->name, 0, 1) }}</span>
+                                </div>
+                            @endif
                         </div>
                         
                         <!-- User Info -->
