@@ -45,6 +45,9 @@
                     
                     @if($showActions)
                         <div class="flex items-center gap-2 flex-shrink-0">
+                            <span class="px-2 py-1 rounded-full text-xs font-medium {{ $priorityBadge }}">
+                                {{ $priorityIcon }} {{ $task->priority_name }}
+                            </span>
                             <span class="px-3 py-1 rounded-full text-xs font-medium {{ $task->completed ? 'bg-green-100 text-green-800' : ($task->is_overdue ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800') }} transition-colors duration-200">
                                 {{ $task->completed ? 'Завершено' : ($task->is_overdue ? 'Просрочено' : 'Активно') }}
                             </span>

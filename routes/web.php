@@ -1,36 +1,30 @@
 <?php
 
-/**
- * Web Routes
- * 
- * Определяет все маршруты приложения.
- * 
- * Middleware:
- * - auth - требует авторизованного пользователя
- * - verified - требует подтверждённого email
- */
-
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\TaskController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TaskController;
 use App\Http\Controllers\DonationController;
+use Illuminate\Support\Facades\Route;
 
-// Главная страница - welcome
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "web" middleware group. Make something great!
+|
+*/
+
 Route::get('/', function () {
-    if (Auth::check()) {
-        return redirect()->route('dashboard');
-    }
     return view('home');
-})->name('welcome');
+})->name('home');
 
-// Dashboard
 Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->name('dashboard')
-    ->middleware(['auth', 'verified']);
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
-// Защищённые маршруты
 Route::middleware(['auth'])->group(function () {
     Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
     Route::get('/tasks/{task}', [TaskController::class, 'show'])->name('tasks.show');
@@ -44,6 +38,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/tasks/export/csv', [TaskController::class, 'exportCsv'])->name('tasks.export.csv');
 
     // Профиль
+    Route::get('/profile', [ProfileController::class, 'view'])->name('profile.view');
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

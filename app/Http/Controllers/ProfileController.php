@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use App\Models\User;
+use App\Helpers\TaskHelper;
+use App\Models\Donation;
 
 /**
  * Class ProfileController
@@ -17,6 +20,49 @@ use Illuminate\View\View;
  */
 class ProfileController extends Controller
 {
+    /**
+     * Display the user's public profile.
+     */
+    public function view(Request $request)
+    {
+        $user = $request->user();
+        
+        // Get task statistics
+        $taskStats = TaskHelper::getUserTaskStats($user);
+        
+        // Get donation statistics
+        $donationStats = [
+            'count' => Donation::getTotalDonationCount($user->id),
+            'amount' => Donation::getTotalDonationAmount($user->id),
+            'currencies' => Donation::where('user_id', $user->id)
+                ->where('status', 'completed')
+                ->distinct('currency')
+                ->count('currency'),
+        ];
+        
+        // Get tasks by completion status for chart
+        $completionStats = [
+            'completed' => $user->tasks()->where('completed', true)->count(),
+            'pending' => $user->tasks()->where('completed', false)->count(),
+        ];
+        
+        // Get tasks created in the last 7 days for activity chart
+        $tasksByDay = $user->tasks()
+            ->where('created_at', '>=', now()->subDays(7))
+            ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get();
+        
+        return view('profile.view', [
+            'user' => $user,
+            'taskStats' => $taskStats,
+            'donationStats' => $donationStats,
+            'completionStats' => $completionStats,
+            'tasksByDay' => $tasksByDay
+        ]);
+    }
+
     /**
      * Display the user's profile form.
      */
