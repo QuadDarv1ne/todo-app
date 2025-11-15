@@ -63,7 +63,9 @@ class DonationController extends Controller
                 'description' => 'nullable|string|max:500',
             ], [
                 'currency.required' => 'Пожалуйста, выберите валюту',
+                'currency.max' => 'Валюта не может быть длиннее 10 символов',
                 'amount.required' => 'Пожалуйста, укажите сумму',
+                'amount.numeric' => 'Сумма должна быть числом',
                 'amount.min' => 'Сумма должна быть больше 0',
                 'amount.max' => 'Сумма не может превышать 1,000,000',
                 'description.max' => 'Описание не может превышать 500 символов',
@@ -127,7 +129,9 @@ class DonationController extends Controller
                 'description' => 'nullable|string|max:500',
             ], [
                 'currency.required' => 'Пожалуйста, выберите валюту',
+                'currency.max' => 'Валюта не может быть длиннее 10 символов',
                 'amount.required' => 'Пожалуйста, укажите сумму',
+                'amount.numeric' => 'Сумма должна быть числом',
                 'amount.min' => 'Сумма должна быть больше 0',
                 'amount.max' => 'Сумма не может превышать 1,000,000',
                 'description.max' => 'Описание не может превышать 500 символов',

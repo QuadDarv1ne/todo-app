@@ -7,6 +7,10 @@ use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use App\Models\User;
 use App\Observers\UserObserver;
+use App\Events\TaskCreated;
+use App\Events\TaskUpdated;
+use App\Events\TaskDeleted;
+use App\Listeners\ClearTaskCache;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -18,6 +22,15 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         Registered::class => [
             SendEmailVerificationNotification::class,
+        ],
+        TaskCreated::class => [
+            ClearTaskCache::class,
+        ],
+        TaskUpdated::class => [
+            ClearTaskCache::class,
+        ],
+        TaskDeleted::class => [
+            ClearTaskCache::class,
         ],
     ];
 
