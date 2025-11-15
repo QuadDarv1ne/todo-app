@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DonationController;
 
 // Главная страница - welcome
 Route::get('/', function () {
@@ -31,6 +32,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    
+    // Маршруты для донатов
+    Route::get('/donations/my', [DonationController::class, 'myDonations'])->name('donations.my');
+    Route::post('/donations', [DonationController::class, 'store'])->name('donations.store');
+    Route::get('/api/donations/stats', [DonationController::class, 'apiStats'])->name('donations.api.stats');
 });
 
 require __DIR__.'/auth.php';

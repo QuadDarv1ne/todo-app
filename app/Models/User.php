@@ -99,6 +99,14 @@ class User extends Authenticatable
         return $this->tasks()->where('completed', false);
     }
 
+    /**
+     * Все донаты пользователя
+     */
+    public function donations(): HasMany
+    {
+        return $this->hasMany(Donation::class)->orderBy('created_at', 'desc');
+    }
+
     // === АКСЕССОРЫ ДЛЯ ПОЛЯ BIO ===
     
     /**
