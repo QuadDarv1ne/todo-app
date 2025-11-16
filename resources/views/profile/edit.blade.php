@@ -38,7 +38,9 @@
                         </div>
                     </div>
                     
-                    <div class="space-y-4">
+                    @include('profile.partials.reminder-settings-form')
+
+                    <div class="space-y-4 mt-8">
                         @forelse($user->notifications as $notification)
                             <x-notification 
                                 :type="$notification->data['type'] === 'task_limit_approaching' ? 'warning' : 'info'"

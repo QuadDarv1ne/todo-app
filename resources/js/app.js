@@ -17,3 +17,4 @@ import './monitor';
 
 // Push уведомления
 import './push';
+import './profile-reminders';

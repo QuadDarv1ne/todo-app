@@ -38,6 +38,13 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
                             </svg>
                         </button>
+
+                        <!-- Push toggle (desktop) -->
+                        @if(config('push.vapid_public_key'))
+                        <button id="pushToggle" type="button" class="ml-2 px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200 text-sm" aria-live="polite">
+                            Уведомления
+                        </button>
+                        @endif
                     @endif
                 </div>
             </div>
@@ -197,6 +204,11 @@
                         Выйти
                     </button>
                 </form>
+                @if(config('push.vapid_public_key'))
+                <button id="pushToggleMobile" type="button" class="w-full text-left px-5 py-4 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200 text-lg">
+                    Уведомления
+                </button>
+                @endif
             @else
                 <a href="{{ route('login') }}" 
                    class="block px-5 py-4 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200 text-lg">
@@ -228,5 +240,60 @@ document.addEventListener('DOMContentLoaded', () => {
         apply();
     });
     apply();
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('pushToggle');
+    const btnMobile = document.getElementById('pushToggleMobile');
+    if (!btn && !btnMobile) return;
+
+    const setLabel = async (el) => {
+        if (!el) return;
+        if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+            el.textContent = 'Уведомления недоступны';
+            el.disabled = true;
+            return;
+        }
+        const reg = await navigator.serviceWorker.ready;
+        const sub = await reg.pushManager.getSubscription();
+        el.textContent = sub ? 'Отключить уведомления' : 'Включить уведомления';
+    };
+
+    const announce = (msg) => {
+        if (window.announceToScreenReader) {
+            window.announceToScreenReader(msg);
+        }
+    };
+
+    const togglePush = async () => {
+        try {
+            const reg = await navigator.serviceWorker.ready;
+            const sub = await reg.pushManager.getSubscription();
+            if (sub) {
+                await window.pushDisable();
+                announce('Push-уведомления отключены');
+            } else {
+                const res = await window.pushEnable();
+                if (res && res.ok) announce('Push-уведомления включены');
+                else announce('Не удалось включить Push-уведомления');
+            }
+        } catch(e) {
+            announce('Ошибка при переключении Push-уведомлений');
+        } finally {
+            setLabel(btn);
+            setLabel(btnMobile);
+        }
+    };
+
+    if (btn) {
+        setLabel(btn);
+        btn.addEventListener('click', togglePush);
+    }
+    if (btnMobile) {
+        setLabel(btnMobile);
+        btnMobile.addEventListener('click', togglePush);
+    }
 });
 </script>
