@@ -53,6 +53,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Шаблоны задач
     Route::get('/templates', [App\Http\Controllers\TaskTemplateController::class, 'index'])->name('templates.index');
+    Route::get('/templates/{template}', [App\Http\Controllers\TaskTemplateController::class, 'show'])->name('templates.show');
     Route::post('/templates', [App\Http\Controllers\TaskTemplateController::class, 'store'])->name('templates.store');
     Route::match(['put', 'patch'], '/templates/{template}', [App\Http\Controllers\TaskTemplateController::class, 'update'])->name('templates.update');
     Route::delete('/templates/{template}', [App\Http\Controllers\TaskTemplateController::class, 'destroy'])->name('templates.destroy');

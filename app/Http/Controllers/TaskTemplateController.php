@@ -110,4 +110,16 @@ class TaskTemplateController extends Controller
             'data' => array_merge($data, ['due_date' => $dueDate]),
         ]);
     }
+
+    public function show(TaskTemplate $template)
+    {
+        if ($template->user_id !== Auth::id()) {
+            return response()->json(['success' => false, 'message' => 'Недостаточно прав'], 403);
+        }
+
+        return response()->json([
+            'success' => true,
+            'template' => $template,
+        ]);
+    }
 }
