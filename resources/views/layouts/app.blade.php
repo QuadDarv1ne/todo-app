@@ -96,6 +96,11 @@
             
             <!-- Live region for accessibility announcements -->
             <div id="aria-live-region" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+
+            <!-- Toast container -->
+            <div id="toast-root" aria-live="polite" aria-atomic="true" class="fixed z-50 inset-0 pointer-events-none flex flex-col items-end gap-3 p-4 sm:p-6">
+                <!-- toasts appear here -->
+            </div>
         </div>
         
         <!-- Edit Task Modal -->

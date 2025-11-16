@@ -28,8 +28,10 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       await window.axios.patch('/reminders', payload);
       setStatus('Настройки напоминаний сохранены');
+      if (window.toast) window.toast.success('Настройки напоминаний сохранены');
     } catch (err) {
       setStatus('Не удалось сохранить настройки', false);
+      if (window.toast) window.toast.error('Не удалось сохранить настройки');
     }
   });
 });

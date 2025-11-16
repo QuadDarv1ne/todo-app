@@ -274,10 +274,16 @@ document.addEventListener('DOMContentLoaded', () => {
             if (sub) {
                 await window.pushDisable();
                 announce('Push-уведомления отключены');
+                if (window.toast) window.toast.info('Push-уведомления отключены');
             } else {
                 const res = await window.pushEnable();
-                if (res && res.ok) announce('Push-уведомления включены');
-                else announce('Не удалось включить Push-уведомления');
+                if (res && res.ok) {
+                    announce('Push-уведомления включены');
+                    if (window.toast) window.toast.success('Push-уведомления включены');
+                } else {
+                    announce('Не удалось включить Push-уведомления');
+                    if (window.toast) window.toast.error('Не удалось включить Push-уведомления');
+                }
             }
         } catch(e) {
             announce('Ошибка при переключении Push-уведомлений');
