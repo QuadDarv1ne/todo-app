@@ -418,6 +418,7 @@
 
 @section('scripts')
 <script>
+// Глобальные функции для модальных окон
 window.openCreateTaskModal = function() {
     const modal = document.getElementById('createTaskModal');
     if (modal) {
@@ -438,11 +439,21 @@ window.closeCreateTaskModal = function() {
     }
 }
 
+window.closeEditTaskModal = function() {
+    const modal = document.getElementById('editTaskModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+}
+
+// Инициализация после загрузки DOM
+document.addEventListener('DOMContentLoaded', function() {
 // Close modal on Escape key
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
-        closeCreateTaskModal();
-        closeEditTaskModal();
+        window.closeCreateTaskModal();
+        window.closeEditTaskModal();
     }
 });
 
@@ -589,6 +600,8 @@ document.querySelectorAll('.task-toggle').forEach(checkbox => {
         }
     });
 });
+
+}); // End DOMContentLoaded
 </script>
 @endsection
 @endsection
