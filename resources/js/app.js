@@ -31,3 +31,6 @@ import './analytics';
 
 // Подзадачи (чек-листы)
 import './subtasks';
+
+// Шаблоны задач
+import './templates';

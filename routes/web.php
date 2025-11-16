@@ -50,6 +50,13 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/tasks/{task}/subtasks/{subtask}', [App\Http\Controllers\SubtaskController::class, 'update'])->name('subtasks.update');
     Route::delete('/tasks/{task}/subtasks/{subtask}', [App\Http\Controllers\SubtaskController::class, 'destroy'])->name('subtasks.destroy');
     Route::post('/tasks/{task}/subtasks/reorder', [App\Http\Controllers\SubtaskController::class, 'reorder'])->name('subtasks.reorder');
+
+    // Шаблоны задач
+    Route::get('/templates', [App\Http\Controllers\TaskTemplateController::class, 'index'])->name('templates.index');
+    Route::post('/templates', [App\Http\Controllers\TaskTemplateController::class, 'store'])->name('templates.store');
+    Route::match(['put', 'patch'], '/templates/{template}', [App\Http\Controllers\TaskTemplateController::class, 'update'])->name('templates.update');
+    Route::delete('/templates/{template}', [App\Http\Controllers\TaskTemplateController::class, 'destroy'])->name('templates.destroy');
+    Route::get('/templates/apply/{template}', [App\Http\Controllers\TaskTemplateController::class, 'apply'])->name('templates.apply');
     
     // Экспорт задач
     Route::get('/tasks/export/json', [TaskController::class, 'exportJson'])->name('tasks.export.json');
