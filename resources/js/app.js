@@ -34,3 +34,9 @@ import './subtasks';
 
 // Шаблоны задач
 import './templates';
+
+// Drag-and-drop для задач
+import './drag-drop';
+
+// Улучшенный поиск с подсветкой
+import './enhanced-search';

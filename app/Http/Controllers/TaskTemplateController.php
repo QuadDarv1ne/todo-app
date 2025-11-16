@@ -122,4 +122,57 @@ class TaskTemplateController extends Controller
             'template' => $template,
         ]);
     }
+
+    public function export(Request $request)
+    {
+        $templates = TaskTemplate::query()
+            ->where('user_id', Auth::id())
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(fn($t) => $t->only(['name', 'title', 'description', 'priority', 'reminders_enabled', 'default_due_days']));
+
+        $filename = 'task_templates_' . now()->format('Y-m-d_H-i-s') . '.json';
+
+        return response()->json($templates, 200, [
+            'Content-Type' => 'application/json',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ]);
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => ['required', 'file', 'mimes:json', 'max:2048'],
+        ]);
+
+        $file = $request->file('file');
+        $content = file_get_contents($file->getRealPath());
+        $data = json_decode($content, true);
+
+        if (!is_array($data)) {
+            return response()->json(['success' => false, 'message' => 'Неверный формат файла'], 400);
+        }
+
+        $imported = 0;
+        foreach ($data as $item) {
+            if (empty($item['name'])) continue;
+
+            TaskTemplate::create([
+                'user_id' => Auth::id(),
+                'name' => $item['name'],
+                'title' => $item['title'] ?? null,
+                'description' => $item['description'] ?? null,
+                'priority' => $item['priority'] ?? null,
+                'reminders_enabled' => (bool)($item['reminders_enabled'] ?? false),
+                'default_due_days' => $item['default_due_days'] ?? null,
+            ]);
+            $imported++;
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => "Импортировано шаблонов: $imported",
+            'imported' => $imported,
+        ]);
+    }
 }
