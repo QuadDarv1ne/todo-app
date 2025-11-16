@@ -139,6 +139,9 @@ class EnhancedSearch {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  const search = new EnhancedSearch();
-  search.init();
+  // Инициализировать только на странице с поиском
+  if (document.getElementById('search') && document.querySelector('[data-tasks-container]')) {
+    const search = new EnhancedSearch();
+    search.init();
+  }
 });

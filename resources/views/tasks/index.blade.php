@@ -418,15 +418,24 @@
 
 @section('scripts')
 <script>
-function openCreateTaskModal() {
-    document.getElementById('createTaskModal').classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
+window.openCreateTaskModal = function() {
+    const modal = document.getElementById('createTaskModal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
 }
 
-function closeCreateTaskModal() {
-    document.getElementById('createTaskModal').classList.add('hidden');
-    document.body.style.overflow = 'auto';
-    document.getElementById('createTaskForm').reset();
+window.closeCreateTaskModal = function() {
+    const modal = document.getElementById('createTaskModal');
+    const form = document.getElementById('createTaskForm');
+    if (modal) {
+        modal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+    if (form) {
+        form.reset();
+    }
 }
 
 // Close modal on Escape key
@@ -467,8 +476,11 @@ document.querySelectorAll('.edit-task').forEach(button => {
 });
 
 function closeEditTaskModal() {
-    document.getElementById('editTaskModal').classList.add('hidden');
-    document.body.style.overflow = 'auto';
+    const modal = document.getElementById('editTaskModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
 }
 
 document.getElementById('cancelEdit')?.addEventListener('click', closeEditTaskModal);

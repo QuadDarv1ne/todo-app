@@ -134,6 +134,11 @@ class TemplatesManager {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  const tm = new TemplatesManager();
-  tm.init();
+  // Инициализировать только если есть хотя бы один из элементов шаблонов
+  if (document.getElementById('template_select') || 
+      document.getElementById('createTemplateModal') ||
+      document.getElementById('toggle_save_template')) {
+    const tm = new TemplatesManager();
+    tm.init();
+  }
 });

@@ -55,6 +55,9 @@ class TaskDragDrop {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  const dragDrop = new TaskDragDrop();
-  dragDrop.init();
+  // Инициализировать только если контейнер задач существует
+  if (document.querySelector('[data-tasks-container]')) {
+    const dragDrop = new TaskDragDrop();
+    dragDrop.init();
+  }
 });
