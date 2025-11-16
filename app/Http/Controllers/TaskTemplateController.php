@@ -15,10 +15,14 @@ class TaskTemplateController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return response()->json([
-            'success' => true,
-            'templates' => $templates,
-        ]);
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'templates' => $templates,
+            ]);
+        }
+
+        return view('templates.index', compact('templates'));
     }
 
     public function store(Request $request)
