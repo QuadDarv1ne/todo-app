@@ -1,6 +1,6 @@
+/* Импорт дополнительных стилей должен идти раньше других правил */
+@import './components.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Импорт дополнительных стилей */
-@import './components.css';

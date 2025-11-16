@@ -200,6 +200,17 @@
                     }
                 }
             });
+
+            // React to theme changes by updating legend label color
+            const updateLegendColor = () => {
+                const darkNow = document.documentElement.classList.contains('dark');
+                taskChart.options.plugins.legend.labels.color = darkNow ? '#e5e7eb' : '#374151';
+                taskChart.update();
+            };
+
+            // Observe class changes on html element (theme toggle)
+            const observer = new MutationObserver(updateLegendColor);
+            observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
         });
     </script>
     @endpush
