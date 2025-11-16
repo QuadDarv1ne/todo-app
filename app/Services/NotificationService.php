@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Log;
 
 class NotificationService
 {
+    public function __construct(private readonly PushService $pushService)
+    {
+    }
     /**
      * Отправить уведомления о приближающихся сроках задач.
      *
@@ -52,6 +55,13 @@ class NotificationService
                 // Проверяем, что у пользователя все еще включены напоминания
                 if ($task->user->reminder_enabled) {
                     $task->user->notify(new TaskDueReminder($task));
+                    // Web Push
+                    $this->pushService->sendToUser($task->user, [
+                        'title' => 'Напоминание о задаче',
+                        'body' => sprintf('"%s" — срок: %s', $task->title, optional($task->due_date)->format('d.m.Y')),
+                        'icon' => '/icons/any-192.svg',
+                        'url' => url('/tasks'),
+                    ]);
                     $count++;
                     
                     Log::info('Task due reminder sent', [
@@ -99,6 +109,13 @@ class NotificationService
                 // Проверяем, что у пользователя все еще включены напоминания
                 if ($task->user->reminder_enabled && $task->user->reminder_overdue) {
                     $task->user->notify(new TaskDueReminder($task));
+                    // Web Push
+                    $this->pushService->sendToUser($task->user, [
+                        'title' => 'Просроченная задача',
+                        'body' => sprintf('"%s" просрочена (дедлайн был %s)', $task->title, optional($task->due_date)->format('d.m.Y')),
+                        'icon' => '/icons/any-192.svg',
+                        'url' => url('/tasks'),
+                    ]);
                     $count++;
                     
                     Log::info('Overdue task reminder sent', [
