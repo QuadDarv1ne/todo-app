@@ -15,3 +15,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index']);
     Route::get('/achievements/progress', [AchievementController::class, 'progress']);
 });
+
+// Публичные роуты для логирования ошибок и производительности клиента
+use App\Http\Controllers\ClientLogController;
+Route::post('/log-js-error', [ClientLogController::class, 'logJsError']);
+Route::post('/log-performance', [ClientLogController::class, 'logPerformance']);
