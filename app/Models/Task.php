@@ -61,13 +61,19 @@ class Task extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'user_id',
         'title',
         'description',
         'completed',
-        'order', // ← обязательно для сортировки!
-        'due_date',
         'priority',
+        'order',
+        'due_date',
         'reminders_enabled',
+        'is_recurring',
+        'recurrence_type',
+        'recurrence_interval',
+        'recurrence_end_date',
+        'last_recurrence_date',
     ];
 
     /**
@@ -80,6 +86,10 @@ class Task extends Model
         'order'     => 'integer',
         'due_date'  => 'date',
         'reminders_enabled' => 'boolean',
+        'is_recurring' => 'boolean',
+        'recurrence_interval' => 'integer',
+        'recurrence_end_date' => 'date',
+        'last_recurrence_date' => 'datetime',
     ];
 
     /**

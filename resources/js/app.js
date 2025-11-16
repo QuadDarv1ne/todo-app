@@ -40,3 +40,6 @@ import './drag-drop';
 
 // Улучшенный поиск с подсветкой
 import './enhanced-search';
+
+// Умные фильтры с запоминанием
+import './smart-filters';

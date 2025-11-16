@@ -397,6 +397,34 @@
                             <span class="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">Включить напоминания</span>
                         </label>
                     </div>
+                    <div>
+                        <label class="flex items-center cursor-pointer mb-3">
+                            <input type="checkbox" id="is_recurring" name="is_recurring" value="1" onchange="toggleRecurringOptions()"
+                                   class="h-5 w-5 text-indigo-600 rounded focus:ring-indigo-500">
+                            <span class="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">Повторяющаяся задача</span>
+                        </label>
+                        <div id="recurring_options" class="hidden space-y-3 pl-8 border-l-2 border-indigo-200 dark:border-indigo-700">
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label for="recurrence_type" class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Периодичность</label>
+                                    <select id="recurrence_type" name="recurrence_type" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm dark:bg-gray-700 dark:text-gray-100">
+                                        <option value="daily">Ежедневно</option>
+                                        <option value="weekly">Еженедельно</option>
+                                        <option value="monthly">Ежемесячно</option>
+                                        <option value="yearly">Ежегодно</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="recurrence_interval" class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Каждые (N)</label>
+                                    <input type="number" id="recurrence_interval" name="recurrence_interval" value="1" min="1" max="365" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm dark:bg-gray-700 dark:text-gray-100">
+                                </div>
+                            </div>
+                            <div>
+                                <label for="recurrence_end_date" class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Дата окончания (опционально)</label>
+                                <input type="date" id="recurrence_end_date" name="recurrence_end_date" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm dark:bg-gray-700 dark:text-gray-100">
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700 flex justify-end gap-3">
                     <button type="button" onclick="closeCreateTaskModal()"
@@ -444,6 +472,14 @@ window.closeEditTaskModal = function() {
     if (modal) {
         modal.classList.add('hidden');
         document.body.style.overflow = 'auto';
+    }
+}
+
+function toggleRecurringOptions() {
+    const checkbox = document.getElementById('is_recurring');
+    const options = document.getElementById('recurring_options');
+    if (checkbox && options) {
+        options.classList.toggle('hidden', !checkbox.checked);
     }
 }
 

@@ -27,6 +27,11 @@ class StoreTaskRequest extends FormRequest
             'description' => 'nullable|string|max:65535',
             'due_date' => ['nullable', 'date', new NotPastDate()],
             'priority' => 'nullable|string|in:low,medium,high',
+            'reminders_enabled' => 'nullable|boolean',
+            'is_recurring' => 'nullable|boolean',
+            'recurrence_type' => 'nullable|required_if:is_recurring,true|in:daily,weekly,monthly,yearly',
+            'recurrence_interval' => 'nullable|integer|min:1|max:365',
+            'recurrence_end_date' => 'nullable|date|after_or_equal:due_date',
         ];
     }
 

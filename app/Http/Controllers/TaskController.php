@@ -135,6 +135,10 @@ class TaskController extends Controller
                 'due_date' => $data['due_date'] ?? null,
                 'priority' => $data['priority'] ?? 'medium',
                 'reminders_enabled' => $data['reminders_enabled'] ?? true,
+                'is_recurring' => $data['is_recurring'] ?? false,
+                'recurrence_type' => $data['recurrence_type'] ?? null,
+                'recurrence_interval' => $data['recurrence_interval'] ?? 1,
+                'recurrence_end_date' => $data['recurrence_end_date'] ?? null,
                 'order' => $maxOrder + 1,
                 'completed' => false,
             ]);
@@ -144,7 +148,7 @@ class TaskController extends Controller
 
             return response()->json([
                 'success' => true,
-                'task' => $task->only(['id', 'title', 'description', 'completed', 'order', 'due_date', 'priority', 'reminders_enabled', 'created_at', 'updated_at']),
+                'task' => $task->only(['id', 'title', 'description', 'completed', 'order', 'due_date', 'priority', 'reminders_enabled', 'is_recurring', 'recurrence_type', 'created_at', 'updated_at']),
             ], 201);
         } catch (\Exception $e) {
             Log::error('Error creating task: ' . $e->getMessage());
