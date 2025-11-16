@@ -149,3 +149,29 @@
         color: #f3f4f6;
     }
 }
+
+/* Единые фокус-стили для ссылок и кнопок */
+@layer components {
+    a:focus-visible,
+    button:focus-visible,
+    .btn:focus-visible {
+        outline: 2px solid transparent;
+        outline-offset: 2px;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.35);
+    }
+    .dark a:focus-visible,
+    .dark button:focus-visible,
+    .dark .btn:focus-visible {
+        box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.45);
+    }
+}
+
+/* Reduced motion: отключаем/смягчаем анимации и переходы */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+    }
+}

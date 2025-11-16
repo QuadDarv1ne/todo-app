@@ -14,7 +14,7 @@
                         <!-- Avatar -->
                         <div class="flex-shrink-0">
                             @if($user->avatar_path)
-                                <img class="h-24 w-24 rounded-full object-cover" src="{{ asset('storage/avatars/' . $user->avatar_path) }}" alt="{{ $user->name }}" />
+                                <img class="h-24 w-24 rounded-full object-cover" src="{{ asset('storage/avatars/' . $user->avatar_path) }}" alt="{{ $user->name }}" loading="lazy" decoding="async" />
                             @else
                                 <div class="h-24 w-24 rounded-full bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center">
                                     <span class="text-3xl font-bold text-indigo-700 dark:text-indigo-200">{{ substr($user->name, 0, 1) }}</span>

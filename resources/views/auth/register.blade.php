@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Регистрация в Maestro7IT">
     <meta name="theme-color" content="#667eea">
+    <meta name="color-scheme" content="light dark">
     <title>Регистрация - Maestro7IT</title>
     
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -301,6 +302,8 @@
         .btn-primary:active {
             transform: translateY(0);
         }
+        .btn:focus-visible, .btn-primary:focus-visible { box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.35); outline: 2px solid transparent; outline-offset: 2px; }
+        .dark .btn:focus-visible, .dark .btn-primary:focus-visible { box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.45); }
 
         .btn-primary:disabled {
             opacity: 0.5;
@@ -328,6 +331,8 @@
             color: #4f46e5;
             text-decoration: underline;
         }
+        .auth-link a:focus-visible { box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.35); outline: 2px solid transparent; outline-offset: 2px; border-radius: 0.25rem; }
+        .dark .auth-link a:focus-visible { box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.45); }
 
         .alert {
             padding: 1rem;

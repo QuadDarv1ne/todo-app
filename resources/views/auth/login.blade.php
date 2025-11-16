@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Maestro7IT — вход и регистрация">
     <meta name="theme-color" content="#667eea">
+    <meta name="color-scheme" content="light dark">
     <title>{{ $title ?? 'Maestro7IT' }}</title>
     
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -123,6 +124,8 @@
             border: none;
             outline: none;
         }
+        .tab:focus-visible { box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.35); border-radius: 0.5rem; }
+        .dark .tab:focus-visible { box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.45); }
 
         .tab:hover {
             color: #667eea;
@@ -263,6 +266,8 @@
             color: #4f46e5;
             text-decoration: underline;
         }
+        .forgot-link:focus-visible { box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.35); outline: 2px solid transparent; outline-offset: 2px; border-radius: 0.375rem; }
+        .dark .forgot-link:focus-visible { box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.45); }
 
         .btn {
             width: 100%;
@@ -289,6 +294,8 @@
         .btn:active {
             transform: translateY(0);
         }
+        .btn:focus-visible { box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.35); outline: 2px solid transparent; outline-offset: 2px; }
+        .dark .btn:focus-visible { box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.45); }
 
         .btn:disabled {
             opacity: 0.5;
@@ -329,6 +336,8 @@
         .footer-link:hover {
             color: #4f46e5;
         }
+        .footer-link:focus-visible { box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.35); outline: 2px solid transparent; outline-offset: 2px; border-radius: 0.25rem; }
+        .dark .footer-link:focus-visible { box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.45); }
 
         .back-link {
             display: inline-flex;
@@ -345,6 +354,8 @@
         .back-link:hover {
             color: #4f46e5;
         }
+        .back-link:focus-visible { box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.35); outline: 2px solid transparent; outline-offset: 2px; border-radius: 0.375rem; }
+        .dark .back-link:focus-visible { box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.45); }
 
         .back-link svg {
             width: 1rem;
@@ -367,7 +378,7 @@
     <div class="container">
         <div class="card">
             <!-- Back Link -->
-            <a href="{{ route('home') }}" class="back-link">
+            <a href="{{ route('home') }}" class="back-link" aria-label="На главную">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                 </svg>
@@ -383,15 +394,15 @@
             </div>
 
             <!-- Tabs -->
-            <div class="tabs">
-                <button class="tab {{ request()->routeIs('login') && !old('name') ? 'active' : '' }}" onclick="switchTab('login', event)" data-tab="login">Вход</button>
-                <button class="tab {{ old('name') ? 'active' : '' }}" onclick="switchTab('register', event)" data-tab="register">Регистрация</button>
+            <div class="tabs" role="tablist" aria-label="Авторизация" id="auth-tablist">
+                <button id="tab-login" role="tab" aria-controls="login" aria-selected="{{ (request()->routeIs('login') && !old('name')) ? 'true' : 'false' }}" class="tab {{ request()->routeIs('login') && !old('name') ? 'active' : '' }}" onclick="switchTab('login', event)" data-tab="login">Вход</button>
+                <button id="tab-register" role="tab" aria-controls="register" aria-selected="{{ old('name') ? 'true' : 'false' }}" class="tab {{ old('name') ? 'active' : '' }}" onclick="switchTab('register', event)" data-tab="register">Регистрация</button>
             </div>
 
             <!-- Login Tab -->
-            <div id="login" class="tab-content {{ request()->routeIs('login') && !old('name') ? 'active' : '' }}">
+            <div id="login" role="tabpanel" aria-labelledby="tab-login" class="tab-content {{ request()->routeIs('login') && !old('name') ? 'active' : '' }}">
                 @if ($errors->any())
-                    <div class="alert alert-error">
+                    <div class="alert alert-error" role="alert">
                         @foreach ($errors->all() as $error)
                             <div>{{ $error }}</div>
                         @endforeach
@@ -404,18 +415,18 @@
                     <div class="form-group">
                         <label for="email">Email</label>
                         <input type="email" id="email" name="email" value="{{ old('email') }}" 
-                               placeholder="your@email.com" required autofocus>
+                               placeholder="your@email.com" required autofocus autocomplete="email">
                         @error('email')
-                            <div class="error-message show">{{ $message }}</div>
+                            <div class="error-message show" role="alert" id="email-error">{{ $message }}</div>
                         @enderror
                     </div>
 
                     <div class="form-group">
                         <label for="password">Пароль</label>
                         <input type="password" id="password" name="password" 
-                               placeholder="••••••••" required>
+                               placeholder="••••••••" required autocomplete="current-password">
                         @error('password')
-                            <div class="error-message show">{{ $message }}</div>
+                            <div class="error-message show" role="alert" id="password-error">{{ $message }}</div>
                         @enderror
                     </div>
 
@@ -435,9 +446,9 @@
             </div>
 
             <!-- Register Tab -->
-            <div id="register" class="tab-content {{ old('name') ? 'active' : '' }}">
+            <div id="register" role="tabpanel" aria-labelledby="tab-register" class="tab-content {{ old('name') ? 'active' : '' }}">
                 @if ($errors->any() && old('name'))
-                    <div class="alert alert-error">
+                    <div class="alert alert-error" role="alert">
                         @foreach ($errors->all() as $error)
                             <div>{{ $error }}</div>
                         @endforeach
@@ -449,8 +460,8 @@
 
                     <div class="form-group">
                         <label for="name">Имя</label>
-                        <input type="text" id="name" name="name" value="{{ old('name') }}" 
-                               placeholder="Ваше имя" required autofocus>
+                           <input type="text" id="name" name="name" value="{{ old('name') }}" 
+                               placeholder="Ваше имя" required autofocus autocomplete="name">
                         @error('name')
                             <div class="error-message show">{{ $message }}</div>
                         @enderror
@@ -458,8 +469,8 @@
 
                     <div class="form-group">
                         <label for="email-reg">Email</label>
-                        <input type="email" id="email-reg" name="email" value="{{ old('email') }}" 
-                               placeholder="your@email.com" required>
+                           <input type="email" id="email-reg" name="email" value="{{ old('email') }}" 
+                               placeholder="your@email.com" required autocomplete="email">
                         @error('email')
                             <div class="error-message show">{{ $message }}</div>
                         @enderror
@@ -467,8 +478,8 @@
 
                     <div class="form-group">
                         <label for="password-reg">Пароль</label>
-                        <input type="password" id="password-reg" name="password" 
-                               placeholder="••••••••" required>
+                           <input type="password" id="password-reg" name="password" 
+                               placeholder="••••••••" required autocomplete="new-password">
                         @error('password')
                             <div class="error-message show">{{ $message }}</div>
                         @enderror
@@ -476,8 +487,8 @@
 
                     <div class="form-group">
                         <label for="password_confirmation">Подтверждение пароля</label>
-                        <input type="password" id="password_confirmation" name="password_confirmation" 
-                               placeholder="••••••••" required>
+                           <input type="password" id="password_confirmation" name="password_confirmation" 
+                               placeholder="••••••••" required autocomplete="new-password">
                     </div>
 
                     <button type="submit" class="btn">Зарегистрироваться</button>
@@ -504,6 +515,8 @@
 
             document.querySelectorAll('.tab').forEach(tab => {
                 tab.classList.remove('active');
+                tab.setAttribute('aria-selected', 'false');
+                tab.setAttribute('tabindex', '-1');
             });
 
             // Add active class to selected tab and content
@@ -511,7 +524,12 @@
             const tabButton = document.querySelector(`[data-tab="${tabName}"]`);
             
             if (tabContent) tabContent.classList.add('active');
-            if (tabButton) tabButton.classList.add('active');
+            if (tabButton) {
+                tabButton.classList.add('active');
+                tabButton.setAttribute('aria-selected', 'true');
+                tabButton.removeAttribute('tabindex');
+                tabButton.focus();
+            }
 
             // Update footer text
             updateFooterText(tabName);
@@ -545,10 +563,15 @@
 
         function showFieldError(input, message) {
             input.classList.add('error');
+            input.setAttribute('aria-invalid', 'true');
             let errorMsg = input.parentElement.querySelector('.error-message');
             if (!errorMsg) {
                 errorMsg = document.createElement('div');
                 errorMsg.className = 'error-message show';
+                errorMsg.setAttribute('role', 'alert');
+                const errId = (input.id ? input.id : 'field') + '-error';
+                errorMsg.id = errId;
+                input.setAttribute('aria-describedby', errId);
                 input.parentElement.appendChild(errorMsg);
             }
             errorMsg.textContent = message;
@@ -557,6 +580,8 @@
 
         function clearFieldError(input) {
             input.classList.remove('error');
+            input.removeAttribute('aria-invalid');
+            input.removeAttribute('aria-describedby');
             const errorMsg = input.parentElement.querySelector('.error-message');
             if (errorMsg) {
                 errorMsg.classList.remove('show');
@@ -601,6 +626,26 @@
                         clearFieldError(this);
                     } else {
                         showFieldError(this, 'Пароли не совпадают');
+                    }
+                }
+            });
+        }
+
+        // Keyboard navigation for tabs
+        const tablist = document.getElementById('auth-tablist');
+        if (tablist) {
+            tablist.addEventListener('keydown', (e) => {
+                const tabs = Array.from(tablist.querySelectorAll('[role="tab"]'));
+                const currentIndex = tabs.findIndex(t => t.classList.contains('active'));
+                if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    let nextIndex = currentIndex;
+                    if (e.key === 'ArrowRight') nextIndex = (currentIndex + 1) % tabs.length;
+                    if (e.key === 'ArrowLeft') nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+                    const nextTab = tabs[nextIndex];
+                    if (nextTab) {
+                        const tabName = nextTab.getAttribute('data-tab');
+                        switchTab(tabName);
                     }
                 }
             });
