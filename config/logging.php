@@ -85,6 +85,13 @@ return [
         'papertrail' => [
             'driver' => 'monolog',
             'level' => env('LOG_LEVEL', 'debug'),
+        
+            'client' => [
+                'driver' => 'daily',
+                'path' => storage_path('logs/client.log'),
+                'level' => 'info',
+                'days' => 14,
+            ],
             'handler' => env('LOG_PAPERTRAIL_HANDLER', SyslogUdpHandler::class),
             'handler_with' => [
                 'host' => env('PAPERTRAIL_URL'),
