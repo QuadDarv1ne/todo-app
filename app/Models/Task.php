@@ -121,6 +121,30 @@ class Task extends Model
     }
 
     /**
+     * Отношение: задача может иметь много подзадач.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function subtasks()
+    {
+        return $this->hasMany(Subtask::class)->orderBy('order');
+    }
+
+    /**
+     * Получить процент выполнения подзадач.
+     *
+     * @return float
+     */
+    public function getSubtasksProgressAttribute(): float
+    {
+        $total = $this->subtasks()->count();
+        if ($total === 0) return 0;
+        
+        $completed = $this->subtasks()->where('completed', true)->count();
+        return round(($completed / $total) * 100, 1);
+    }
+
+    /**
      * Получить статус задачи в виде строки.
      *
      * @return string

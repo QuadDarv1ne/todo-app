@@ -28,3 +28,6 @@ import './keyboard-shortcuts';
 
 // Расширенная аналитика
 import './analytics';
+
+// Подзадачи (чек-листы)
+import './subtasks';

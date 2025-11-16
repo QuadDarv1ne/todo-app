@@ -44,6 +44,13 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/tasks/bulk/delete', [TaskController::class, 'bulkDelete'])->name('tasks.bulk.delete');
     Route::post('/tasks/bulk/priority', [TaskController::class, 'bulkPriority'])->name('tasks.bulk.priority');
     
+    // Подзадачи
+    Route::get('/tasks/{task}/subtasks', [App\Http\Controllers\SubtaskController::class, 'index'])->name('subtasks.index');
+    Route::post('/tasks/{task}/subtasks', [App\Http\Controllers\SubtaskController::class, 'store'])->name('subtasks.store');
+    Route::patch('/tasks/{task}/subtasks/{subtask}', [App\Http\Controllers\SubtaskController::class, 'update'])->name('subtasks.update');
+    Route::delete('/tasks/{task}/subtasks/{subtask}', [App\Http\Controllers\SubtaskController::class, 'destroy'])->name('subtasks.destroy');
+    Route::post('/tasks/{task}/subtasks/reorder', [App\Http\Controllers\SubtaskController::class, 'reorder'])->name('subtasks.reorder');
+    
     // Экспорт задач
     Route::get('/tasks/export/json', [TaskController::class, 'exportJson'])->name('tasks.export.json');
     Route::get('/tasks/export/csv', [TaskController::class, 'exportCsv'])->name('tasks.export.csv');
