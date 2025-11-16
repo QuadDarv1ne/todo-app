@@ -422,6 +422,36 @@ async function applyTemplate(id) {
     window.location.href = `/tasks?apply_template=${id}`;
 }
 
+async function handleImport(input) {
+    const file = input.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+        const res = await fetch('/templates/import', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json',
+            },
+            body: formData,
+        });
+        const data = await res.json();
+        if (data.success) {
+            alert(data.message || 'Шаблоны импортированы');
+            window.location.reload();
+        } else {
+            alert(data.message || 'Ошибка импорта');
+        }
+    } catch (e) {
+        console.error('Import error:', e);
+        alert('Ошибка импорта шаблонов');
+    }
+    input.value = '';
+}
+
 // Close modals on Escape
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
