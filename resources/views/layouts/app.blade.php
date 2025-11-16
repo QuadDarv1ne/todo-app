@@ -31,6 +31,14 @@
         <!-- Canonical URL -->
         <link rel="canonical" href="{{ url()->current() }}">
 
+        <!-- PWA Manifest -->
+        <link rel="manifest" href="/manifest.webmanifest">
+        <meta name="theme-color" content="#0ea5e9" media="(prefers-color-scheme: light)">
+        <meta name="theme-color" content="#111827" media="(prefers-color-scheme: dark)">
+        @if(config('push.vapid_public_key'))
+            <meta name="vapid-public-key" content="{{ config('push.vapid_public_key') }}">
+        @endif
+
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
