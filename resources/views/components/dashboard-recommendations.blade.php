@@ -1,8 +1,8 @@
 <!-- Рекомендации -->
 @if(isset($recommendations) && count($recommendations) > 0)
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-            <svg class="w-5 h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center">
+            <svg class="w-5 h-5 mr-2 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
             </svg>
             Умные рекомендации
@@ -10,7 +10,7 @@
         
         <div class="space-y-3">
             @foreach($recommendations as $recommendation)
-                <div class="flex items-start gap-4 p-4 rounded-lg border {{ $recommendation['urgency'] === 'high' ? 'bg-red-50 border-red-200' : ($recommendation['urgency'] === 'medium' ? 'bg-yellow-50 border-yellow-200' : 'bg-blue-50 border-blue-200') }}">
+                <div class="flex items-start gap-4 p-4 rounded-lg border {{ $recommendation['urgency'] === 'high' ? 'bg-red-50 border-red-200 dark:bg-red-900/30 dark:border-red-700' : ($recommendation['urgency'] === 'medium' ? 'bg-yellow-50 border-yellow-200 dark:bg-yellow-900/30 dark:border-yellow-700' : 'bg-blue-50 border-blue-200 dark:bg-blue-900/30 dark:border-blue-700') }}">
                     <!-- Иконка -->
                     <div class="flex-shrink-0 mt-0.5">
                         @switch($recommendation['icon'])
@@ -53,10 +53,10 @@
                     
                     <!-- Контент -->
                     <div class="flex-1 min-w-0">
-                        <h4 class="text-sm font-semibold text-gray-900 mb-1">{{ $recommendation['title'] }}</h4>
-                        <p class="text-sm text-gray-600 mb-2">{{ $recommendation['description'] }}</p>
+                        <h4 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">{{ $recommendation['title'] }}</h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">{{ $recommendation['description'] }}</p>
                         <a href="{{ $recommendation['action_url'] }}" 
-                           class="inline-flex items-center text-sm font-medium {{ $recommendation['urgency'] === 'high' ? 'text-red-700 hover:text-red-800' : ($recommendation['urgency'] === 'medium' ? 'text-yellow-700 hover:text-yellow-800' : 'text-blue-700 hover:text-blue-800') }}">
+                           class="inline-flex items-center text-sm font-medium {{ $recommendation['urgency'] === 'high' ? 'text-red-700 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300' : ($recommendation['urgency'] === 'medium' ? 'text-yellow-700 hover:text-yellow-800 dark:text-yellow-400 dark:hover:text-yellow-300' : 'text-blue-700 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300') }}">
                             {{ $recommendation['action'] }}
                             <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -96,22 +96,22 @@
 
 <!-- Следующая рекомендуемая задача -->
 @if(isset($nextTask) && $nextTask)
-    <div class="bg-white rounded-lg shadow-sm border-2 border-indigo-200 p-6 mb-6">
-        <h3 class="text-sm font-medium text-indigo-600 mb-2">🎯 СЛЕДУЮЩАЯ ЗАДАЧА</h3>
-        <h4 class="text-xl font-bold text-gray-900 mb-2">{{ $nextTask->title }}</h4>
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border-2 border-indigo-200 dark:border-indigo-700 p-6 mb-6">
+        <h3 class="text-sm font-medium text-indigo-600 dark:text-indigo-400 mb-2">🎯 СЛЕДУЮЩАЯ ЗАДАЧА</h3>
+        <h4 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">{{ $nextTask->title }}</h4>
         @if($nextTask->description)
-            <p class="text-sm text-gray-600 mb-3">{{ Str::limit($nextTask->description, 100) }}</p>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">{{ Str::limit($nextTask->description, 100) }}</p>
         @endif
         <div class="flex items-center gap-4 text-sm">
             @if($nextTask->due_date)
-                <span class="flex items-center text-gray-600">
+                <span class="flex items-center text-gray-600 dark:text-gray-400">
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                     </svg>
                     {{ $nextTask->due_date->format('d.m.Y') }}
                 </span>
             @endif
-            <span class="px-2 py-1 rounded-full text-xs font-medium {{ $nextTask->priority === 'high' ? 'bg-red-100 text-red-800' : ($nextTask->priority === 'medium' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800') }}">
+            <span class="px-2 py-1 rounded-full text-xs font-medium {{ $nextTask->priority === 'high' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300' : ($nextTask->priority === 'medium' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300' : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300') }}">
                 {{ $nextTask->priority_name }}
             </span>
         </div>
@@ -120,9 +120,9 @@
 
 <!-- Задачи на сегодня -->
 @if(isset($todayTasks) && $todayTasks->count() > 0)
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-            <svg class="w-5 h-5 mr-2 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center">
+            <svg class="w-5 h-5 mr-2 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
             Задачи на сегодня
@@ -130,14 +130,14 @@
         
         <div class="space-y-2">
             @foreach($todayTasks as $task)
-                <div class="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition">
+                <div class="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                     <div class="flex items-center gap-3 flex-1 min-w-0">
                         <input type="checkbox" 
                                class="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500"
                                {{ $task->completed ? 'checked' : '' }}>
-                        <span class="text-sm font-medium text-gray-900 truncate">{{ $task->title }}</span>
+                        <span class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{{ $task->title }}</span>
                     </div>
-                    <span class="flex-shrink-0 px-2 py-1 rounded-full text-xs font-medium ml-2 {{ $task->priority === 'high' ? 'bg-red-100 text-red-800' : ($task->priority === 'medium' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800') }}">
+                    <span class="flex-shrink-0 px-2 py-1 rounded-full text-xs font-medium ml-2 {{ $task->priority === 'high' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300' : ($task->priority === 'medium' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300' : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300') }}">
                         {{ $task->priority_name }}
                     </span>
                 </div>
@@ -145,7 +145,7 @@
         </div>
         
         <a href="{{ route('tasks.index', ['due_date' => 'today']) }}" 
-           class="mt-4 inline-flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-800">
+           class="mt-4 inline-flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300">
             Посмотреть все задачи на сегодня
             <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>

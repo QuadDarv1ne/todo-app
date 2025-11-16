@@ -14,16 +14,27 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-        <!-- Initial theme loader -->
+        <!-- Initial theme loader + react to system changes when no explicit choice -->
         <script>
             (function() {
-                const stored = localStorage.getItem('theme');
-                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                if (stored === 'dark' || (!stored && prefersDark)) {
-                    document.documentElement.classList.add('dark');
-                } else {
-                    document.documentElement.classList.remove('dark');
-                }
+                const media = window.matchMedia('(prefers-color-scheme: dark)');
+                const apply = () => {
+                    const stored = localStorage.getItem('theme');
+                    const prefersDark = media.matches;
+                    if (stored === 'dark' || (!stored && prefersDark)) {
+                        document.documentElement.classList.add('dark');
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                    }
+                };
+                // Apply on load
+                apply();
+                // React to system theme changes only when user didn't explicitly choose
+                media.addEventListener?.('change', () => {
+                    if (!localStorage.getItem('theme')) {
+                        apply();
+                    }
+                });
             })();
         </script>
 
@@ -32,7 +43,7 @@
 
         @stack('scripts')
     </head>
-    <body class="font-sans antialiased bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <body class="font-sans antialiased bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
         <div class="min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
             <x-navigation />
 

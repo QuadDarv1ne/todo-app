@@ -11,6 +11,14 @@
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet" />
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script>
+        (function() {
+            const media = window.matchMedia('(prefers-color-scheme: dark)');
+            const stored = localStorage.getItem('theme');
+            const shouldDark = stored === 'dark' || (!stored && media.matches);
+            if (shouldDark) document.documentElement.classList.add('dark');
+        })();
+    </script>
     
     <style>
         * {
@@ -28,6 +36,9 @@
             justify-content: center;
             padding: 1rem;
         }
+        .dark body {
+            background: linear-gradient(135deg, #0b1220 0%, #0f172a 100%);
+        }
 
         .container {
             width: 100%;
@@ -40,6 +51,10 @@
             box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
             padding: 2rem 1.5rem;
             animation: slideUp 0.4s ease-out;
+        }
+        .dark .card {
+            background: #111827;
+            box-shadow: 0 20px 25px rgba(0,0,0,0.35);
         }
 
         @media (min-width: 768px) {
@@ -94,6 +109,7 @@
             font-weight: 700;
             color: #1f2937;
         }
+        .dark .header h1 { color: #e5e7eb; }
 
         @media (min-width: 768px) {
             .header h1 {
@@ -105,6 +121,7 @@
             color: #6b7280;
             font-size: 0.875rem;
         }
+        .dark .header p { color: #9ca3af; }
 
         @media (min-width: 768px) {
             .header p {
@@ -123,6 +140,7 @@
             color: #374151;
             font-size: 0.875rem;
         }
+        .dark label { color: #e5e7eb; }
 
         input {
             width: 100%;
@@ -132,6 +150,11 @@
             font-family: inherit;
             font-size: 1rem;
             transition: all 300ms ease;
+        }
+        .dark input {
+            background: #1f2937;
+            border-color: #374151;
+            color: #e5e7eb;
         }
 
         input:focus {
@@ -143,6 +166,7 @@
         input::placeholder {
             color: #d1d5db;
         }
+        .dark input::placeholder { color: #9ca3af; }
 
         input.error {
             border-color: #ef4444;
@@ -167,6 +191,11 @@
             margin-top: 1rem;
             font-size: 0.75rem;
             color: #1e40af;
+        }
+        .dark .password-requirements {
+            background: #0f172a;
+            border-color: #1e3a8a;
+            color: #93c5fd;
         }
 
         @media (min-width: 768px) {
@@ -212,6 +241,7 @@
             border-radius: 2px;
             overflow: hidden;
         }
+        .dark .password-strength { background: #374151; }
 
         .password-strength-bar {
             height: 100%;
@@ -283,6 +313,7 @@
             color: #6b7280;
             font-size: 0.875rem;
         }
+        .dark .auth-link { color: #9ca3af; }
 
         .auth-link a {
             color: #667eea;
@@ -290,6 +321,8 @@
             text-decoration: none;
             transition: color 300ms;
         }
+        .dark .auth-link a { color: #a5b4fc; }
+        .dark .auth-link a:hover { color: #818cf8; }
 
         .auth-link a:hover {
             color: #4f46e5;

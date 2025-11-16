@@ -11,6 +11,14 @@
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet" />
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script>
+        (function() {
+            const media = window.matchMedia('(prefers-color-scheme: dark)');
+            const stored = localStorage.getItem('theme');
+            const shouldDark = stored === 'dark' || (!stored && media.matches);
+            if (shouldDark) document.documentElement.classList.add('dark');
+        })();
+    </script>
     
     <style>
         * {
@@ -32,6 +40,9 @@
             justify-content: center;
             padding: 1rem;
         }
+        .dark body {
+            background: linear-gradient(135deg, #0b1220 0%, #0f172a 100%);
+        }
 
         .container {
             width: 100%;
@@ -44,6 +55,10 @@
             box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
             padding: 2rem 1.5rem;
             animation: slideUp 0.4s ease-out;
+        }
+        .dark .card {
+            background: #111827;
+            box-shadow: 0 20px 25px rgba(0,0,0,0.35);
         }
 
         @media (min-width: 768px) {
@@ -76,12 +91,14 @@
             height: 2.5rem;
             color: #667eea;
         }
+        .dark .logo svg { color: #818cf8; }
 
         .logo-text {
             font-size: 1.5rem;
             font-weight: 700;
             color: #667eea;
         }
+        .dark .logo-text { color: #a5b4fc; }
 
         .tabs {
             display: flex;
@@ -89,6 +106,7 @@
             margin-bottom: 2rem;
             border-bottom: 2px solid #e5e7eb;
         }
+        .dark .tabs { border-bottom-color: #374151; }
 
         .tab {
             flex: 1;
@@ -110,11 +128,20 @@
             color: #667eea;
             background: rgba(102, 126, 234, 0.05);
         }
+        .dark .tab:hover {
+            color: #a5b4fc;
+            background: rgba(129, 140, 248, 0.08);
+        }
 
         .tab.active {
             color: #667eea;
             border-bottom-color: #667eea;
             background: rgba(102, 126, 234, 0.08);
+        }
+        .dark .tab.active {
+            color: #a5b4fc;
+            border-bottom-color: #818cf8;
+            background: rgba(129, 140, 248, 0.12);
         }
 
         .tab-content {
@@ -158,6 +185,7 @@
             color: #374151;
             font-size: 0.875rem;
         }
+        .dark label { color: #e5e7eb; }
 
         input {
             width: 100%;
@@ -167,6 +195,11 @@
             font-family: inherit;
             font-size: 1rem;
             transition: all 300ms ease;
+        }
+        .dark input {
+            background: #1f2937;
+            border-color: #374151;
+            color: #e5e7eb;
         }
 
         input:focus {
@@ -178,6 +211,7 @@
         input::placeholder {
             color: #d1d5db;
         }
+        .dark input::placeholder { color: #9ca3af; }
 
         .error-message {
             color: #ef4444;
@@ -213,6 +247,7 @@
             font-size: 0.875rem;
             color: #374151;
         }
+        .dark .checkbox-label { color: #e5e7eb; }
 
         .forgot-link {
             display: inline-block;
@@ -221,6 +256,8 @@
             font-size: 0.875rem;
             transition: color 300ms;
         }
+        .dark .forgot-link { color: #a5b4fc; }
+        .dark .forgot-link:hover { color: #818cf8; }
 
         .forgot-link:hover {
             color: #4f46e5;
@@ -240,6 +277,8 @@
             background-color: #667eea;
             color: white;
         }
+        .dark .btn { background-color: #4f46e5; }
+        .dark .btn:hover { background-color: #6366f1; }
 
         .btn:hover {
             background-color: #4f46e5;
@@ -276,6 +315,7 @@
             font-size: 0.875rem;
             margin-top: 1.5rem;
         }
+        .dark .footer-text { color: #9ca3af; }
 
         .footer-link {
             color: #667eea;
@@ -283,6 +323,8 @@
             font-weight: 600;
             transition: color 300ms;
         }
+        .dark .footer-link { color: #a5b4fc; }
+        .dark .footer-link:hover { color: #818cf8; }
 
         .footer-link:hover {
             color: #4f46e5;
@@ -298,7 +340,8 @@
             text-decoration: none;
             transition: color 300ms;
         }
-
+        .dark .back-link { color: #a5b4fc; }
+        .dark .back-link:hover { color: #818cf8; }
         .back-link:hover {
             color: #4f46e5;
         }
@@ -584,12 +627,12 @@
 
         // Initialize correct tab on page load
         document.addEventListener('DOMContentLoaded', function() {
-            const hasRegistrationData = {{ old('name') ? 'true' : 'false' }};
-            const hasLoginErrors = {{ ($errors->has('email') || $errors->has('password')) && !old('name') ? 'true' : 'false' }};
+            const hasRegistrationData = "{{ old('name') ? '1' : '0' }}";
+            const hasLoginErrors = "{{ (($errors->has('email') || $errors->has('password')) && !old('name')) ? '1' : '0' }}";
             
-            if (hasRegistrationData) {
+            if (hasRegistrationData === '1') {
                 switchTab('register');
-            } else if (hasLoginErrors) {
+            } else if (hasLoginErrors === '1') {
                 switchTab('login');
             } else {
                 // Default to login tab
