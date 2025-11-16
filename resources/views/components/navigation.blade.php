@@ -1,4 +1,4 @@
-<nav class="bg-white border-b border-gray-100 shadow-sm" x-data="{ mobileMenuOpen: false }">
+<nav class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 shadow-sm transition-colors duration-300" x-data="{ mobileMenuOpen: false }">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16">
             
@@ -12,24 +12,32 @@
                 </a>
 
                 <!-- Desktop Navigation Links -->
-                <div class="hidden md:flex gap-8">
+                <div class="hidden md:flex gap-8 items-center">
                     @auth
-                        <a href="{{ route('dashboard') }}" 
-                           class="px-1 py-2 text-base font-medium {{ request()->routeIs('dashboard') ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-700 hover:text-indigo-600' }} transition-colors duration-200">
+                                <a href="{{ route('dashboard') }}" 
+                                    class="px-1 py-2 text-base font-medium {{ request()->routeIs('dashboard') ? 'text-indigo-600 border-b-2 border-indigo-600 dark:text-indigo-400' : 'text-gray-700 hover:text-indigo-600 dark:text-gray-300 dark:hover:text-indigo-400' }} transition-colors duration-200">
                             Dashboard
                         </a>
-                        <a href="{{ route('tasks.index') }}" 
-                           class="px-1 py-2 text-base font-medium {{ request()->routeIs('tasks.*') ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-700 hover:text-indigo-600' }} transition-colors duration-200">
+                                <a href="{{ route('tasks.index') }}" 
+                                    class="px-1 py-2 text-base font-medium {{ request()->routeIs('tasks.*') ? 'text-indigo-600 border-b-2 border-indigo-600 dark:text-indigo-400' : 'text-gray-700 hover:text-indigo-600 dark:text-gray-300 dark:hover:text-indigo-400' }} transition-colors duration-200">
                             Задачи
                         </a>
-                        <a href="{{ route('achievements.index') }}" 
-                           class="px-1 py-2 text-base font-medium {{ request()->routeIs('achievements.*') ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-700 hover:text-indigo-600' }} transition-colors duration-200">
+                                <a href="{{ route('achievements.index') }}" 
+                                    class="px-1 py-2 text-base font-medium {{ request()->routeIs('achievements.*') ? 'text-indigo-600 border-b-2 border-indigo-600 dark:text-indigo-400' : 'text-gray-700 hover:text-indigo-600 dark:text-gray-300 dark:hover:text-indigo-400' }} transition-colors duration-200">
                             Достижения
                         </a>
                         <a href="{{ route('activity-logs.index') }}" 
-                           class="px-1 py-2 text-base font-medium {{ request()->routeIs('activity-logs.*') ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-700 hover:text-indigo-600' }} transition-colors duration-200">
+                           class="px-1 py-2 text-base font-medium {{ request()->routeIs('activity-logs.*') ? 'text-indigo-600 border-b-2 border-indigo-600 dark:text-indigo-400' : 'text-gray-700 hover:text-indigo-600 dark:text-gray-300 dark:hover:text-indigo-400' }} transition-colors duration-200">
                             История
                         </a>
+                        <button id="themeToggle" type="button" class="ml-2 p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200" aria-label="Переключить тему">
+                            <svg data-icon-light class="w-5 h-5 text-gray-700 dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+                            </svg>
+                            <svg data-icon-dark class="w-5 h-5 text-yellow-400 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+                            </svg>
+                        </button>
                     @endif
                 </div>
             </div>
@@ -39,8 +47,8 @@
                 @auth
                     <!-- Notifications Bell -->
                     <div class="relative group">
-                        <button class="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 relative">
-                            <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <button class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 relative">
+                            <svg class="w-6 h-6 text-gray-700 dark:text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                             </svg>
                             @php
@@ -54,9 +62,9 @@
                         </button>
 
                         <!-- Notifications Dropdown -->
-                        <div class="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 top-full">
-                            <div class="p-4 border-b border-gray-200">
-                                <h3 class="text-lg font-semibold text-gray-900">Уведомления</h3>
+                        <div class="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 top-full">
+                            <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Уведомления</h3>
                             </div>
                             <div class="max-h-96 overflow-y-auto">
                                 @forelse(Auth::user()->notifications->take(5) as $notification)
@@ -89,13 +97,13 @@
                                         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                                         </svg>
-                                        <h3 class="mt-2 text-sm font-medium text-gray-900">Нет уведомлений</h3>
-                                        <p class="mt-1 text-sm text-gray-500">Здесь будут отображаться ваши уведомления.</p>
+                                        <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">Нет уведомлений</h3>
+                                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Здесь будут отображаться ваши уведомления.</p>
                                     </div>
                                 @endforelse
                             </div>
                             @if(Auth::user()->notifications->count() > 0)
-                                <div class="p-3 border-t border-gray-200 text-center">
+                                <div class="p-3 border-t border-gray-200 dark:border-gray-700 text-center">
                                     <a href="{{ route('profile.edit') }}#notifications" class="text-sm font-medium text-indigo-600 hover:text-indigo-500">
                                         Просмотреть все
                                     </a>
@@ -106,7 +114,7 @@
 
                     <!-- Desktop User Menu -->
                     <div class="hidden sm:flex items-center gap-3 relative group">
-                        <button class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors duration-200">
+                        <button class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
                             <div class="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0">
                                 <span class="text-lg font-semibold text-indigo-700">{{ substr(Auth::user()->name, 0, 1) }}</span>
                             </div>
@@ -117,19 +125,19 @@
                         </button>
 
                         <!-- Dropdown Menu -->
-                        <div class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 top-full">
-                            <a href="{{ route('profile.edit') }}" class="block px-5 py-3 text-base text-gray-700 hover:bg-gray-50 first:rounded-t-xl transition-colors duration-200">Профиль</a>
-                            <a href="{{ route('tasks.index') }}" class="block px-5 py-3 text-base text-gray-700 hover:bg-gray-50 transition-colors duration-200">Мои задачи</a>
+                        <div class="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 top-full">
+                            <a href="{{ route('profile.edit') }}" class="block px-5 py-3 text-base text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 first:rounded-t-xl transition-colors duration-200">Профиль</a>
+                            <a href="{{ route('tasks.index') }}" class="block px-5 py-3 text-base text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">Мои задачи</a>
                             <form method="POST" action="{{ route('logout') }}" class="border-t border-gray-200">
                                 @csrf
-                                <button type="submit" class="w-full text-left px-5 py-3 text-base text-red-600 hover:bg-red-50 last:rounded-b-xl transition-colors duration-200">Выйти</button>
+                                <button type="submit" class="w-full text-left px-5 py-3 text-base text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 last:rounded-b-xl transition-colors duration-200">Выйти</button>
                             </form>
                         </div>
                     </div>
 
                     <!-- Mobile Menu Button -->
-                    <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200">
-                        <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
+                        <svg class="w-6 h-6 text-gray-700 dark:text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                                   :d="mobileMenuOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'" />
                         </svg>
@@ -150,8 +158,8 @@
                     </div>
 
                     <!-- Mobile Menu Button -->
-                    <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200">
-                        <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
+                        <svg class="w-6 h-6 text-gray-700 dark:text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                                   :d="mobileMenuOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'" />
                         </svg>
@@ -204,3 +212,21 @@
         </div>
     </div>
 </nav>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const toggle = document.getElementById('themeToggle');
+    if(!toggle) return;
+    const apply = () => {
+        const isDark = document.documentElement.classList.contains('dark');
+        toggle.querySelector('[data-icon-light]')?.classList.toggle('hidden', isDark);
+        toggle.querySelector('[data-icon-dark]')?.classList.toggle('hidden', !isDark);
+    };
+    toggle.addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+        localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+        apply();
+    });
+    apply();
+});
+</script>

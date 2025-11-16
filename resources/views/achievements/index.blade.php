@@ -5,7 +5,7 @@
         </h2>
     </x-slot>
 
-    <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12">
+    <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950 py-12 transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Header Section -->
             <div class="mb-8">
@@ -23,7 +23,7 @@
             </div>
 
             <!-- User Progress Card -->
-            <div class="bg-white rounded-xl shadow-lg border border-gray-200 mb-8 overflow-hidden">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 mb-8 overflow-hidden transition-colors duration-300">
                 <div class="bg-gradient-to-r from-indigo-500 to-purple-600 px-8 py-6">
                     <div class="flex items-center justify-between">
                         <div class="text-white">
@@ -66,7 +66,7 @@
                             <span class="font-medium">Прогресс до следующего уровня</span>
                             <span class="font-semibold text-indigo-600">{{ number_format($levelProgress, 1) }}%</span>
                         </div>
-                        <div class="w-full bg-gray-200 rounded-full h-6 overflow-hidden shadow-inner">
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-6 overflow-hidden shadow-inner">
                             <div class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 h-6 rounded-full transition-all duration-700 flex items-center justify-end px-3"
                                  style="width: {{ min($levelProgress, 100) }}%">
                                 @if($levelProgress > 15)
@@ -129,7 +129,7 @@
 
             <!-- Список достижений по категориям -->
             @foreach($achievementsByCategory as $category => $categoryAchievements)
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-6 overflow-hidden">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 mb-6 overflow-hidden transition-colors duration-300">
                     <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b border-gray-200">
                         <h3 class="text-xl font-bold text-gray-900 flex items-center gap-3">
                             @switch($category)

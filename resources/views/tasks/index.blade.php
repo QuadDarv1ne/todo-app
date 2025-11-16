@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8">
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950 py-8 transition-colors duration-300">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Header with Action Button -->
         <div class="mb-8 flex items-center justify-between">
@@ -25,7 +25,7 @@
         </div>
 
         <!-- Filters with Modern Design -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8 transition-colors duration-300">
             <form action="{{ route('tasks.index') }}" method="GET" class="space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <!-- Search -->
@@ -150,7 +150,7 @@
         @else
             <div class="grid grid-cols-1 gap-4">
                 @foreach($tasks as $task)
-                    <div class="task-card group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-200 border border-gray-200 overflow-hidden {{ $task->completed ? 'opacity-75' : '' }}">
+                    <div class="task-card group bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-lg transition-all duration-200 border border-gray-200 dark:border-gray-700 overflow-hidden {{ $task->completed ? 'opacity-75' : '' }}">
                         <!-- Priority Bar -->
                         <div class="h-1.5 {{ $task->priority === 'high' ? 'bg-red-500' : ($task->priority === 'medium' ? 'bg-yellow-500' : 'bg-green-500') }}"></div>
                         
@@ -170,12 +170,12 @@
                                 <div class="flex-grow">
                                     <div class="flex items-start justify-between gap-4">
                                         <div class="flex-grow">
-                                            <h3 class="task-title text-lg font-bold {{ $task->completed ? 'line-through text-gray-400' : 'text-gray-900' }} mb-2">
+                                            <h3 class="task-title text-lg font-bold {{ $task->completed ? 'line-through text-gray-500 dark:text-gray-500' : 'text-gray-900 dark:text-gray-100' }} mb-2">
                                                 {{ $task->title }}
                                             </h3>
                                             
                                             @if($task->description)
-                                                <p class="text-sm text-gray-600 leading-relaxed">{{ $task->description }}</p>
+                                                <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">{{ $task->description }}</p>
                                             @endif
 
                                             <!-- Meta info -->
