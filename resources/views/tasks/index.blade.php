@@ -148,9 +148,24 @@
                 </button>
             </div>
         @else
-            <div class="grid grid-cols-1 gap-4">
+            <!-- Bulk Operations Toggle -->
+            <div class="mb-4 flex items-center justify-between">
+                <button 
+                    data-select-all-tasks
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-all text-sm font-medium">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                    </svg>
+                    Выбрать все
+                </button>
+                <div class="text-sm text-gray-600 dark:text-gray-400">
+                    Всего задач: {{ $tasks->total() }}
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 gap-4" data-tasks-container>
                 @foreach($tasks as $task)
-                    <div class="task-card group bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-lg transition-all duration-200 border border-gray-200 dark:border-gray-700 overflow-hidden {{ $task->completed ? 'opacity-75' : '' }}">
+                    <div class="task-card group bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-lg transition-all duration-200 border border-gray-200 dark:border-gray-700 overflow-hidden {{ $task->completed ? 'opacity-75' : '' }}" data-task-id="{{ $task->id }}">
                         <!-- Priority Bar -->
                         <div class="h-1.5 {{ $task->priority === 'high' ? 'bg-red-500' : ($task->priority === 'medium' ? 'bg-yellow-500' : 'bg-green-500') }}"></div>
                         

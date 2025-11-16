@@ -39,6 +39,11 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
     Route::post('/tasks/reorder', [TaskController::class, 'reorder'])->name('tasks.reorder');
     
+    // Массовые операции с задачами
+    Route::post('/tasks/bulk/complete', [TaskController::class, 'bulkComplete'])->name('tasks.bulk.complete');
+    Route::post('/tasks/bulk/delete', [TaskController::class, 'bulkDelete'])->name('tasks.bulk.delete');
+    Route::post('/tasks/bulk/priority', [TaskController::class, 'bulkPriority'])->name('tasks.bulk.priority');
+    
     // Экспорт задач
     Route::get('/tasks/export/json', [TaskController::class, 'exportJson'])->name('tasks.export.json');
     Route::get('/tasks/export/csv', [TaskController::class, 'exportCsv'])->name('tasks.export.csv');

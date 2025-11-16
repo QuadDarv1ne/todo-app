@@ -373,4 +373,110 @@ class TaskController extends Controller
             abort(500, 'Ошибка при генерации отчета');
         }
     }
+
+    /**
+     * Массовое выполнение задач.
+     */
+    public function bulkComplete(Request $request): JsonResponse
+    {
+        try {
+            $request->validate([
+                'task_ids' => 'required|array',
+                'task_ids.*' => 'required|exists:tasks,id',
+            ]);
+
+            $updated = 0;
+            foreach ($request->task_ids as $taskId) {
+                $task = Task::find($taskId);
+                if ($task && $task->user_id === $request->user()->id) {
+                    $task->update(['completed' => true]);
+                    event(new TaskUpdated($task));
+                    $updated++;
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => "Выполнено задач: {$updated}",
+                'updated' => $updated
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error bulk completing tasks: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка при выполнении операции'
+            ], 500);
+        }
+    }
+
+    /**
+     * Массовое удаление задач.
+     */
+    public function bulkDelete(Request $request): JsonResponse
+    {
+        try {
+            $request->validate([
+                'task_ids' => 'required|array',
+                'task_ids.*' => 'required|exists:tasks,id',
+            ]);
+
+            $deleted = 0;
+            foreach ($request->task_ids as $taskId) {
+                $task = Task::find($taskId);
+                if ($task && $task->user_id === $request->user()->id) {
+                    event(new TaskDeleted($task));
+                    $task->delete();
+                    $deleted++;
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => "Удалено задач: {$deleted}",
+                'deleted' => $deleted
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error bulk deleting tasks: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка при удалении задач'
+            ], 500);
+        }
+    }
+
+    /**
+     * Массовое изменение приоритета задач.
+     */
+    public function bulkPriority(Request $request): JsonResponse
+    {
+        try {
+            $request->validate([
+                'task_ids' => 'required|array',
+                'task_ids.*' => 'required|exists:tasks,id',
+                'priority' => 'required|string|in:low,medium,high',
+            ]);
+
+            $updated = 0;
+            foreach ($request->task_ids as $taskId) {
+                $task = Task::find($taskId);
+                if ($task && $task->user_id === $request->user()->id) {
+                    $task->update(['priority' => $request->priority]);
+                    event(new TaskUpdated($task));
+                    $updated++;
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => "Обновлено задач: {$updated}",
+                'updated' => $updated
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error bulk updating priority: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка при изменении приоритета'
+            ], 500);
+        }
+    }
 }

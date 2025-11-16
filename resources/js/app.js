@@ -19,3 +19,12 @@ import './monitor';
 // Push уведомления
 import './push';
 import './profile-reminders';
+
+// Массовые операции с задачами
+import './bulk-operations';
+
+// Горячие клавиши
+import './keyboard-shortcuts';
+
+// Расширенная аналитика
+import './analytics';
