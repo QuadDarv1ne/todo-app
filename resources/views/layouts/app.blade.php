@@ -94,5 +94,20 @@
         <x-edit-task-modal />
         
         @stack('scripts')
+
+        <!-- Service Worker Registration -->
+        <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js').then(function(registration) {
+                    // Регистрация успешна
+                    // console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                }, function(err) {
+                    // Регистрация не удалась
+                    // console.warn('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+        </script>
     </body>
 </html>
