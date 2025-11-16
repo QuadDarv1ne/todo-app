@@ -6,6 +6,7 @@ use App\Models\Task;
 use App\Models\User;
 use App\Notifications\TaskDueReminder;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 
 class NotificationService
 {
@@ -20,11 +21,20 @@ class NotificationService
      */
     public function sendTaskDueReminders(int $daysBeforeDue = 1): int
     {
+        $nowHM = now()->format('H:i');
         $targetDate = now()->addDays($daysBeforeDue)->startOfDay();
         $endDate = $targetDate->copy()->endOfDay();
         
         // Получаем пользователей с включенными напоминаниями для указанного интервала
-        $users = User::where('reminder_enabled', true);
+        $users = User::where('reminder_enabled', true)
+            ->where(function ($q) use ($nowHM) {
+                if ($nowHM === '09:00') {
+                    $q->whereTime('reminder_time', '=', $nowHM)
+                      ->orWhereNull('reminder_time');
+                } else {
+                    $q->whereTime('reminder_time', '=', $nowHM);
+                }
+            });
         
         switch ($daysBeforeDue) {
             case 1:
@@ -54,6 +64,11 @@ class NotificationService
             try {
                 // Проверяем, что у пользователя все еще включены напоминания
                 if ($task->user->reminder_enabled) {
+                    // dedupe по задаче/дате, чтобы не слать повторно в этот день
+                    $dedupeKey = sprintf('reminder:task:%d:due:%s', $task->id, $targetDate->toDateString());
+                    if (!Cache::add($dedupeKey, true, now()->addDay())) {
+                        continue;
+                    }
                     $task->user->notify(new TaskDueReminder($task));
                     // Web Push
                     $this->pushService->sendToUser($task->user, [
@@ -89,9 +104,18 @@ class NotificationService
      */
     public function sendOverdueTaskReminders(): int
     {
-        // Получаем пользователей с включенными напоминаниями о просроченных задачах
+        $nowHM = now()->format('H:i');
+        // Получаем пользователей с включенными напоминаниями о просроченных задачах и подходящим временем
         $users = User::where('reminder_enabled', true)
             ->where('reminder_overdue', true)
+            ->where(function ($q) use ($nowHM) {
+                if ($nowHM === '09:00') {
+                    $q->whereTime('reminder_time', '=', $nowHM)
+                      ->orWhereNull('reminder_time');
+                } else {
+                    $q->whereTime('reminder_time', '=', $nowHM);
+                }
+            })
             ->pluck('id');
         
         $tasks = Task::where('completed', false)
@@ -108,6 +132,11 @@ class NotificationService
             try {
                 // Проверяем, что у пользователя все еще включены напоминания
                 if ($task->user->reminder_enabled && $task->user->reminder_overdue) {
+                    // dedupe по задаче/дате для просроченных
+                    $dedupeKey = sprintf('reminder:task:%d:overdue:%s', $task->id, now()->toDateString());
+                    if (!Cache::add($dedupeKey, true, now()->addDay())) {
+                        continue;
+                    }
                     $task->user->notify(new TaskDueReminder($task));
                     // Web Push
                     $this->pushService->sendToUser($task->user, [

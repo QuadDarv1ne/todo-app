@@ -24,25 +24,22 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // Send task reminders daily at 9:00 AM
+        // Run reminders every minute; NotificationService фильтрует по личному времени пользователя и кэширует, чтобы не дублировать в пределах дня
         $schedule->command('tasks:send-reminders --days=1')
-                 ->dailyAt('09:00')
-                 ->description('Send task reminders for tasks due tomorrow');
+             ->everyMinute()
+             ->description('Send task reminders for tasks due tomorrow (per-user time)');
 
-        // Send task reminders for tasks due in 3 days
         $schedule->command('tasks:send-reminders --days=3')
-                 ->dailyAt('09:00')
-                 ->description('Send task reminders for tasks due in 3 days');
+             ->everyMinute()
+             ->description('Send task reminders for tasks due in 3 days (per-user time)');
 
-        // Send task reminders for tasks due in 1 week
         $schedule->command('tasks:send-reminders --days=7')
-                 ->dailyAt('09:00')
-                 ->description('Send task reminders for tasks due in 1 week');
+             ->everyMinute()
+             ->description('Send task reminders for tasks due in 1 week (per-user time)');
 
-        // Send overdue task reminders daily at 9:30 AM
         $schedule->command('tasks:send-reminders')
-                 ->dailyAt('09:30')
-                 ->description('Send reminders for overdue tasks');
+             ->everyMinute()
+             ->description('Send reminders for overdue tasks (per-user time)');
     }
 
     /**
