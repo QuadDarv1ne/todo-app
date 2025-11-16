@@ -175,3 +175,27 @@
         scroll-behavior: auto !important;
     }
 }
+
+/* Screen reader only content */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* Hover transitions for badges */
+@layer components {
+    .task-card .inline-flex.items-center.gap-1\.5 {
+        transition: transform 150ms ease, box-shadow 150ms ease;
+    }
+    
+    .task-card:hover .inline-flex.items-center.gap-1\.5 {
+        transform: translateY(-1px);
+    }
+}

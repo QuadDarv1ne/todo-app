@@ -89,4 +89,53 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/api/donations/stats', [DonationController::class, 'apiStats'])->name('donations.api.stats');
 });
 
+// Sitemap route (public)
+Route::get('/sitemap.xml', function () {
+    $sitemap = '<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL;
+    $sitemap .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . PHP_EOL;
+    
+    // Home page
+    $sitemap .= '  <url>' . PHP_EOL;
+    $sitemap .= '    <loc>' . url('/') . '</loc>' . PHP_EOL;
+    $sitemap .= '    <lastmod>' . now()->toAtomString() . '</lastmod>' . PHP_EOL;
+    $sitemap .= '    <changefreq>daily</changefreq>' . PHP_EOL;
+    $sitemap .= '    <priority>1.0</priority>' . PHP_EOL;
+    $sitemap .= '  </url>' . PHP_EOL;
+    
+    // Login page
+    $sitemap .= '  <url>' . PHP_EOL;
+    $sitemap .= '    <loc>' . route('login') . '</loc>' . PHP_EOL;
+    $sitemap .= '    <lastmod>' . now()->toAtomString() . '</lastmod>' . PHP_EOL;
+    $sitemap .= '    <changefreq>monthly</changefreq>' . PHP_EOL;
+    $sitemap .= '    <priority>0.8</priority>' . PHP_EOL;
+    $sitemap .= '  </url>' . PHP_EOL;
+    
+    // Register page
+    $sitemap .= '  <url>' . PHP_EOL;
+    $sitemap .= '    <loc>' . route('register') . '</loc>' . PHP_EOL;
+    $sitemap .= '    <lastmod>' . now()->toAtomString() . '</lastmod>' . PHP_EOL;
+    $sitemap .= '    <changefreq>monthly</changefreq>' . PHP_EOL;
+    $sitemap .= '    <priority>0.8</priority>' . PHP_EOL;
+    $sitemap .= '  </url>' . PHP_EOL;
+    
+    $sitemap .= '</urlset>';
+    
+    return response($sitemap, 200)->header('Content-Type', 'application/xml');
+})->name('sitemap');
+
+// Robots.txt route (already exists as static file, but can be dynamic)
+Route::get('/robots.txt', function () {
+    $robots = "User-agent: *" . PHP_EOL;
+    $robots .= "Allow: /" . PHP_EOL;
+    $robots .= "Disallow: /dashboard" . PHP_EOL;
+    $robots .= "Disallow: /profile" . PHP_EOL;
+    $robots .= "Disallow: /tasks" . PHP_EOL;
+    $robots .= "Disallow: /notifications" . PHP_EOL;
+    $robots .= "Disallow: /activity-logs" . PHP_EOL;
+    $robots .= PHP_EOL;
+    $robots .= "Sitemap: " . url('/sitemap.xml') . PHP_EOL;
+    
+    return response($robots, 200)->header('Content-Type', 'text/plain');
+});
+
 require __DIR__.'/auth.php';

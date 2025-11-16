@@ -5,7 +5,31 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>@yield('title', config('app.name', 'Laravel') . ' - Управление задачами')</title>
+        
+        <!-- SEO Meta Tags -->
+        <meta name="description" content="@yield('description', 'Эффективное управление задачами и проектами. Создавайте, отслеживайте и завершайте задачи с удобным интерфейсом.')">
+        <meta name="keywords" content="@yield('keywords', 'управление задачами, todo, задачи, планирование, продуктивность')">
+        <meta name="author" content="{{ config('app.name', 'Laravel') }}">
+        <meta name="robots" content="index, follow">
+        
+        <!-- Open Graph / Facebook -->
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="{{ url()->current() }}">
+        <meta property="og:title" content="@yield('og_title', config('app.name', 'Laravel') . ' - Управление задачами')">
+        <meta property="og:description" content="@yield('og_description', 'Эффективное управление задачами и проектами')">
+        <meta property="og:image" content="@yield('og_image', asset('images/og-image.jpg'))">
+        <meta property="og:locale" content="{{ str_replace('_', '-', app()->getLocale()) }}">
+        
+        <!-- Twitter -->
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:url" content="{{ url()->current() }}">
+        <meta name="twitter:title" content="@yield('twitter_title', config('app.name', 'Laravel') . ' - Управление задачами')">
+        <meta name="twitter:description" content="@yield('twitter_description', 'Эффективное управление задачами и проектами')">
+        <meta name="twitter:image" content="@yield('twitter_image', asset('images/og-image.jpg'))">
+        
+        <!-- Canonical URL -->
+        <link rel="canonical" href="{{ url()->current() }}">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -61,6 +85,9 @@
                 {{ $slot ?? '' }}
                 @yield('content')
             </main>
+            
+            <!-- Live region for accessibility announcements -->
+            <div id="aria-live-region" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
         </div>
         
         <!-- Edit Task Modal -->

@@ -1,2 +1,15 @@
 User-agent: *
-Disallow:
+Allow: /
+Disallow: /dashboard
+Disallow: /profile
+Disallow: /tasks
+Disallow: /notifications
+Disallow: /activity-logs
+Disallow: /achievements
+Disallow: /reminders
+Disallow: /tags
+Disallow: /statistics
+Disallow: /donations
+
+# Crawl-delay (optional)
+Crawl-delay: 1
