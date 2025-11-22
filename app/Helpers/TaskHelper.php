@@ -245,7 +245,7 @@ class TaskHelper
             
             $byDay = collect($days)->mapWithKeys(function ($day) {
                 return [$day => 0];
-            });
+            })->toArray(); // Преобразуем в массив для возможности изменения
 
             $tasks->each(function ($task) use (&$byDay, $days) {
                 $dayOfWeek = $task->created_at->dayOfWeekIso - 1; // 0-6
@@ -253,7 +253,7 @@ class TaskHelper
                 $byDay[$dayName]++;
             });
 
-            return $byDay->toArray();
+            return $byDay;
         });
     }
 
